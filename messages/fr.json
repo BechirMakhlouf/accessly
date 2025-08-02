@@ -1,0 +1,235 @@
+{
+  "auth": {
+    "orContinueWith": "Ou continuer avec",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@exemple.com",
+    "passwordLabel": "Mot de passe",
+    "errors": {
+      "invalidEmail": "Veuillez entrer une adresse email valide.",
+      "pwShort": "Le mot de passe doit contenir au moins 6 caractères."
+    },
+    "signInForm": {
+      "loginTitle": "Connexion",
+      "loginDescription": "Entrez votre email ci-dessous pour vous connecter à votre compte",
+      "forgotPassword": "Mot de passe oublié ?",
+      "loggingIn": "Connexion en cours...",
+      "login": "Se connecter",
+      "signupPrompt": "Vous n'avez pas de compte ?",
+      "signup": "S'inscrire"
+    },
+    "oauth": {
+      "google": "Google",
+      "microsoft": "Microsoft",
+      "apple": "Apple"
+    },
+    "signUpForm": {
+      "signUpTitle": "Inscription",
+      "signUpDescription": "Créez un nouveau compte",
+      "repeatPasswordLabel": "Répéter le mot de passe",
+      "errors": {
+        "passwordsMismatch": "Les mots de passe ne correspondent pas"
+      },
+      "creatingAccount": "Création du compte en cours...",
+      "signUp": "S'inscrire",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter"
+    }
+  },
+  "landing": {
+    "pushThroughAnyChallenge": "Surmontez N'importe Quel Défi",
+    "turnYourImpossibleIntoInevitable": "Transformez Votre <impossible>Impossible</impossible> En Inévitable",
+    "heroDescription": "Comme Sisyphe, chaque grand projet commence par pousser ce rocher en haut de la colline. Nous vous donnons les outils pour que chaque poussée compte, transformant les luttes répétitives en un élan imparable.",
+    "startYourJourney": "Commencez Votre Voyage",
+    "watchDemo": "Voir la Démo",
+    "joinBuilders": "Rejoignez {count} bâtisseurs",
+    "ratingSummary": "{rating} sur {reviewsCount} avis",
+    "builtForTheRelentless": "Conçu pour les <relentless>Acharnés</relentless>",
+    "featuresDescription": "Chaque fonctionnalité est conçue pour vous aider à surmonter les obstacles et à construire quelque chose d'extraordinaire.",
+    "features": {
+      "lightningFastSetup": {
+        "title": "Configuration Ultra Rapide",
+        "description": "Lancez votre projet en quelques minutes, pas en heures. Les modèles préconfigurés et les paramètres intelligents vous permettent de démarrer instantanément."
+      },
+      "automateTheGrind": {
+        "title": "Automatisez la Routine",
+        "description": "Transformez les tâches répétitives en flux de travail automatisés. Concentrez-vous sur ce qui compte pendant que nous nous occupons de pousser le rocher."
+      },
+      "progressTracking": {
+        "title": "Suivi de Progrès",
+        "description": "Voyez le chemin parcouru. Le suivi visuel des progrès vous garde motivé lorsque la montagne semble interminable."
+      },
+      "enterpriseSecurity": {
+        "title": "Sécurité d'Entreprise",
+        "description": "Sécurité de niveau bancaire avec chiffrement de bout en bout. Vos données sont protégées pendant que vous vous concentrez sur la construction."
+      },
+      "teamCollaboration": {
+        "title": "Collaboration d'Équipe",
+        "description": "Partagez la charge. Les outils de collaboration en temps réel aident votre équipe à pousser le rocher ensemble."
+      },
+      "smartAnalytics": {
+        "title": "Analyses Intelligentes",
+        "description": "Des informations basées sur les données vous aident à optimiser votre approche et à trouver le chemin le plus efficace vers le sommet de la montagne."
+      }
+    },
+    "builtOnModernFoundations": "Construit sur des <modern>Fondations Modernes</modern>",
+    "techStackDescription": "Propulsé par les dernières technologies pour garantir que vos projets sont rapides, sécurisés et évolutifs.",
+    "techStack": {
+      "nextjs": {
+        "title": "Next.js 15",
+        "description": "Framework React avec App Router, Server Components et optimisations de performance de pointe."
+      },
+      "supabase": {
+        "title": "Supabase",
+        "description": "Base de données PostgreSQL avec abonnements en temps réel, authentification et fonctions edge."
+      },
+      "tailwind": {
+        "title": "Tailwind CSS",
+        "description": "Framework CSS utility-first avec des composants shadcn/ui pour des interfaces belles et réactives."
+      }
+    },
+    "lovedByBuilders": "Aimé par les <builders>Bâtisseurs</builders>",
+    "testimonialsDescription": "Découvrez ce que les autres disent de leur parcours avec Accessly Starter.",
+    "testimonials": {
+      "sarahJohnson": {
+        "quote": "\"Enfin, un starter qui ne me donne pas envie d'abandonner avant de commencer. Les fonctionnalités d'automatisation à elles seules m'ont fait gagner des semaines de travail.\"",
+        "role": "Fondatrice, TechFlow"
+      },
+      "marcusRodriguez": {
+        "quote": "\"Le suivi des progrès me motive. Voir tout ce que j'ai accompli rend la bataille difficile en valoir la peine.\"",
+        "role": "Développeur Senior"
+      },
+      "alexLiu": {
+        "quote": "\"Notre équipe est passée de l'idée au MVP en un temps record. Les fonctionnalités de collaboration rendent le travail d'équipe fluide.\"",
+        "role": "CTO, StartupXYZ"
+      }
+    },
+    "simplePricing": "Tarification <pricing>Simple</pricing>",
+    "pricingDescription": "Choisissez le plan qui correspond à votre parcours. Mettez à niveau à mesure que vous montez plus haut.",
+    "pricing": {
+      "starter": {
+        "title": "Débutant",
+        "subtitle": "Parfait pour les bâtisseurs solitaires",
+        "price": "$0",
+        "priceSuffix": "/mois",
+        "features": {
+          "projects": "5 projets",
+          "templates": "Modèles de base",
+          "communitySupport": "Support communautaire"
+        },
+        "cta": "Commencer"
+      },
+      "pro": {
+        "badge": "Le Plus Populaire",
+        "title": "Pro",
+        "subtitle": "Pour les équipes en croissance",
+        "price": "$29",
+        "priceSuffix": "/mois",
+        "features": {
+          "unlimitedProjects": "Projets illimités",
+          "premiumTemplates": "Modèles premium",
+          "teamCollaboration": "Collaboration d'équipe",
+          "prioritySupport": "Support prioritaire"
+        },
+        "cta": "Démarrer l'essai Pro"
+      },
+      "enterprise": {
+        "title": "Entreprise",
+        "subtitle": "Pour les grandes organisations",
+        "price": "$99",
+        "priceSuffix": "/mois",
+        "features": {
+          "everythingPro": "Tout inclus dans Pro",
+          "customIntegrations": "Intégrations personnalisées",
+          "dedicatedSupport": "Support dédié",
+          "slaGuarantee": "Garantie SLA"
+        },
+        "cta": "Contacter les Ventes"
+      }
+    },
+    "cta": {
+      "readyToPushYourBoulder": "Prêt à Pousser Votre Rocher ?",
+      "joinBuilders": "Rejoignez des milliers de bâtisseurs qui ont transformé leurs rêves impossibles en histoires de succès inévitables.",
+      "startYourJourney": "Commencez Votre Voyage",
+      "talkToSales": "Parler aux Ventes",
+      "trialInfo": "Aucune carte de crédit requise • Essai gratuit de 14 jours • Annulez à tout moment"
+    },
+    "footer": {
+      "brand": "Accessly Starter",
+      "tagline": "Transformez votre impossible en inévitable. Conçu pour les acharnés.",
+      "product": "Produit",
+      "features": "Fonctionnalités",
+      "pricing": "Tarification",
+      "documentation": "Documentation",
+      "changelog": "Journal des modifications",
+      "company": "Entreprise",
+      "about": "À propos",
+      "blog": "Blog",
+      "careers": "Carrières",
+      "contact": "Contact",
+      "support": "Support",
+      "helpCenter": "Centre d'aide",
+      "community": "Communauté",
+      "status": "Statut",
+      "privacy": "Confidentialité",
+      "copyright": "© {year} Accessly Starter. Tous droits réservés.",
+      "terms": "Conditions",
+      "cookies": "Cookies"
+    }
+  },
+  "Header": {
+    "logoText": "Accessly Starter",
+    "nav": {
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "docs": "Docs",
+      "blog": "Blog"
+    },
+    "auth": {
+      "app": "App",
+      "signIn": "Se connecter",
+      "getStarted": "Commencer",
+      "profileAlt": "Avatar du profil"
+    },
+    "dropdown": {
+      "dashboard": "Tableau de bord",
+      "profile": "Profil",
+      "settings": "Paramètres",
+      "signOut": "Se déconnecter"
+    },
+    "mobileMenu": {
+      "theme": "Thème",
+      "open": "Ouvrir le menu",
+      "close": "Fermer le menu"
+    },
+    "userDefaultName": "Utilisateur"
+  },
+  "themeToggle": {
+    "name": "Changer le thème",
+    "dark": "Sombre",
+    "light": "Clair",
+    "system": "Système"
+  },
+  "localeSwitcher": {
+    "ariaLabel": "Sélectionner la langue",
+    "searchPlaceholder": "Rechercher une langue...",
+    "empty": "Aucune langue trouvée."
+  },
+  "authCodeError": {
+    "title": "Désolé, quelque chose s'est mal passé.",
+    "codeErrorPrefix": "Code d'erreur :",
+    "unspecifiedError": "Une erreur non spécifiée est survenue."
+  },
+  "forgotPasswordForm": {
+    "checkYourEmail": "Vérifiez votre e-mail",
+    "passwordResetInstructionsSent": "Instructions de réinitialisation du mot de passe envoyées",
+    "ifRegisteredUsingEmail": "Si vous vous êtes inscrit avec votre e-mail et mot de passe, vous recevrez un e-mail de réinitialisation du mot de passe.",
+    "resetYourPassword": "Réinitialisez votre mot de passe",
+    "enterEmailToReset": "Saisissez votre e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+    "emailLabel": "E-mail",
+    "sending": "Envoi en cours...",
+    "sendResetEmail": "Envoyer l'e-mail de réinitialisation",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "login": "Connexion",
+    "genericError": "Une erreur est survenue"
+  }
+}

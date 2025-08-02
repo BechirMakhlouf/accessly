@@ -1,0 +1,235 @@
+{
+  "auth": {
+    "orContinueWith": "Or continue with",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "Password",
+    "errors": {
+      "invalidEmail": "Please enter a valid email address.",
+      "pwShort": "Password must be at least 6 characters."
+    },
+    "signInForm": {
+      "loginTitle": "Login",
+      "loginDescription": "Enter your email below to login to your account",
+      "forgotPassword": "Forgot your password?",
+      "loggingIn": "Logging in...",
+      "login": "Login",
+      "signupPrompt": "Don't have an account?",
+      "signup": "Sign up"
+    },
+    "oauth": {
+      "google": "Google",
+      "microsoft": "Microsoft",
+      "apple": "Apple"
+    },
+    "signUpForm": {
+      "signUpTitle": "Sign up",
+      "signUpDescription": "Create a new account",
+      "repeatPasswordLabel": "Repeat Password",
+      "errors": {
+        "passwordsMismatch": "Passwords do not match"
+      },
+      "creatingAccount": "Creating an account...",
+      "signUp": "Sign up",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
+  },
+  "landing": {
+    "pushThroughAnyChallenge": "Push Through Any Challenge",
+    "turnYourImpossibleIntoInevitable": "Turn Your <impossible>Impossible</impossible> Into Inevitable",
+    "heroDescription": "Like Accessly, every great project starts with pushing that boulder uphill. We give you the tools to make each push count, turning repetitive struggles into unstoppable momentum.",
+    "startYourJourney": "Start Your Journey",
+    "watchDemo": "Watch Demo",
+    "joinBuilders": "Join {count} builders",
+    "ratingSummary": "{rating} from {reviewsCount} reviews",
+    "builtForTheRelentless": "Built for the <relentless>Relentless</relentless>",
+    "featuresDescription": "Every feature designed to help you push through obstacles and build something extraordinary.",
+    "features": {
+      "lightningFastSetup": {
+        "title": "Lightning Fast Setup",
+        "description": "Get your project rolling in minutes, not hours. Pre-configured templates and smart defaults get you past the starting line instantly."
+      },
+      "automateTheGrind": {
+        "title": "Automate the Grind",
+        "description": "Turn repetitive tasks into automated workflows. Focus on what matters while we handle the boulder-pushing."
+      },
+      "progressTracking": {
+        "title": "Progress Tracking",
+        "description": "See how far you've come. Visual progress tracking keeps you motivated when the mountain feels endless."
+      },
+      "enterpriseSecurity": {
+        "title": "Enterprise Security",
+        "description": "Bank-level security with end-to-end encryption. Your data is protected while you focus on building."
+      },
+      "teamCollaboration": {
+        "title": "Team Collaboration",
+        "description": "Share the load. Real-time collaboration tools help your team push the boulder together."
+      },
+      "smartAnalytics": {
+        "title": "Smart Analytics",
+        "description": "Data-driven insights help you optimize your approach and find the most efficient path up the mountain."
+      }
+    },
+    "builtOnModernFoundations": "Built on <modern>Modern Foundations</modern>",
+    "techStackDescription": "Powered by the latest technologies to ensure your projects are fast, secure, and scalable.",
+    "techStack": {
+      "nextjs": {
+        "title": "Next.js 15",
+        "description": "React framework with App Router, Server Components, and cutting-edge performance optimizations."
+      },
+      "supabase": {
+        "title": "Supabase",
+        "description": "PostgreSQL database with real-time subscriptions, authentication, and edge functions."
+      },
+      "tailwind": {
+        "title": "Tailwind CSS",
+        "description": "Utility-first CSS framework with shadcn/ui components for beautiful, responsive interfaces."
+      }
+    },
+    "lovedByBuilders": "Loved by <builders>Builders</builders>",
+    "testimonialsDescription": "See what others are saying about their journey with Accessly Starter.",
+    "testimonials": {
+      "sarahJohnson": {
+        "quote": "\"Finally, a starter that doesn't make me want to give up before I begin. The automation features alone saved me weeks of work.\"",
+        "role": "Founder, TechFlow"
+      },
+      "marcusRodriguez": {
+        "quote": "\"The progress tracking keeps me motivated. Seeing how much I've accomplished makes the uphill battle feel worth it.\"",
+        "role": "Senior Developer"
+      },
+      "alexLiu": {
+        "quote": "\"Our team went from idea to MVP in record time. The collaboration features make working together seamless.\"",
+        "role": "CTO, StartupXYZ"
+      }
+    },
+    "simplePricing": "Simple <pricing>Pricing</pricing>",
+    "pricingDescription": "Choose the plan that fits your journey. Upgrade as you climb higher.",
+    "pricing": {
+      "starter": {
+        "title": "Starter",
+        "subtitle": "Perfect for solo builders",
+        "price": "$0",
+        "priceSuffix": "/month",
+        "features": {
+          "projects": "5 projects",
+          "templates": "Basic templates",
+          "communitySupport": "Community support"
+        },
+        "cta": "Get Started"
+      },
+      "pro": {
+        "badge": "Most Popular",
+        "title": "Pro",
+        "subtitle": "For growing teams",
+        "price": "$29",
+        "priceSuffix": "/month",
+        "features": {
+          "unlimitedProjects": "Unlimited projects",
+          "premiumTemplates": "Premium templates",
+          "teamCollaboration": "Team collaboration",
+          "prioritySupport": "Priority support"
+        },
+        "cta": "Start Pro Trial"
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "subtitle": "For large organizations",
+        "price": "$99",
+        "priceSuffix": "/month",
+        "features": {
+          "everythingPro": "Everything in Pro",
+          "customIntegrations": "Custom integrations",
+          "dedicatedSupport": "Dedicated support",
+          "slaGuarantee": "SLA guarantee"
+        },
+        "cta": "Contact Sales"
+      }
+    },
+    "cta": {
+      "readyToPushYourBoulder": "Ready to Push Your Boulder?",
+      "joinBuilders": "Join thousands of builders who've turned their impossible dreams into inevitable success stories.",
+      "startYourJourney": "Start Your Journey",
+      "talkToSales": "Talk to Sales",
+      "trialInfo": "No credit card required • 14-day free trial • Cancel anytime"
+    },
+    "footer": {
+      "brand": "Accessly Starter",
+      "tagline": "Turn your impossible into inevitable. Built for the relentless.",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "documentation": "Documentation",
+      "changelog": "Changelog",
+      "company": "Company",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "contact": "Contact",
+      "support": "Support",
+      "helpCenter": "Help Center",
+      "community": "Community",
+      "status": "Status",
+      "privacy": "Privacy",
+      "copyright": "© {year} Accessly Starter. All rights reserved.",
+      "terms": "Terms",
+      "cookies": "Cookies"
+    }
+  },
+  "Header": {
+    "logoText": "Accessly Starter",
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "docs": "Docs",
+      "blog": "Blog"
+    },
+    "auth": {
+      "app": "App",
+      "signIn": "Sign in",
+      "getStarted": "Get Started",
+      "profileAlt": "Profile Avatar"
+    },
+    "dropdown": {
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "settings": "Settings",
+      "signOut": "Sign out"
+    },
+    "mobileMenu": {
+      "theme": "Theme",
+      "open": "Open menu",
+      "close": "Close menu"
+    },
+    "userDefaultName": "User"
+  },
+  "themeToggle": {
+    "name": "Toggle theme",
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
+  },
+  "localeSwitcher": {
+    "ariaLabel": "Select language",
+    "searchPlaceholder": "Search language...",
+    "empty": "No language found."
+  },
+  "authCodeError": {
+    "title": "Sorry, something went wrong.",
+    "codeErrorPrefix": "Code error:",
+    "unspecifiedError": "An unspecified error occurred."
+  },
+  "forgotPasswordForm": {
+    "checkYourEmail": "Check Your Email",
+    "passwordResetInstructionsSent": "Password reset instructions sent",
+    "ifRegisteredUsingEmail": "If you registered using your email and password, you will receive a password reset email.",
+    "resetYourPassword": "Reset Your Password",
+    "enterEmailToReset": "Type in your email and we'll send you a link to reset your password",
+    "emailLabel": "Email",
+    "sending": "Sending...",
+    "sendResetEmail": "Send reset email",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Login",
+    "genericError": "An error occurred"
+  }
+}
