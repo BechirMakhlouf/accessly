@@ -5,6 +5,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n/config";
 import { SupabaseCSRClient } from "../supabase/client";
 import { getFullRoute, routes } from "../routes";
+import { signInWithOAuthAction } from "./actions";
 
 export const AUTH_USER_KEY = ["authUser"] as const;
 
@@ -52,9 +53,13 @@ export async function signInWithOAuth(
   provider: Provider,
   messageLocale: Locale
 ) {
+
+  if (supabase === null) return null
+
   const redirectTo = getFullRoute(routes.api.auth.callback)
   console.log("[auth] signing with oauth with redirectTo: ", redirectTo);
-  const { data, error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
+  // const { data, error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
+  const { data, error } = await signInWithOAuthAction(provider)
 
   if (error) {
     error.message = translateErrorCode(error.code, "auth", messageLocale);
