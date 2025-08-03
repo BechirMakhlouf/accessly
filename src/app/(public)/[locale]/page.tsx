@@ -1,550 +1,529 @@
-import Link from "next/link"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  ArrowRight,
-  Shield,
-  Rocket,
-  Users,
-  Star,
-  Check,
-  Mountain,
-  Target,
-  Repeat,
-  TrendingUp,
-  Code,
-  Database,
-  Smartphone,
-} from "lucide-react"
-import { Header } from "@/components/header"
+"use client"
 
-export default function HomePage() {
-  const t = useTranslations("landing");
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { ThemeToggle } from "@/components/theme-toggle"
+import {
+  Shield,
+  Search,
+  Settings,
+  BarChart3,
+  Cloud,
+  Database,
+  Key,
+  Users,
+  CheckCircle,
+  ArrowRight,
+  Zap,
+  Lock,
+  Eye,
+  Workflow,
+} from "lucide-react"
+import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
+import { routes } from "@/lib/routes"
+
+type VisibilityState = {
+  hero?: boolean
+  "features-header"?: boolean
+  "feature-0"?: boolean
+  "feature-1"?: boolean
+  "feature-2"?: boolean
+  "feature-3"?: boolean
+  "benefits-content"?: boolean
+  "benefits-visual"?: boolean
+  cta?: boolean
+}
+
+export default function AccesslyLanding() {
+  const [isVisible, setIsVisible] = useState({} as VisibilityState)
+  const observerRef = useRef<IntersectionObserver | null>(null)
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible((prev: object) => ({
+              ...prev,
+              [entry.target.id]: true,
+            }))
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
+
+    const elements = document.querySelectorAll("[data-animate]")
+    elements.forEach((el) => observerRef.current?.observe(el))
+
+    return () => observerRef.current?.disconnect()
+  }, [])
+
+  const features = [
+    {
+      icon: Search,
+      title: "Discovery",
+      description: "Automatically discover and catalog all digital resources across your organization",
+      color: "bg-blue-500 dark:bg-blue-600",
+    },
+    {
+      icon: Shield,
+      title: "Governance",
+      description: "Enforce policies and compliance standards across all access points",
+      color: "bg-green-500 dark:bg-green-600",
+    },
+    {
+      icon: Settings,
+      title: "Provisioning",
+      description: "Streamline access requests and approvals with automated workflows",
+      color: "bg-purple-500 dark:bg-purple-600",
+    },
+    {
+      icon: BarChart3,
+      title: "Audit",
+      description: "Complete visibility and reporting on all access activities and changes",
+      color: "bg-orange-500 dark:bg-orange-600",
+    },
+  ]
+
+  const resources = [
+    { icon: Cloud, label: "Cloud Accounts" },
+    { icon: Workflow, label: "SaaS Apps" },
+    { icon: Key, label: "API Keys" },
+    { icon: Database, label: "Databases" },
+    { icon: Users, label: "Employee Perks" },
+    { icon: Eye, label: "Training Resources" },
+  ]
+
+  const benefits = [
+    "Reduce security risks by 90%",
+    "Cut access provisioning time by 75%",
+    "Achieve 100% compliance visibility",
+    "Eliminate shadow IT completely",
+  ]
 
   return (
-    <>
-      <Header />
-      <div className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-950/20 dark:via-red-950/20 dark:to-pink-950/20" />
-          <div className="relative container mx-auto px-4 py-24 text-center">
-            <div className="max-w-4xl mx-auto">
-              <Badge
-                variant="secondary"
-                className="mb-6 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 dark:from-orange-900/50 dark:to-red-900/50 dark:text-orange-200"
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Lock className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Accessly
+            </span>
+          </div>
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link
+              href={routes.marketing.features}
+              className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-slate-700 dark:text-slate-300"
+            >
+              Features
+            </Link>
+            <Link
+              href={routes.landingPage}
+              className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-slate-700 dark:text-slate-300"
+            >
+              Benefits
+            </Link>
+            <Link
+              href={routes.marketing.pricing}
+              className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-slate-700 dark:text-slate-300"
+            >
+              Pricing
+            </Link>
+            <ThemeToggle />
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-200 dark:border-slate-700 bg-transparent"
+              asChild
+            >
+              <Link href={routes.auth.signIn}>Sign In</Link>
+            </Button>
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              asChild
+            >
+              <Link href={routes.auth.signUp}>Get Started</Link>
+            </Button>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-20 lg:py-32">
+        <div className="absolute inset-0 bg-grid-slate-100 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,black,rgba(0,0,0,0.6))] -z-10" />
+        <div className="container mx-auto px-4 lg:px-6">
+          <div
+            id="hero"
+            data-animate
+            className={`text-center max-w-4xl mx-auto transition-all duration-1000 ${isVisible.hero ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+          >
+            <Badge
+              variant="secondary"
+              className="mb-6 px-4 py-2 text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+            >
+              <Zap className="w-4 h-4 mr-2" />
+              The Future of Access Management
+            </Badge>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-slate-900 dark:text-white">
+              Your{" "}
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                Single Pane of Glass
+              </span>{" "}
+              for Access Operations
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+              Centralize discovery, governance, provisioning and audit of every digital resource your organization uses.
+              From cloud accounts to employee perks.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6 group"
+                asChild
               >
-                <Mountain className="w-3 h-3 mr-1" />
-                {t("pushThroughAnyChallenge")}
-              </Badge>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
-                {t.rich("turnYourImpossibleIntoInevitable", {
-                  impossible: (children) => (
-                    <span className="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent">
-                      {children}
-                    </span>
-                  ),
-                })}
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-                {t("heroDescription")}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <Button
-                  size="lg"
-                  className="text-lg px-8 py-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
-                  asChild
+                <Link href={routes.auth.signUp}>
+                  Start Free Trial
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 py-6 bg-transparent border-slate-200 dark:border-slate-700"
+                asChild
+              >
+                <Link href={routes.landingPage}>Watch Demo</Link>
+              </Button>
+            </div>
+
+            {/* Resource Types */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-4xl mx-auto">
+              {resources.map((resource, index) => (
+                <div
+                  key={resource.label}
+                  className={`flex flex-col items-center p-4 rounded-lg bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all duration-300 hover:-translate-y-1 ${isVisible.hero ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                    }`}
+                  style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                  <Link href="/signup">
-                    {t("startYourJourney")}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6" asChild>
-                  <Link href="#demo">{t("watchDemo")}</Link>
-                </Button>
-              </div>
-
-              {/* Social Proof */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    <Avatar className="w-8 h-8 border-2 border-background">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <Avatar className="w-8 h-8 border-2 border-background">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>SM</AvatarFallback>
-                    </Avatar>
-                    <Avatar className="w-8 h-8 border-2 border-background">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>AL</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <span>{t("joinBuilders", { count: "10,000+" })}</span>
+                  <resource.icon className="w-8 h-8 text-slate-600 dark:text-slate-400 mb-2" />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300 text-center">
+                    {resource.label}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <span>{t("ratingSummary", { rating: "4.9/5", reviewsCount: "2,000+" })}</span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Features Section */}
-        <section className="py-24 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold tracking-tight mb-4">
-                {t.rich("builtForTheRelentless", {
-                  relentless: (children) => (
-                    <span className="text-orange-600">{children}</span>
-                  ),
-                })}
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                {t("featuresDescription")}
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center mb-6">
-                    <Rocket className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{t("features.lightningFastSetup.title")}</h3>
-                  <p className="text-muted-foreground">{t("features.lightningFastSetup.description")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-6">
-                    <Repeat className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{t("features.automateTheGrind.title")}</h3>
-                  <p className="text-muted-foreground">{t("features.automateTheGrind.description")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center mb-6">
-                    <TrendingUp className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{t("features.progressTracking.title")}</h3>
-                  <p className="text-muted-foreground">{t("features.progressTracking.description")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center mb-6">
-                    <Shield className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{t("features.enterpriseSecurity.title")}</h3>
-                  <p className="text-muted-foreground">{t("features.enterpriseSecurity.description")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center mb-6">
-                    <Users className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{t("features.teamCollaboration.title")}</h3>
-                  <p className="text-muted-foreground">{t("features.teamCollaboration.description")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center mb-6">
-                    <Target className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{t("features.smartAnalytics.title")}</h3>
-                  <p className="text-muted-foreground">{t("features.smartAnalytics.description")}</p>
-                </CardContent>
-              </Card>
-            </div>
+      {/* Features Section */}
+      <section id="features" className="py-20 lg:py-32 bg-white dark:bg-slate-900">
+        <div className="container mx-auto px-4 lg:px-6">
+          <div
+            id="features-header"
+            data-animate
+            className={`text-center mb-16 transition-all duration-1000 ${isVisible["features-header"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+          >
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
+              Complete Access Management
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+              Four core capabilities that transform how your organization manages digital access
+            </p>
           </div>
-        </section>
 
-        {/* Tech Stack Section */}
-        <section className="py-24">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold tracking-tight mb-4">
-                {t.rich("builtOnModernFoundations", {
-                  modern: (children) => <span className="text-orange-600">{children}</span>,
-                })}
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                {t("techStackDescription")}
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center mx-auto mb-4">
-                  <Code className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t("techStack.nextjs.title")}</h3>
-                <p className="text-muted-foreground">{t("techStack.nextjs.description")}</p>
-              </div>
-
-              <div className="text-center">
-                <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-4">
-                  <Database className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t("techStack.supabase.title")}</h3>
-                <p className="text-muted-foreground">{t("techStack.supabase.description")}</p>
-              </div>
-
-              <div className="text-center">
-                <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center mx-auto mb-4">
-                  <Smartphone className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t("techStack.tailwind.title")}</h3>
-                <p className="text-muted-foreground">{t("techStack.tailwind.description")}</p>
-              </div>
-            </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <Card
+                key={feature.title}
+                id={`feature-${index}`}
+                data-animate
+                className={`group hover:shadow-xl dark:hover:shadow-slate-900/50 transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg dark:shadow-slate-900/20 bg-white dark:bg-slate-800 ${isVisible[`feature-${index}` as "feature-1"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                style={{ transitionDelay: `${index * 200}ms` }}
+              >
+                <CardHeader className="text-center pb-4">
+                  <div
+                    className={`w-16 h-16 ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-center text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Testimonials Section */}
-        <section className="py-24 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold tracking-tight mb-4">
-                {t.rich("lovedByBuilders", {
-                  builders: (children) => <span className="text-orange-600">{children}</span>,
-                })}
+      {/* Benefits Section */}
+      <section
+        id="benefits"
+        className="py-20 lg:py-32 bg-gradient-to-br from-slate-50 to-white dark:from-slate-950 dark:to-slate-900"
+      >
+        <div className="container mx-auto px-4 lg:px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div
+              id="benefits-content"
+              data-animate
+              className={`transition-all duration-1000 ${isVisible["benefits-content"] ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+                }`}
+            >
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
+                Transform Your Security Posture
               </h2>
-              <p className="text-xl text-muted-foreground">
-                {t("testimonialsDescription")}
+              <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
+                Organizations using Accessly see immediate improvements in security, compliance, and operational
+                efficiency.
               </p>
+
+              <div className="space-y-4 mb-8">
+                {benefits.map((benefit, index) => (
+                  <div
+                    key={benefit}
+                    className={`flex items-center space-x-3 transition-all duration-500 ${isVisible["benefits-content"] ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                      }`}
+                    style={{ transitionDelay: `${index * 100 + 300}ms` }}
+                  >
+                    <CheckCircle className="w-6 h-6 text-green-500 dark:text-green-400 flex-shrink-0" />
+                    <span className="text-lg font-medium text-slate-700 dark:text-slate-300">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6"
+                asChild
+              >
+                <Link href={routes.landingPage}>See How It Works</Link>
+              </Button>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                {
-                  stars: 5,
-                  quote: t("testimonials.sarahJohnson.quote"),
-                  name: "Sarah Johnson",
-                  role: t("testimonials.sarahJohnson.role"),
-                  avatarFallback: "SJ",
-                },
-                {
-                  stars: 5,
-                  quote: t("testimonials.marcusRodriguez.quote"),
-                  name: "Marcus Rodriguez",
-                  role: t("testimonials.marcusRodriguez.role"),
-                  avatarFallback: "MR",
-                },
-                {
-                  stars: 5,
-                  quote: t("testimonials.alexLiu.quote"),
-                  name: "Alex Liu",
-                  role: t("testimonials.alexLiu.role"),
-                  avatarFallback: "AL",
-                },
-              ].map(({ stars, quote, name, role, avatarFallback }, i) => (
-                <Card className="border-0 shadow-lg" key={i}>
+            <div
+              id="benefits-visual"
+              data-animate
+              className={`transition-all duration-1000 ${isVisible["benefits-visual"] ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                }`}
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-3xl opacity-20 animate-pulse" />
+                <Card className="relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-2xl dark:shadow-slate-900/50">
                   <CardContent className="p-8">
-                    <div className="flex mb-4">
-                      {[...Array(stars)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <p className="text-muted-foreground mb-6">{quote}</p>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback>{avatarFallback}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold">{name}</p>
-                        <p className="text-sm text-muted-foreground">{role}</p>
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Security Score</span>
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+                        >
+                          Excellent
+                        </Badge>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full w-[92%] animate-pulse" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 pt-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-slate-800 dark:text-slate-200">2,847</div>
+                          <div className="text-sm text-slate-600 dark:text-slate-400">Resources Managed</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-slate-800 dark:text-slate-200">99.9%</div>
+                          <div className="text-sm text-slate-600 dark:text-slate-400">Compliance Rate</div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Pricing Section */}
-        <section className="py-24">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold tracking-tight mb-4">
-                {t.rich("simplePricing", {
-                  pricing: (children) => <span className="text-orange-600">{children}</span>,
-                })}
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                {t("pricingDescription")}
+      {/* CTA Section */}
+      <section className="py-20 lg:py-32 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white">
+        <div className="container mx-auto px-4 lg:px-6">
+          <div
+            id="cta"
+            data-animate
+            className={`text-center max-w-4xl mx-auto transition-all duration-1000 ${isVisible.cta ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+          >
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">Ready to Secure Your Digital Future?</h2>
+            <p className="text-xl mb-8 opacity-90">
+              Join hundreds of organizations already using Accessly to transform their access management.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+              <Input
+                type="email"
+                placeholder="Enter your work email"
+                className="max-w-sm bg-white/10 border-white/20 text-white placeholder:text-white/70 focus:bg-white/20"
+              />
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100 font-semibold px-8" asChild>
+                <Link href={routes.auth.signUp}>Start Free Trial</Link>
+              </Button>
+            </div>
+
+            <p className="text-sm opacity-75">No credit card required • 14-day free trial • Setup in minutes</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 dark:bg-slate-950 text-white py-16 border-t border-slate-800 dark:border-slate-900">
+        <div className="container mx-auto px-4 lg:px-6">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold">Accessly</span>
+              </div>
+              <p className="text-slate-400 dark:text-slate-500 mb-4">
+                The single pane of glass for access management and operations.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <Card className="border-2 hover:border-orange-200 transition-colors">
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-2">{t("pricing.starter.title")}</h3>
-                  <p className="text-muted-foreground mb-6">{t("pricing.starter.subtitle")}</p>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">{t("pricing.starter.price")}</span>
-                    <span className="text-muted-foreground">{t("pricing.starter.priceSuffix")}</span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.starter.features.projects")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.starter.features.templates")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.starter.features.communitySupport")}</span>
-                    </li>
-                  </ul>
-                  <Button className="w-full" variant="outline" asChild>
-                    <Link href="/signup">{t("pricing.starter.cta")}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-orange-500 relative hover:border-orange-600 transition-colors">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-gradient-to-r from-orange-500 to-red-600 text-white">{t("pricing.pro.badge")}</Badge>
-                </div>
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-2">{t("pricing.pro.title")}</h3>
-                  <p className="text-muted-foreground mb-6">{t("pricing.pro.subtitle")}</p>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">{t("pricing.pro.price")}</span>
-                    <span className="text-muted-foreground">{t("pricing.pro.priceSuffix")}</span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.pro.features.unlimitedProjects")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.pro.features.premiumTemplates")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.pro.features.teamCollaboration")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.pro.features.prioritySupport")}</span>
-                    </li>
-                  </ul>
-                  <Button
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
-                    asChild
+            <div>
+              <h3 className="font-semibold mb-4">Product</h3>
+              <ul className="space-y-2 text-slate-400 dark:text-slate-500">
+                <li>
+                  <Link
+                    href={routes.marketing.features}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
                   >
-                    <Link href="/signup">{t("pricing.pro.cta")}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 hover:border-orange-200 transition-colors">
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-2">{t("pricing.enterprise.title")}</h3>
-                  <p className="text-muted-foreground mb-6">{t("pricing.enterprise.subtitle")}</p>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">{t("pricing.enterprise.price")}</span>
-                    <span className="text-muted-foreground">{t("pricing.enterprise.priceSuffix")}</span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.enterprise.features.everythingPro")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.enterprise.features.customIntegrations")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.enterprise.features.dedicatedSupport")}</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span>{t("pricing.enterprise.features.slaGuarantee")}</span>
-                    </li>
-                  </ul>
-                  <Button className="w-full" variant="outline" asChild>
-                    <Link href="/contact">{t("pricing.enterprise.cta")}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-24 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-950/20 dark:via-red-950/20 dark:to-pink-950/20">
-          <div className="container mx-auto px-4 text-center">
-            <div className="max-w-3xl mx-auto">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-                {t("cta.readyToPushYourBoulder")}
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8">
-                {t("cta.joinBuilders")}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="text-lg px-8 py-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
-                  asChild
-                >
-                  <Link href="/signup">
-                    {t("cta.startYourJourney")}
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    Features
                   </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6" asChild>
-                  <Link href="/contact">{t("cta.talkToSales")}</Link>
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground mt-6">
-                {t("cta.trialInfo")}
-              </p>
+                </li>
+                <li>
+                  <Link
+                    href={routes.marketing.pricing}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.landingPage}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Security
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.landingPage}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Integrations
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-slate-400 dark:text-slate-500">
+                <li>
+                  <Link
+                    href={routes.marketing.about}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.landingPage}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.marketing.blog}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.marketing.contact}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Resources</h3>
+              <ul className="space-y-2 text-slate-400 dark:text-slate-500">
+                <li>
+                  <Link
+                    href={routes.marketing.docs}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Documentation
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.landingPage}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.landingPage}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Status
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={routes.landingPage}
+                    className="hover:text-white dark:hover:text-slate-300 transition-colors"
+                  >
+                    Privacy
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
-        </section>
 
-        {/* Footer */}
-        <footer className="border-t bg-background">
-          <div className="container mx-auto px-4 py-12">
-            <div className="grid md:grid-cols-4 gap-8">
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">S</span>
-                  </div>
-                  <span className="font-bold text-xl bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                    {t("footer.brand")}
-                  </span>
-                </div>
-                <p className="text-muted-foreground">{t("footer.tagline")}</p>
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-4">{t("footer.product")}</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>
-                    <Link href="/features" className="hover:text-foreground">
-                      {t("footer.features")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/pricing" className="hover:text-foreground">
-                      {t("footer.pricing")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/docs" className="hover:text-foreground">
-                      {t("footer.documentation")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/changelog" className="hover:text-foreground">
-                      {t("footer.changelog")}
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-4">{t("footer.company")}</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>
-                    <Link href="/about" className="hover:text-foreground">
-                      {t("footer.about")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/blog" className="hover:text-foreground">
-                      {t("footer.blog")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/careers" className="hover:text-foreground">
-                      {t("footer.careers")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/contact" className="hover:text-foreground">
-                      {t("footer.contact")}
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-4">{t("footer.support")}</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>
-                    <Link href="/help" className="hover:text-foreground">
-                      {t("footer.helpCenter")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/community" className="hover:text-foreground">
-                      {t("footer.community")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/status" className="hover:text-foreground">
-                      {t("footer.status")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/privacy" className="hover:text-foreground">
-                      {t("footer.privacy")}
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-muted-foreground">{t("footer.copyright", { year: 2024 })}</p>
-              <div className="flex space-x-6 mt-4 md:mt-0">
-                <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
-                  {t("footer.terms")}
-                </Link>
-                <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
-                  {t("footer.privacy")}
-                </Link>
-                <Link href="/cookies" className="text-sm text-muted-foreground hover:text-foreground">
-                  {t("footer.cookies")}
-                </Link>
-              </div>
-            </div>
+          <div className="border-t border-slate-800 dark:border-slate-900 mt-12 pt-8 text-center text-slate-400 dark:text-slate-500">
+            <p>&copy; {new Date().getFullYear()} Accessly. All rights reserved.</p>
           </div>
-        </footer>
-      </div>
-    </>
+        </div>
+      </footer>
+    </div>
   )
 }

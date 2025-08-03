@@ -101,8 +101,8 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
               type="button"
             >
               <span className="sr-only">{t('oauth.google')}</span>
+              <GoogleIcon />
             </Button>
-            <GoogleIcon />
             <Button
               variant="outline"
               className="h-11"
