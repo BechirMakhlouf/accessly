@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { checkBotId } from 'botid/server';
 
 export async function GET(request: Request) {
+  console.log("[auth] oauth callback route hit", request);
   const verification = await checkBotId();
 
   if (verification.isBot) {

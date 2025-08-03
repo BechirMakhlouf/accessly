@@ -52,11 +52,10 @@ export async function signInWithOAuth(
   provider: Provider,
   messageLocale: Locale
 ) {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider, options: {
-      redirectTo: getFullRoute(routes.api.auth.callback)
-    }
-  });
+  const redirectTo = getFullRoute(routes.api.auth.callback)
+  console.log("[auth] signing with oauth with redirectTo: ", redirectTo);
+  const { data, error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
+
   if (error) {
     error.message = translateErrorCode(error.code, "auth", messageLocale);
     throw error;

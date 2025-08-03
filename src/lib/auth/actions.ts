@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createSSRClient } from "@/lib/supabase/server"
-import { getFullRoute, routes } from "@/lib/routes"
-import { Provider } from "@supabase/supabase-js"
+// import { getFullRoute } from "@/lib/routes"
+import { routes } from "@/lib/routes"
+// import { Provider } from "@supabase/supabase-js"
 
 // export async function signUp(formData: {
 //   firstName: string
@@ -77,22 +78,22 @@ export async function signOut() {
   redirect(routes.auth.signIn)
 }
 
-export async function signInWithOAuth(provider: Provider) {
-  const supabase = await createSSRClient()
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: getFullRoute("/api/auth/callback"),
-    },
-  })
-
-  if (error) {
-    return { data, error };
-  }
-
-  redirect(data.url)
-}
+// export async function signInWithOAuth(provider: Provider) {
+//   const supabase = await createSSRClient()
+//
+//   const { data, error } = await supabase.auth.signInWithOAuth({
+//     provider,
+//     options: {
+//       redirectTo: getFullRoute("/api/auth/callback"),
+//     },
+//   })
+//
+//   if (error) {
+//     return { data, error };
+//   }
+//
+//   redirect(data.url)
+// }
 
 // export async function getCurrentUser() {
 //   const supabase = await createSSRClient()
