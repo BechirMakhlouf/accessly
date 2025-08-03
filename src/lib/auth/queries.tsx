@@ -4,6 +4,7 @@ import { translateErrorCode } from 'supabase-error-translator-js';
 import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n/config";
 import { SupabaseCSRClient } from "../supabase/client";
+import { getFullRoute, routes } from "../routes";
 
 export const AUTH_USER_KEY = ["authUser"] as const;
 
@@ -51,7 +52,11 @@ export async function signInWithOAuth(
   provider: Provider,
   messageLocale: Locale
 ) {
-  const { data, error } = await supabase.auth.signInWithOAuth({ provider });
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider, options: {
+      redirectTo: getFullRoute(routes.api.auth.callback)
+    }
+  });
   if (error) {
     error.message = translateErrorCode(error.code, "auth", messageLocale);
     throw error;
