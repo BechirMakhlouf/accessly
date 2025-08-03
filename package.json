@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "-- NEXT --": "",
-    "init": "pnpm install && shx cp .env.example .env.local",
+    "init": "npm install && shx cp env.example .env.local",
     "dev": "next dev --turbopack",
     "devs": "next dev --turbopack --experimental-https",
     "build": "next build",
