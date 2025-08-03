@@ -8,7 +8,7 @@ export const USER_SETTINGS_KEY = ["userSettings"] as const;
 
 export async function getUserSettings(supabase: TypedSupabaseClient) {
   const user_id = await getUserId(supabase);
-  const result = (await supabase.from("user_settings").select("*").eq("user_id", user_id!).limit(1).single().throwOnError()).data;
+  const result = (await supabase.from("user_settings").select("*").eq("user_id", user_id!).limit(1).maybeSingle().throwOnError()).data;
   return result;
 }
 
@@ -70,7 +70,7 @@ export const uploadUserAvatar = async (supabase: TypedSupabaseClient, file: File
 }
 
 export const getUserSettingsQueryOptions: (supabase: TypedSupabaseClient) =>
-  UndefinedInitialDataOptions<UserSettings> =
+  UndefinedInitialDataOptions<UserSettings | null> =
   (supabase: TypedSupabaseClient) => ({
     queryKey: USER_SETTINGS_KEY,
     queryFn: () => getUserSettings(supabase),
