@@ -8,7 +8,7 @@ export const USER_SETTINGS_KEY = ["userSettings"] as const;
 
 export async function getUserSettings(supabase: TypedSupabaseClient) {
   const user_id = await getUserId(supabase);
-  const result = (await supabase.from("user_settings").select("*").eq("user_id", user_id!).limit(1).single().throwOnError()).data;
+  const result = (await supabase.from("user_settings").select("*").eq("user_id", user_id!).limit(1).maybeSingle().throwOnError()).data;
   return result;
 }
 
