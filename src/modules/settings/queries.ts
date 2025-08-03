@@ -70,7 +70,7 @@ export const uploadUserAvatar = async (supabase: TypedSupabaseClient, file: File
 }
 
 export const getUserSettingsQueryOptions: (supabase: TypedSupabaseClient) =>
-  UndefinedInitialDataOptions<UserSettings> =
+  UndefinedInitialDataOptions<UserSettings | null> =
   (supabase: TypedSupabaseClient) => ({
     queryKey: USER_SETTINGS_KEY,
     queryFn: () => getUserSettings(supabase),
