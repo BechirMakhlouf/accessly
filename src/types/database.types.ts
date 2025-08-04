@@ -17,10 +17,10 @@ export type Database = {
     Functions: {
       graphql: {
         Args: {
-          query?: string
-          operationName?: string
-          variables?: Json
           extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
         }
         Returns: Json
       }
@@ -34,6 +34,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      accessables: {
+        Row: {
+          board_id: string
+          created_at: string
+          created_by_user_id: string
+          id: string
+          is_public: boolean
+          metadata: Json | null
+          name: string
+          resource_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          created_by_user_id: string
+          id?: string
+          is_public?: boolean
+          metadata?: Json | null
+          name: string
+          resource_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          created_by_user_id?: string
+          id?: string
+          is_public?: boolean
+          metadata?: Json | null
+          name?: string
+          resource_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accessables_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      boards: {
+        Row: {
+          created_at: string
+          created_by_user_id: string
+          description: string | null
+          id: string
+          is_restricted: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_user_id: string
+          description?: string | null
+          id?: string
+          is_restricted?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by_user_id?: string
+          description?: string | null
+          id?: string
+          is_restricted?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_settings: {
         Row: {
           avatar_url: string | null
