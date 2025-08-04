@@ -3,7 +3,7 @@ CREATE TYPE team_role AS ENUM ('admin', 'member');
 
 -- 2. Create teams table
 CREATE TABLE IF NOT EXISTS teams (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY default gen_random_uuid(),
   name TEXT NOT NULL,
   description TEXT NOT NULL,
   icon_url TEXT,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS team_members (
 
 -- 4. Create invites table (AFTER teams exists)
 CREATE TABLE IF NOT EXISTS invites (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id UUID NOT NULL REFERENCES teams(id),
   invited_by UUID NOT NULL REFERENCES auth.users(id),
   invite_link TEXT NOT NULL,
