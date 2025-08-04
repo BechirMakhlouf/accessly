@@ -1,4 +1,7 @@
--- Create teams table
+-- 1. Create ENUM for team roles
+CREATE TYPE team_role AS ENUM ('admin', 'member');
+
+-- 2. Create teams table
 CREATE TABLE IF NOT EXISTS teams (
   id UUID PRIMARY KEY,
   name TEXT NOT NULL,
@@ -9,10 +12,7 @@ CREATE TABLE IF NOT EXISTS teams (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Create ENUM for team roles
-CREATE TYPE team_role AS ENUM ('admin', 'member');
-
--- Create team_members table
+-- 3. Create team_members table
 CREATE TABLE IF NOT EXISTS team_members (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
@@ -22,15 +22,28 @@ CREATE TABLE IF NOT EXISTS team_members (
   PRIMARY KEY (user_id, team_id)
 );
 
--- Enable RLS on teams
-ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
+-- 4. Create invites table (AFTER teams exists)
+CREATE TABLE IF NOT EXISTS invites (
+  id UUID PRIMARY KEY,
+  team_id UUID NOT NULL REFERENCES teams(id),
+  invited_by UUID NOT NULL REFERENCES auth.users(id),
+  invite_link TEXT NOT NULL,
+  email TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 
--- Allow users to view teams they created
+-- 5. Enable Row Level Security (RLS)
+ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
+ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invites ENABLE ROW LEVEL SECURITY;
+
+-- 6. RLS Policies for teams
 CREATE POLICY "Users can view their own team"
   ON teams FOR SELECT
   USING (auth.uid() = created_by);
 
--- Only admins can update the team
 CREATE POLICY "Only team admins can update team"
   ON teams FOR UPDATE
   USING (
@@ -42,7 +55,6 @@ CREATE POLICY "Only team admins can update team"
     )
   );
 
--- Only admins can delete the team
 CREATE POLICY "Only team admins can delete team"
   ON teams FOR DELETE
   USING (
@@ -54,14 +66,57 @@ CREATE POLICY "Only team admins can delete team"
     )
   );
 
--- Enable RLS on team_members
-ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
+-- 7. RLS Policies for team_members
+CREATE POLICY "Team members can view membership"
+  ON team_members FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM team_members AS tm
+      WHERE tm.user_id = auth.uid()
+        AND tm.team_id = team_members.team_id
+    )
+  );
 
--- Trigger for auto-updating updated_at
-CREATE TRIGGER handle_updated_at
+CREATE POLICY "Admins can update team membership"
+  ON team_members FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM team_members AS tm
+      WHERE tm.user_id = auth.uid()
+        AND tm.team_id = team_members.team_id
+        AND tm.role = 'admin'
+    )
+  );
+
+CREATE POLICY "Admins can delete team membership"
+  ON team_members FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM team_members AS tm
+      WHERE tm.user_id = auth.uid()
+        AND tm.team_id = team_members.team_id
+        AND tm.role = 'admin'
+    )
+  );
+
+-- 8. RLS Policies for invites
+CREATE POLICY "Users can view invites they sent"
+  ON invites FOR SELECT
+  USING (auth.uid() = invited_by);
+
+CREATE POLICY "Users can update invites they sent"
+  ON invites FOR UPDATE
+  USING (auth.uid() = invited_by);
+
+-- 9. Triggers to update updated_at timestamp
+CREATE TRIGGER handle_updated_at_teams
+BEFORE UPDATE ON teams
+FOR EACH ROW EXECUTE PROCEDURE moddatetime(updated_at);
+
+CREATE TRIGGER handle_updated_at_members
 BEFORE UPDATE ON team_members
 FOR EACH ROW EXECUTE PROCEDURE moddatetime(updated_at);
 
-CREATE TRIGGER handle_updated_at
-BEFORE UPDATE ON teams
+CREATE TRIGGER handle_updated_at_invites
+BEFORE UPDATE ON invites
 FOR EACH ROW EXECUTE PROCEDURE moddatetime(updated_at);
