@@ -54,6 +54,9 @@ export const routes = {
         account: "/app/settings/account",
         preferences: "/app/settings/preferences",
         billing: "/app/settings/billing",
+      },
+      team: {
+        root: "/app/team"
       }
     }
   },
