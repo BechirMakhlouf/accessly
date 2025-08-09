@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/providers/providers";
 import { getDynamicLocale } from "@/lib/i18n/actions";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default async function RootLayout({
           {children}
         </Providers>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

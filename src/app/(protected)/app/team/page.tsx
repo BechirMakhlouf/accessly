@@ -7,7 +7,7 @@ export default function SettingsPage() {
     <div className="container mx-auto py-8 px-4 md:px-6 lg:px-8">
       <h1 className="text-3xl font-bold mb-6">Team Settings</h1>
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-md mb-6">
+        <TabsList className="w-full flex max-w-md mb-6">
           <TabsTrigger value="general">Settings</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
         </TabsList>
@@ -20,6 +20,7 @@ export default function SettingsPage() {
           </TabsContent>
         </TabsContents>
       </Tabs>
+      {/* <TeamMembers /> */}
     </div>
   )
 }
