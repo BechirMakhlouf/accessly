@@ -14,10 +14,10 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get('next') ?? '/app'
+  let next = searchParams.get('next') ?? '/dashboard'
   if (!next.startsWith('/')) {
     // if "next" is not a relative URL, use the default
-    next = '/app'
+    next = '/dashboard'
   }
 
   if (code) {
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`https://${forwardedHost}${next}`)
       } else {
         console.warn("not forwardedHost header, using origin")
-        return NextResponse.redirect(getFullRoute("/app"));
+        return NextResponse.redirect(getFullRoute("/dashboard"));
       }
     }
 

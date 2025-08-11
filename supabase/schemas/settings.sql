@@ -1,6 +1,5 @@
 create table if not exists user_settings (
-  user_id uuid primary key references auth.users(id) on delete cascade,
-  display_name text not null default '',
+  id uuid primary key references auth.users(id) on delete cascade,
   avatar_url text,
   theme text check (theme in ('light', 'dark', 'system')) default 'system',
   language text default 'en',
@@ -13,22 +12,22 @@ ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can select their settings"
   ON user_settings
   TO authenticated
-  using ( (select auth.uid()) = user_id );
+  using ( (select auth.uid()) = id );
 
 CREATE POLICY "Users can update their settings"
   ON user_settings
   TO authenticated
-  using ( (select auth.uid()) = user_id );
+  using ( (select auth.uid()) = id );
 
 CREATE POLICY "Users can delete their settings"
   ON user_settings
   TO authenticated
-  using ( (select auth.uid()) = user_id );
+  using ( (select auth.uid()) = id );
 
 CREATE POLICY "Users can insert their own settings"
   ON user_settings
   TO authenticated
-  using ( (select auth.uid()) = user_id );
+  using ( (select auth.uid()) = id );
 
 create trigger
   handle_updated_at before update

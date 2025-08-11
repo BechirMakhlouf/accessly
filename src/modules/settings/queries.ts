@@ -20,7 +20,7 @@ export async function upsertUserSettings(supabase: TypedSupabaseClient, settings
 
   return await supabase
     .from("user_settings")
-    .upsert({ ...settings, user_id })
+    .upsert({ ...settings, id: user_id })
     .throwOnError();
 }
 
@@ -45,7 +45,7 @@ export const deleteUserAvatar = async (supabase: TypedSupabaseClient) => {
 
   if (deleteError) throw deleteError
 
-  await upsertUserSettings(supabase, { user_id, avatar_url: null })
+  await upsertUserSettings(supabase, { id: user_id, avatar_url: null })
 }
 
 export const uploadUserAvatar = async (supabase: TypedSupabaseClient, file: File) => {
@@ -65,7 +65,7 @@ export const uploadUserAvatar = async (supabase: TypedSupabaseClient, file: File
 
   const avatarPublicUrl = supabase.storage.from("avatars").getPublicUrl(uploadResult.data.path).data.publicUrl;
 
-  await upsertUserSettings(supabase, { user_id, avatar_url: avatarPublicUrl })
+  await upsertUserSettings(supabase, { id: user_id, avatar_url: avatarPublicUrl })
   return uploadResult;
 }
 

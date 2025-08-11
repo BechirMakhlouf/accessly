@@ -34,7 +34,7 @@ const initialMembers: Member[] = [
   { id: "4", name: "Diana Prince", email: "diana@example.com", role: "Viewer", avatar: "/placeholder.svg?height=32&width=32" },
 ]
 
-export function TeamMembers() {
+export function OrgMembers() {
   const [members, setMembers] = useState<Member[]>(initialMembers)
   const [newMemberEmail, setNewMemberEmail] = useState("")
   const [newMemberRole, setNewMemberRole] = useState<Member["role"]>("Member")
@@ -138,7 +138,7 @@ export function TeamMembers() {
                   <AvatarFallback>{getFallbackText(member.name)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium leading-none">{member.name}</p>
+                  <p className="text-sm font-medium text-foreground leading-none">{member.name}</p>
                   <p className="text-sm text-muted-foreground">{member.email}</p>
                 </div>
               </div>

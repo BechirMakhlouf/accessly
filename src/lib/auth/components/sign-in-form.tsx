@@ -60,7 +60,7 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     try {
       await signInMutation.mutateAsync({ email: data.email, password: data.password })
-      router.push(routes.protected.app.root)
+      router.push(routes.protected.dashboard.root)
       reset()
     } catch (err) {
       console.error(err)
@@ -71,7 +71,7 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
   const handleOAuth = async (provider: 'google' | 'azure' | 'apple') => {
     try {
       await oauthMutation.mutateAsync(provider)
-      router.push(routes.protected.app.root)
+      router.push(routes.protected.dashboard.root)
       reset()
     } catch (err) {
       console.error(err)

@@ -18,11 +18,11 @@ export function GeneralSettings() {
   const {
     settings: { data: settings, isLoading: isSettingsLoading },
     setUserAvatar: { mutate: setUserAvatar, isPending: isAvatarUploading },
-    setSettings: { mutate: setSettings, isPending: isUpdatingSettings }
+    setSettings: { /* mutate: setSettings, */ isPending: isUpdatingSettings }
   } = useUserSettings();
 
   useEffect(() => {
-    setDisplayName((displayName) => settings?.display_name ?? displayName)
+    setDisplayName((displayName) => settings?.id ?? displayName)
   }, [settings])
   const handleAvatarUpload = async () => {
     fileInputRef.current?.click();
@@ -52,7 +52,7 @@ export function GeneralSettings() {
   }
 
   const handleSaveDisplayName = () => {
-    setSettings({ display_name: displayName })
+    // setSettings({ display_name: displayName })
     toast("Display name updated successfully!")
   }
 

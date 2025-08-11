@@ -1,0 +1,81 @@
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. Insert test users into auth.users
+INSERT INTO auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    recovery_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
+) VALUES
+-- 6 fixed UUIDs for predictable references
+('00000000-0000-0000-0000-000000000000', '11111111-1111-1111-1111-111111111111', 'authenticated', 'authenticated', 'admin1@example.com', crypt('password123', gen_salt('bf')), now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+('00000000-0000-0000-0000-000000000000', '22222222-2222-2222-2222-222222222222', 'authenticated', 'authenticated', 'member1@example.com', crypt('password123', gen_salt('bf')), now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+('00000000-0000-0000-0000-000000000000', '33333333-3333-3333-3333-333333333333', 'authenticated', 'authenticated', 'admin2@example.com', crypt('password123', gen_salt('bf')), now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+('00000000-0000-0000-0000-000000000000', '44444444-4444-4444-4444-444444444444', 'authenticated', 'authenticated', 'member2@example.com', crypt('password123', gen_salt('bf')), now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+('00000000-0000-0000-0000-000000000000', '55555555-5555-5555-5555-555555555555', 'authenticated', 'authenticated', 'admin3@example.com', crypt('password123', gen_salt('bf')), now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+('00000000-0000-0000-0000-000000000000', '66666666-6666-6666-6666-666666666666', 'authenticated', 'authenticated', 'member3@example.com', crypt('password123', gen_salt('bf')), now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', '');
+
+-- 2. Insert matching identities
+INSERT INTO auth.identities (
+    id,
+    user_id,
+    provider_id,
+    identity_data,
+    provider,
+    last_sign_in_at,
+    created_at,
+    updated_at
+) VALUES
+(uuid_generate_v4(), '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111', '{"sub":"11111111-1111-1111-1111-111111111111","email":"admin1@example.com"}', 'email', now(), now(), now()),
+(uuid_generate_v4(), '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222', '{"sub":"22222222-2222-2222-2222-222222222222","email":"member1@example.com"}', 'email', now(), now(), now()),
+(uuid_generate_v4(), '33333333-3333-3333-3333-333333333333', '33333333-3333-3333-3333-333333333333', '{"sub":"33333333-3333-3333-3333-333333333333","email":"admin2@example.com"}', 'email', now(), now(), now()),
+(uuid_generate_v4(), '44444444-4444-4444-4444-444444444444', '44444444-4444-4444-4444-444444444444', '{"sub":"44444444-4444-4444-4444-444444444444","email":"member2@example.com"}', 'email', now(), now(), now()),
+(uuid_generate_v4(), '55555555-5555-5555-5555-555555555555', '55555555-5555-5555-5555-555555555555', '{"sub":"55555555-5555-5555-5555-555555555555","email":"admin3@example.com"}', 'email', now(), now(), now()),
+(uuid_generate_v4(), '66666666-6666-6666-6666-666666666666', '66666666-6666-6666-6666-666666666666', '{"sub":"66666666-6666-6666-6666-666666666666","email":"member3@example.com"}', 'email', now(), now(), now());
+
+-- 3. Insert profiles
+INSERT INTO public.profiles (id, full_name, avatar_url)
+VALUES
+('11111111-1111-1111-1111-111111111111', 'Admin One', NULL),
+('22222222-2222-2222-2222-222222222222', 'Member One', NULL),
+('33333333-3333-3333-3333-333333333333', 'Admin Two', NULL),
+('44444444-4444-4444-4444-444444444444', 'Member Two', NULL),
+('55555555-5555-5555-5555-555555555555', 'Admin Three', NULL),
+('66666666-6666-6666-6666-666666666666', 'Member Three', NULL);
+
+-- 4. Insert organizations
+INSERT INTO public.organizations (id, slug, name, description, created_by)
+VALUES
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'org-one', 'Organization One', 'First test org', '11111111-1111-1111-1111-111111111111'),
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'org-two', 'Organization Two', 'Second test org', '33333333-3333-3333-3333-333333333333'),
+('cccccccc-cccc-cccc-cccc-cccccccccccc', 'org-three', 'Organization Three', 'Third test org', '55555555-5555-5555-5555-555555555555');
+
+-- 5. Insert organization members
+INSERT INTO public.organization_members (organization_id, user_id, role)
+VALUES
+-- Org One: Admin & Member
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 'admin'),
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', 'member'),
+
+-- Org Two: Admin & Member
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '33333333-3333-3333-3333-333333333333', 'admin'),
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '44444444-4444-4444-4444-444444444444', 'member'),
+
+-- Org Three: Admin & Member
+('cccccccc-cccc-cccc-cccc-cccccccccccc', '55555555-5555-5555-5555-555555555555', 'admin'),
+('cccccccc-cccc-cccc-cccc-cccccccccccc', '66666666-6666-6666-6666-666666666666', 'member');

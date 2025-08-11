@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export function TeamSettings() {
+export function OrgSettings() {
   const [teamName, setTeamName] = useState("Acme Inc.")
   const [iconUrl, setIconUrl] = useState("/placeholder.svg?height=64&width=64")
   const [iconBgColor] = useState("bg-blue-500")

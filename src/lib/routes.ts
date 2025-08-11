@@ -36,7 +36,7 @@ export const routes = {
   auth: {
     signIn: "/sign-in",
     signUp: "/sign-up",
-    signInRedirect: "/app",
+    signInRedirect: "/dashboard",
     signOutRedirect: "/sign-in",
     forgotPassword: "/forgot-password",
     authCodeError: "/auth-code-error",
@@ -46,17 +46,33 @@ export const routes = {
   },
 
   protected: {
-    app: {
-      root: "/app",
-      settings: {
-        root: "/app/settings",
-        general: "/app/settings/general",
-        account: "/app/settings/account",
-        preferences: "/app/settings/preferences",
-        billing: "/app/settings/billing",
+    dashboard: {
+      root: "/dashboard",
+      account: {
+        root: "/dashboard/account",
+        settings: {
+          root: "/dashboard/account/settings/",
+          general: "/dashboard/account/settings/general",
+          account: "/dashboard/account/settings/account",
+          preferences: "/dashboard/account/settings/preferences",
+          billing: "/dashboard/account/settings/billing",
+        }
       },
-      team: {
-        root: "/app/team"
+      organizations: {
+        root: "/dashboard/organizations"
+      },
+      org: {
+        root: "/org",
+        slug: {
+          root: (slug: string) => `org/${slug}/`,
+          members: (slug: string) => `org/${slug}/members`,
+          settings: {
+            root: (slug: string) => `org/${slug}/settings`,
+            general: (slug: string) => `org/${slug}/settings/general`,
+            billing: (slug: string) => `org/${slug}/settings/billing`,
+            security: (slug: string) => `org/${slug}/settings/security`,
+          },
+        }
       }
     }
   },
@@ -69,13 +85,6 @@ export const routes = {
     about: "/",
     contact: "/",
   },
-
-  // Legal pages
-  // legal: {
-  //   terms: "/terms",
-  //   privacy: "/privacy",
-  //   cookies: "/cookies",
-  // },
 
   api: {
     auth: {

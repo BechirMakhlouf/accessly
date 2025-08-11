@@ -8,10 +8,10 @@ import { usePathname } from "next/navigation";
 
 
 const settingsPagesUrls = [
-  { id: "general", url: routes.protected.app.settings.general, name: "General", icon: User },
-  { id: "preferences", url: routes.protected.app.settings.preferences, name: "Preferences", icon: Palette },
-  { id: "account", url: routes.protected.app.settings.account, name: "Account", icon: Settings },
-  { id: "billing", url: routes.protected.app.settings.billing, name: "Billing", icon: CreditCard },
+  { id: "general", url: routes.protected.dashboard.account.settings.general, name: "General", icon: User },
+  { id: "preferences", url: routes.protected.dashboard.account.settings.preferences, name: "Preferences", icon: Palette },
+  { id: "account", url: routes.protected.dashboard.account.settings.account, name: "Account", icon: Settings },
+  { id: "billing", url: routes.protected.dashboard.account.settings.billing, name: "Billing", icon: CreditCard },
 ] as const
 
 export function SettingsNav() {

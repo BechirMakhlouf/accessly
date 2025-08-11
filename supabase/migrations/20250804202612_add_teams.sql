@@ -153,7 +153,4 @@ using ((auth.uid() = created_by));
 
 
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.team_members FOR EACH ROW EXECUTE FUNCTION moddatetime('updated_at');
-
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.teams FOR EACH ROW EXECUTE FUNCTION moddatetime('updated_at');
-
-

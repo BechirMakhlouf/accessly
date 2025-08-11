@@ -37,7 +37,7 @@ type VisibilityState = {
   cta?: boolean
 }
 
-export default function AccesslyLanding() {
+export default function LandingPage() {
   const [isVisible, setIsVisible] = useState({} as VisibilityState)
   const observerRef = useRef<IntersectionObserver | null>(null)
 

@@ -23,7 +23,7 @@ initBotId({
         "method": "*"
       },
       {
-        "path": "/app",
+        "path": "/dashboard",
         "method": "*"
       },
       {

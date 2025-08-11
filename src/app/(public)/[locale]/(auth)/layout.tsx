@@ -9,7 +9,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  if (await isAuthenticated()) redirect(routes.protected.app.root);
+  if (await isAuthenticated()) redirect(routes.protected.dashboard.root);
 
   return <>
     <FloatingLogo />
