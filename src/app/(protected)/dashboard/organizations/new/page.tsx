@@ -16,21 +16,32 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { createOrg } from "@/modules/organizations/actions"
+import { useAuth } from "@/lib/auth/hooks"
+import { routes } from "@/lib/routes"
 
 export default function NewOrganizationPage() {
   const router = useRouter()
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     type: "personal",
     plan: "free"
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would typically submit the form data
-    console.log("Creating organization:", formData)
-    // Redirect back to organizations page
-    router.push("/")
+    if (!user) return;
+
+    const { data, error } = await createOrg({
+      name: formData.name,
+      description: formData.name,
+      slug: formData.name,
+      created_by: user.id
+    })
+    console.log(error);
+    // router.push(routes.protected.dashboard.org.slug.root())
   }
 
   const handleCancel = () => {

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS organizations (
   name TEXT NOT NULL,
   description TEXT,
   icon_url TEXT,
-  created_by UUID NOT NULL,
+  created_by UUID NOT NULL default auth.users(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

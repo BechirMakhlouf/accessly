@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/lib/auth/auth-provider";
+import { AuthProvider } from "@/lib/auth/provider";
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner"
@@ -8,7 +8,7 @@ import { SettingsProvider } from "@/modules/settings/provider";
 export function Providers({ children }: React.PropsWithChildren) {
 
   return <>
-    <QueryClientProvider>
+    <QueryClientProvider >
       <NextIntlClientProvider>
         <ThemeProvider
           attribute="class"
@@ -16,9 +16,12 @@ export function Providers({ children }: React.PropsWithChildren) {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
-          <AuthProvider />
+          <AuthProvider>
+            {/* <AuthProvider> */}
+            {children}
+            <Toaster />
+            {/* </AuthProvider> */}
+          </AuthProvider>
           <SettingsProvider />
         </ThemeProvider>
       </NextIntlClientProvider>

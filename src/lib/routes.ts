@@ -59,7 +59,8 @@ export const routes = {
         }
       },
       organizations: {
-        root: "/dashboard/organizations"
+        root: "/dashboard/organizations",
+        new: "/dashboard/organizations/new"
       },
       org: {
         root: "/org",

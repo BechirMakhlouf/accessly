@@ -1,0 +1,21 @@
+name: Push Supabase Config
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  push-config:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF}}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: supabase config push --project-ref $SUPABASE_PROJECT_REF

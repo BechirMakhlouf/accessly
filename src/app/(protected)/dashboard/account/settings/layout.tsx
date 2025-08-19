@@ -13,7 +13,7 @@ export default async function SettingsPage({ children }: { children: ReactNode }
   if (!userId) return null;
 
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery(getUserSettingsQueryOptions(supabase));
+  await queryClient.prefetchQuery(getUserSettingsQueryOptions(supabase, userId));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

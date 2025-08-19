@@ -1,12 +1,14 @@
 create table if not exists profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  full_name text,
-  avatar_url text, 
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    first_name TEXT,
+    last_name TEXT,
+    avatar_url TEXT,
+    created_at TIMESTAMPTZ not null default NOW(),
+    updated_at TIMESTAMPTZ not null default NOW()
 );
 
 alter table profiles enable row level security;
+
 create policy "Users can update their own profile" on profiles for update using (auth.uid() = id);
 create policy "Users can delete their own profile" on profiles for delete using (auth.uid() = id);
 create policy "Users can insert their own profile" on profiles for insert with check (auth.uid() = id);

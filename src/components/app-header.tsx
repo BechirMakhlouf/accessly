@@ -1,4 +1,3 @@
-
 import { ChevronsUpDown, GalleryVerticalEnd } from "lucide-react"
 import Link from "next/link"
 
@@ -16,6 +15,7 @@ import { OrganizationsDropdown } from "./organizations-dropdown"
 import { AppSearchBar } from "./app-search-bar"
 import UserDropdown from "./user-dropdown"
 import { NotificationsPopover } from "./notification-popover"
+import { TestButton } from "./test-button"
 
 const organizations = ["Acme Inc", "Globex Corp", "Soylent Corp"]
 
@@ -70,6 +70,7 @@ export function AppHeader() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
+        <TestButton />
 
         {/* Right: Actions */}
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">

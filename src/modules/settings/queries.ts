@@ -3,24 +3,24 @@ import { getUserId } from "@/lib/supabase/utils";
 import { UserSettings, UpsertUserSettings } from "./types";
 import { QueryClient, UndefinedInitialDataOptions } from "@tanstack/react-query";
 import { createAvatarPath } from "./utils";
+import { isNullOrUndefined } from "@/lib/utils";
 
 export const USER_SETTINGS_KEY = ["userSettings"] as const;
 
-export async function getUserSettings(supabase: TypedSupabaseClient) {
-  const user_id = await getUserId(supabase);
-  const result = (await supabase.from("user_settings").select("*").eq("user_id", user_id!).limit(1).maybeSingle().throwOnError()).data;
+export async function getUserSettings(supabase: TypedSupabaseClient, userId?: string) {
+  if (isNullOrUndefined(userId)) return null;
+
+  const result = (await supabase.from("user_settings").select("*").eq("id", userId).limit(1).maybeSingle().throwOnError()).data;
   return result;
 }
 
-export async function upsertUserSettings(supabase: TypedSupabaseClient, settings: Partial<UpsertUserSettings>) {
-  const user_id = await getUserId(supabase);
-
-  if (!user_id)
+export async function upsertUserSettings(supabase: TypedSupabaseClient, settings: UpsertUserSettings) {
+  if (!settings.id)
     return;
 
   return await supabase
     .from("user_settings")
-    .upsert({ ...settings, id: user_id })
+    .upsert({ ...settings })
     .throwOnError();
 }
 
@@ -69,15 +69,15 @@ export const uploadUserAvatar = async (supabase: TypedSupabaseClient, file: File
   return uploadResult;
 }
 
-export const getUserSettingsQueryOptions: (supabase: TypedSupabaseClient) =>
+export const getUserSettingsQueryOptions: (supabase: TypedSupabaseClient, userId?: string) =>
   UndefinedInitialDataOptions<UserSettings | null> =
-  (supabase: TypedSupabaseClient) => ({
+  (supabase: TypedSupabaseClient, userId?: string) => ({
     queryKey: USER_SETTINGS_KEY,
-    queryFn: () => getUserSettings(supabase),
+    queryFn: () => getUserSettings(supabase, userId),
   })
 
 export const getUserSettingsMutationOptions = (supabase: TypedSupabaseClient, queryClient: QueryClient) => ({
-  mutationFn: (settings: Partial<UpsertUserSettings>) => upsertUserSettings(supabase, settings),
+  mutationFn: (settings: UpsertUserSettings) => upsertUserSettings(supabase, settings),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: USER_SETTINGS_KEY }),
 })
 
@@ -90,20 +90,26 @@ export const getUserAvatarMutationOptions = (supabase: TypedSupabaseClient, quer
 // Update user theme mutation
 export const updateUserThemeMutationOptions = (
   supabase: TypedSupabaseClient,
-  queryClient: QueryClient
+  queryClient: QueryClient,
+  userId?: string
 ) => ({
-  mutationFn: async (theme: UserSettings["theme"]) =>
-    upsertUserSettings(supabase, { theme }),
+  mutationFn: async (theme: UserSettings["theme"]) => {
+    if (!userId) throw new Error("error.user.notfound");
+    upsertUserSettings(supabase, { theme, id: userId })
+  },
   onSuccess: () => queryClient.invalidateQueries({ queryKey: USER_SETTINGS_KEY }),
 });
 
 // Update user locale mutation
 export const updateUserLocaleMutationOptions = (
   supabase: TypedSupabaseClient,
-  queryClient: QueryClient
+  queryClient: QueryClient,
+  userId?: string
 ) => ({
-  mutationFn: async (language: UserSettings["language"]) =>
-    upsertUserSettings(supabase, { language }),
+  mutationFn: async (language: UserSettings["language"]) => {
+    if (!userId) throw new Error("error.user.notfound");
+    upsertUserSettings(supabase, { language, id: userId })
+  },
   onSuccess: () => queryClient.invalidateQueries({ queryKey: USER_SETTINGS_KEY }),
 });
 

@@ -3,11 +3,11 @@ import type { Provider } from "@supabase/supabase-js";
 import { translateErrorCode } from 'supabase-error-translator-js';
 import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n/config";
-import { SupabaseCSRClient } from "../supabase/client";
 import { getFullRoute, routes } from "../routes";
-import { signInWithOAuthAction } from "./actions";
+import { isAuthenticated, signInWithOAuthAction } from "./actions";
 
 export const AUTH_USER_KEY = ["authUser"] as const;
+export const AUTH_CLAIMS_KEY = ["authClaims"] as const;
 
 export async function signInWithPassword(
   supabase: TypedSupabaseClient,
@@ -35,7 +35,6 @@ export async function signUp(
   return data.user ?? null;
 }
 
-SupabaseCSRClient.auth.getClaims()
 export async function signOut(
   supabase: TypedSupabaseClient,
   messageLocale: Locale
@@ -70,8 +69,11 @@ export async function signInWithOAuth(
 
 // Optional: a query for current user (if using SSR, hydrate from token/session/etc)
 export async function getAuthUser(supabase: TypedSupabaseClient) {
-  const { data } = await supabase.auth.getUser(); // Your CSR/SSR get user function
-  return data.user ?? null;
+  return await supabase.auth.getUser(); // Your CSR/SSR get user function
+}
+
+export async function getUserClaims(supabase: TypedSupabaseClient) {
+  return await supabase.auth.getClaims();
 }
 
 // ---- React Query options "builders" ----
@@ -79,6 +81,11 @@ export async function getAuthUser(supabase: TypedSupabaseClient) {
 export const getAuthUserQueryOptions = (supabase: TypedSupabaseClient) => ({
   queryKey: AUTH_USER_KEY,
   queryFn: () => getAuthUser(supabase),
+});
+
+export const getUserClaimsQueryOptions = (supabase: TypedSupabaseClient) => ({
+  queryKey: AUTH_USER_KEY,
+  queryFn: () => getUserClaims(supabase),
 });
 
 export const signInMutationOptions = (

@@ -20,10 +20,13 @@ export function GeneralSettings() {
     setUserAvatar: { mutate: setUserAvatar, isPending: isAvatarUploading },
     setSettings: { /* mutate: setSettings, */ isPending: isUpdatingSettings }
   } = useUserSettings();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setDisplayName((displayName) => settings?.id ?? displayName)
   }, [settings])
+  useEffect(() => setMounted(true), [])
+
   const handleAvatarUpload = async () => {
     fileInputRef.current?.click();
   }
@@ -56,6 +59,9 @@ export function GeneralSettings() {
     toast("Display name updated successfully!")
   }
 
+
+  if (!mounted)
+    return <></>
   return (
     <div className="space-y-6">
       <Card>
@@ -68,7 +74,6 @@ export function GeneralSettings() {
             <Avatar className="h-20 w-20 border border-border">
               <AvatarImage src={settings?.avatar_url || undefined} />
               <AvatarFallback>
-
                 {isAvatarUploading || isSettingsLoading ? <Skeleton className="w-full h-full" /> : <h1 className="text-2xl">{displayName.slice(0, 2)}</h1>}
               </AvatarFallback>
             </Avatar>
@@ -79,7 +84,7 @@ export function GeneralSettings() {
                 Upload
               </Button>
               <Button variant="outline" onClick={handleAvatarDelete} disabled={isSettingsLoading}>
-                {isAvatarUploading ? <Spinner /> : <Trash2 className="mr-2 h-4 w-4" />}
+                <Trash2 className="mr-2 h-4 w-4" />
                 Delete
               </Button>
             </div>

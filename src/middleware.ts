@@ -6,6 +6,8 @@ export async function middleware(request: NextRequest) {
   const i18nResponse = i18nMiddleware(request);
   const supabaseResponse = await supabaseMiddleware(request, i18nResponse);
 
+  supabaseResponse.headers.append("x-pathname", request.nextUrl.pathname);
+
   return supabaseResponse;
 }
 

@@ -52,6 +52,7 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
     handleSubmit,
     formState: { errors },
     reset,
+    setError
   } = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
   })
@@ -63,7 +64,7 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
       router.push(routes.protected.dashboard.root)
       reset()
     } catch (err) {
-      console.error(err)
+      // setError("root", err)
     }
   }
 
@@ -74,12 +75,11 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
       router.push(routes.protected.dashboard.root)
       reset()
     } catch (err) {
-      console.error(err)
+      // setError("root", err)
     }
   }
 
   const loading = signInMutation.isPending || oauthMutation.isPending
-  // Show password or OAuth error, if any
   const errorMessage =
     (signInMutation.error as { message?: string })?.message ||
     (oauthMutation.error as { message?: string })?.message
