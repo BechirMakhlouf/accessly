@@ -15,7 +15,6 @@ import { OrganizationsDropdown } from "./organizations-dropdown"
 import { AppSearchBar } from "./app-search-bar"
 import UserDropdown from "./user-dropdown"
 import { NotificationsPopover } from "./notification-popover"
-import { TestButton } from "./test-button"
 
 const organizations = ["Acme Inc", "Globex Corp", "Soylent Corp"]
 

@@ -29,7 +29,7 @@ export default async function RootLayout({
   params
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale?: string }>;
 }>) {
   const pathname = await getPathname();
   const locale = pathname.startsWith(routes.protected.dashboard.root) ? undefined : await getLocale((await params).locale);
