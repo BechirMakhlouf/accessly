@@ -70,7 +70,6 @@ export function AppHeader() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <TestButton />
 
         {/* Right: Actions */}
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
