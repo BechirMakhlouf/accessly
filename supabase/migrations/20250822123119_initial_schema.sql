@@ -177,7 +177,7 @@ BEGIN
   );
 
   -- Insert user settings
-  INSERT INTO public.user_settings (user_id)
+  INSERT INTO public.user_settings (id)
   VALUES (
     NEW.id
   );
