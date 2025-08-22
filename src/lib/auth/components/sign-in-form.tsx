@@ -87,7 +87,7 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
       router.push(routes.protected.dashboard.root)
     } catch (err: unknown) {
       console.error("error while signing in with oauth", err);
-      setError('root', { type: 'server', message: "error while singing in." })
+      setError('root', { type: 'server', message: "error while signing in." })
     } finally {
       setIsOauthLoading(false)
     }
