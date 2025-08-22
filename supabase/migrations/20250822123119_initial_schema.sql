@@ -171,7 +171,7 @@ DECLARE
   personal_organization_id UUID;
 BEGIN
   -- Insert profile
-  INSERT INTO public.profiles (id)
+  INSERT INTO public.user_profiles (id)
   VALUES (
     NEW.id
   );
