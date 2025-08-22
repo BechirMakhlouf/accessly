@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createOrg } from "@/modules/organizations/actions"
-import { useAuth } from "@/lib/auth/hooks"
+import { useAuth } from "@/lib/auth/hooks/useAuth"
 
 export default function NewOrganizationPage() {
   const router = useRouter()
