@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { QueryClientProvider } from "./query-client-provider";
 import { SettingsProvider } from "@/modules/settings/provider";
 
-export function Providers({ children }: React.PropsWithChildren) {
+export async function Providers({ children }: React.PropsWithChildren) {
 
   return <>
     <QueryClientProvider >
@@ -17,12 +17,10 @@ export function Providers({ children }: React.PropsWithChildren) {
           disableTransitionOnChange
         >
           <AuthProvider>
-            {/* <AuthProvider> */}
             {children}
             <Toaster />
-            {/* </AuthProvider> */}
+            <SettingsProvider />
           </AuthProvider>
-          <SettingsProvider />
         </ThemeProvider>
       </NextIntlClientProvider>
     </QueryClientProvider>

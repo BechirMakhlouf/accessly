@@ -9,59 +9,64 @@ import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Upload, Trash2 } from "lucide-react"
 import { toast } from "sonner"
-import { useUserSettings } from "../hooks";
 import { Spinner } from "@/components/spinner";
+import { useUserProfile } from "../hooks/useUserProfile";
 
 export function GeneralSettings() {
-  const [displayName, setDisplayName] = useState("")
+  const [fullName, setFullName] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
-    settings: { data: settings, isLoading: isSettingsLoading },
+    profile: { data: profile, isLoading: isProfileLoading },
     setUserAvatar: { mutate: setUserAvatar, isPending: isAvatarUploading },
-    setSettings: { /* mutate: setSettings, */ isPending: isUpdatingSettings }
-  } = useUserSettings();
+    setFullName: { mutate: setFullNameMutation, isPending: isUpdatingProfile },
+  } = useUserProfile();
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setDisplayName((displayName) => settings?.id ?? displayName)
-  }, [settings])
+    setFullName((fullName) => profile?.full_name ?? fullName)
+  }, [profile])
   useEffect(() => setMounted(true), [])
 
   const handleAvatarUpload = async () => {
     fileInputRef.current?.click();
   }
+
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("File size must be less than 5MB")
       return
     }
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file")
       return
     }
+
     setUserAvatar({ file });
-    // Reset input value to allow selecting the same file again
     event.target.value = ""
   }
+
   const handleAvatarDelete = () => {
-    setUserAvatar({ file: undefined })
-    toast("Avatar deleted successfully!")
+    setUserAvatar({ file: undefined }, {
+      onSuccess: () => toast("Avatar deleted successfully!"),
+      onError: () => toast("Failed to delete Avatar!")
+    })
   }
 
   const handleSaveDisplayName = () => {
-    // setSettings({ display_name: displayName })
-    toast("Display name updated successfully!")
+    setFullNameMutation(fullName, {
+      onSuccess: () => toast("Name updated successfully!"),
+      onError: () => toast("Failed to update name!")
+    });
   }
 
+  if (!mounted) return <></>
 
-  if (!mounted)
-    return <></>
   return (
     <div className="space-y-6">
       <Card>
@@ -72,18 +77,28 @@ export function GeneralSettings() {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20 border border-border">
-              <AvatarImage src={settings?.avatar_url || undefined} />
+              <AvatarImage src={profile?.avatar_url || undefined} />
               <AvatarFallback>
-                {isAvatarUploading || isSettingsLoading ? <Skeleton className="w-full h-full" /> : <h1 className="text-2xl">{displayName.slice(0, 2)}</h1>}
+                {isAvatarUploading || isProfileLoading ? (
+                  <Skeleton className="w-full h-full" />
+                ) : (
+                  <h1 className="text-2xl">{fullName.slice(0, 2)}</h1>
+                )}
               </AvatarFallback>
             </Avatar>
             <div className="space-x-2">
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-              <Button onClick={handleAvatarUpload} disabled={isAvatarUploading || isSettingsLoading}>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <Button onClick={handleAvatarUpload} disabled={isAvatarUploading || isProfileLoading}>
                 {isAvatarUploading ? <Spinner /> : <Upload className="mr-2 h-4 w-4" />}
                 Upload
               </Button>
-              <Button variant="outline" onClick={handleAvatarDelete} disabled={isSettingsLoading}>
+              <Button variant="outline" onClick={handleAvatarDelete} disabled={isProfileLoading || !profile?.avatar_url}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
               </Button>
@@ -100,11 +115,12 @@ export function GeneralSettings() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="displayName">Display Name</Label>
-            <Input id="displayName" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+            <Input id="displayName" value={fullName} onChange={(e) => setFullName(e.target.value)} />
           </div>
-          <Button onClick={handleSaveDisplayName} disabled={isUpdatingSettings}>
-            {isUpdatingSettings ?? <Spinner />}
-            Save Changes</Button>
+          <Button onClick={handleSaveDisplayName} disabled={isUpdatingProfile}>
+            {isUpdatingProfile && <Spinner />}
+            Save Changes
+          </Button>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/lib/env";
+import { getUserId } from "../auth/utils";
 
 export async function supabaseMiddleware(request: NextRequest, response?: NextResponse) {
   let supabaseResponse = response ?? NextResponse.next({
@@ -27,11 +28,12 @@ export async function supabaseMiddleware(request: NextRequest, response?: NextRe
           );
         },
       },
+
     },
   );
 
-  //WARNING: DO NOT REMOVE auth.getClaims()
-  await supabase.auth.getClaims();
+  //WARNING: DO NOT REMOVE getUserId
+  await getUserId(supabase);
 
   return supabaseResponse;
 }

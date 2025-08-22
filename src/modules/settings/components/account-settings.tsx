@@ -20,6 +20,7 @@ import { Mail, Phone, Key, AlertTriangle, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { PhoneInput } from "@/components/phone-input"
 import { PasswordConfirmationDialog } from "./password-confirmation-dialog"
+import { updateUserEmail } from "@/lib/auth/actions"
 
 type PendingAction = "email" | "phone" | "password" | "delete" | null
 
@@ -38,11 +39,7 @@ export function AccountSettings() {
   }
 
   const handleEmailUpdate = async () => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    toast("Email address updated successfully!")
+    updateUserEmail(email)
   }
 
   const handlePhoneUpdate = async () => {
@@ -106,7 +103,7 @@ export function AccountSettings() {
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
-          <Button onClick={() => setPendingAction("email")}>
+          <Button onClick={handleEmailUpdate}>
             <Mail className="mr-2 h-4 w-4" />
             Update Email
           </Button>

@@ -15,7 +15,7 @@ export async function createSSRClient(showDebug: boolean = false) {
         getAll() {
           const cookies = cookieStore.getAll();
           if (showDebug)
-            console.debug("Cookies: ", cookies);
+            console.debug("[Supabase] SSR cookies: ", cookies);
 
           return cookies;
         },

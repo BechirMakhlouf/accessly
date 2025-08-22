@@ -14,12 +14,12 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { useUserSettings } from "@/modules/settings/hooks"
-import { redirect } from "next/navigation"
 import { routes } from "@/lib/routes"
 import { Skeleton } from "./ui/skeleton"
-import { useAuth } from "@/lib/auth/hooks"
+import { useAuth } from "@/lib/auth/hooks/useAuth"
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useUserProfile } from "@/modules/profiles/hooks/useUserProfile"
 
 interface UserDropdownProps {
   user?: {
@@ -36,7 +36,8 @@ export default function UserDropdown({
 }: UserDropdownProps) {
   const router = useRouter()
   const { setTheme, theme } = useTheme()
-  const { settings, setUserTheme } = useUserSettings()
+  const { setUserTheme } = useUserSettings()
+  const { profile } = useUserProfile();
   const { user, signOut } = useAuth()
 
   // Ensure SSR and first client render match
@@ -63,7 +64,7 @@ export default function UserDropdown({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={settings?.data?.avatar_url ?? undefined} alt="user avatar" />
+            <AvatarImage src={profile?.data?.avatar_url ?? undefined} alt="user avatar" />
             <AvatarFallback>
               <User className="h-4 w-4 text-foreground" />
             </AvatarFallback>

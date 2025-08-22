@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { localesInfo } from "@/lib/i18n/config"
-import { useUserSettings } from "../hooks" // <-- import your hook!
+import { useUserSettings } from "../hooks"
 
 import { Spinner } from "@/components/spinner"
 
@@ -17,7 +17,7 @@ export function PreferencesSettings() {
   // Get the settings
   const {
     settings: { data: settings, isLoading: isSettingsLoading },
-    setSettings: { isPending, mutateAsync: setSettings, error: setSettingsError, isSuccess: setSettingsSuccess }
+    setSettings: { isPending, mutateAsync: setSettings }
   } = useUserSettings();
 
   // Hydrate local state on settings fetch
@@ -42,13 +42,10 @@ export function PreferencesSettings() {
   const handleSavePreferences = async () => {
     if (!settings) return;
 
-    await setSettings({ theme, language, id: settings.id });
-
-    if (setSettingsSuccess) {
-      toast("Preferences updated successfully!")
-    } else {
-      toast.error("Failed to update preferences. Please try again.")
-    }
+    await setSettings({ theme, language, id: settings.id }, {
+      onSuccess: () => toast.success("Preferences updated successfully!"),
+      onError: () => toast.error("Failed to update preferences. Please try again.")
+    });
   }
 
   return (

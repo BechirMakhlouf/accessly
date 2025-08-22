@@ -1,14 +1,20 @@
 import { supabaseMiddleware } from "@/lib/supabase/middleware";
 import { type NextRequest } from "next/server";
 import { i18nMiddleware } from "./lib/i18n/middleware";
+import { authMiddleware } from "./lib/auth/middleware";
 
 export async function middleware(request: NextRequest) {
-  const i18nResponse = i18nMiddleware(request);
-  const supabaseResponse = await supabaseMiddleware(request, i18nResponse);
+  try {
+    const i18nResponse = i18nMiddleware(request);
+    const supabaseResponse = await supabaseMiddleware(request, i18nResponse);
+    const authResponse = await authMiddleware(request, supabaseResponse);
 
-  supabaseResponse.headers.append("x-pathname", request.nextUrl.pathname);
+    authResponse.headers.append("x-pathname", request.nextUrl.pathname);
 
-  return supabaseResponse;
+    return i18nResponse;
+  } catch {
+
+  }
 }
 
 

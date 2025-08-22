@@ -32,7 +32,7 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }>) {
   const pathname = await getPathname();
-  let locale = pathname.startsWith(routes.protected.dashboard.root) ? undefined : await getLocale((await params).locale);
+  const locale = pathname.startsWith(routes.protected.dashboard.root) ? undefined : await getLocale((await params).locale);
 
   return (
     <html lang={locale} suppressHydrationWarning>

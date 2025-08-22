@@ -18,7 +18,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createOrg } from "@/modules/organizations/actions"
 import { useAuth } from "@/lib/auth/hooks"
-import { routes } from "@/lib/routes"
 
 export default function NewOrganizationPage() {
   const router = useRouter()
@@ -34,7 +33,7 @@ export default function NewOrganizationPage() {
     // Here you would typically submit the form data
     if (!user) return;
 
-    const { data, error } = await createOrg({
+    const { error } = await createOrg({
       name: formData.name,
       description: formData.name,
       slug: formData.name,

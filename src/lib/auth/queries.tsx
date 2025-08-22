@@ -4,10 +4,9 @@ import { translateErrorCode } from 'supabase-error-translator-js';
 import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n/config";
 import { getFullRoute, routes } from "../routes";
-import { isAuthenticated, signInWithOAuthAction } from "./actions";
+import { signInWithOAuthAction } from "./actions";
 
-export const AUTH_USER_KEY = ["authUser"] as const;
-export const AUTH_CLAIMS_KEY = ["authClaims"] as const;
+export const AUTH_USER_KEY = ["auth", "user"] as const;
 
 export async function signInWithPassword(
   supabase: TypedSupabaseClient,
@@ -72,9 +71,6 @@ export async function getAuthUser(supabase: TypedSupabaseClient) {
   return await supabase.auth.getUser(); // Your CSR/SSR get user function
 }
 
-export async function getUserClaims(supabase: TypedSupabaseClient) {
-  return await supabase.auth.getClaims();
-}
 
 // ---- React Query options "builders" ----
 
@@ -83,10 +79,6 @@ export const getAuthUserQueryOptions = (supabase: TypedSupabaseClient) => ({
   queryFn: () => getAuthUser(supabase),
 });
 
-export const getUserClaimsQueryOptions = (supabase: TypedSupabaseClient) => ({
-  queryKey: AUTH_USER_KEY,
-  queryFn: () => getUserClaims(supabase),
-});
 
 export const signInMutationOptions = (
   supabase: TypedSupabaseClient,

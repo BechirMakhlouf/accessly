@@ -1,4 +1,4 @@
-import { GeneralSettings } from "@/modules/settings/components/general-settings";
+import { GeneralSettings } from "@/modules/profiles/components/general-settings";
 
 export default function GeneralSettingsPage() {
   return (
