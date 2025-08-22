@@ -120,7 +120,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by: string
+          created_by?: string
           description?: string | null
           icon_url?: string | null
           id?: string
@@ -140,7 +140,7 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
+      user_profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
@@ -166,7 +166,6 @@ export type Database = {
       }
       user_settings: {
         Row: {
-          avatar_url: string | null
           created_at: string
           id: string
           language: string | null
@@ -174,15 +173,13 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          avatar_url?: string | null
           created_at?: string
-          id: string
+          id?: string
           language?: string | null
           theme?: string | null
           updated_at?: string
         }
         Update: {
-          avatar_url?: string | null
           created_at?: string
           id?: string
           language?: string | null

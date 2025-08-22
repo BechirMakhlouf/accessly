@@ -59,18 +59,19 @@ export const routes = {
         }
       },
       organizations: {
-        root: "/dashboard/organizations"
+        root: "/dashboard/organizations",
+        new: "/dashboard/organizations/new"
       },
       org: {
         root: "/org",
         slug: {
-          root: (slug: string) => `org/${slug}/`,
-          members: (slug: string) => `org/${slug}/members`,
+          root: (slug: string) => `/dashboard/org/${slug}/`,
+          members: (slug: string) => `/dashboard/org/${slug}/members`,
           settings: {
-            root: (slug: string) => `org/${slug}/settings`,
-            general: (slug: string) => `org/${slug}/settings/general`,
-            billing: (slug: string) => `org/${slug}/settings/billing`,
-            security: (slug: string) => `org/${slug}/settings/security`,
+            root: (slug: string) => `/dashboard/org/${slug}/settings`,
+            general: (slug: string) => `/dashboard/org/${slug}/settings/general`,
+            billing: (slug: string) => `/dashboard/org/${slug}/settings/billing`,
+            security: (slug: string) => `/dashboard/org/${slug}/settings/security`,
           },
         }
       }

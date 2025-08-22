@@ -1,33 +1,19 @@
 import { SettingsNav } from "@/modules/settings/components/settings-nav";
 import { ReactNode } from "react";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { getQueryClient } from "@/lib/query-client";
-import { createSSRClient } from "@/lib/supabase/server";
-import { getUserId } from "@/lib/supabase/utils";
-import { getUserSettingsQueryOptions } from "@/modules/settings/queries";
 
 export default async function SettingsPage({ children }: { children: ReactNode }) {
 
-  const supabase = await createSSRClient();
-  const userId = await getUserId(supabase);
-  if (!userId) return null;
-
-  const queryClient = getQueryClient();
-  await queryClient.prefetchQuery(getUserSettingsQueryOptions(supabase));
-
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4  p-4 md:gap-8 md:p-10">
-        <div className="mx-auto grid w-full max-w-6xl gap-2">
-          <h1 className="text-3xl font-semibold">Settings</h1>
+    <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4  p-4 md:gap-8 md:p-10">
+      <div className="mx-auto grid w-full max-w-6xl gap-2">
+        <h1 className="text-3xl font-semibold">Settings</h1>
+      </div>
+      <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
+        <SettingsNav />
+        <div>
+          {children}
         </div>
-        <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-          <SettingsNav />
-          <div>
-            {children}
-          </div>
-        </div>
-      </main>
-    </HydrationBoundary>
+      </div>
+    </main>
   );
 }

@@ -1,32 +1,39 @@
--- Use Postgres to create a bucket.
-insert into storage.buckets
-  (id, name, public)
-values
-  ('avatars', 'avatars', true);
+-- Create avatars bucket (this can be done via Supabase Dashboard or SQL)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true);
 
--- CREATE Avatar File (insert)
-CREATE POLICY "Can upload own avatar"
-ON storage.objects
-FOR INSERT
+-- Policy to allow authenticated users to upload to their own folder
+CREATE POLICY "Users can upload own avatars" ON storage.objects
+FOR INSERT TO authenticated
 WITH CHECK (
-  bucket_id = 'avatars'
-  AND auth.role() = 'authenticated'
+    bucket_id = 'avatars' AND 
+    (storage.foldername(name))[1] = (SELECT auth.uid()::text)
 );
 
--- UPDATE Avatar File
-CREATE POLICY "Can update own avatar"
-ON storage.objects
-FOR UPDATE
+-- Policy to allow users to view their own avatars
+CREATE POLICY "Users can view own avatars" ON storage.objects
+FOR SELECT TO authenticated
 USING (
-  bucket_id = 'avatars'
-  AND auth.role() = 'authenticated'
+    bucket_id = 'avatars' AND 
+    (storage.foldername(name))[1] = (SELECT auth.uid()::text)
 );
 
--- DELETE Avatar File
-CREATE POLICY "Can delete own avatar"
-ON storage.objects
-FOR DELETE
+-- Policy to allow users to update their own avatars
+CREATE POLICY "Users can update own avatars" ON storage.objects
+FOR UPDATE TO authenticated
 USING (
-  bucket_id = 'avatars'
-  AND auth.role() = 'authenticated'
+    bucket_id = 'avatars' AND 
+    (storage.foldername(name))[1] = (SELECT auth.uid()::text)
+)
+WITH CHECK (
+    bucket_id = 'avatars' AND 
+    (storage.foldername(name))[1] = (SELECT auth.uid()::text)
+);
+
+-- Policy to allow users to delete their own avatars
+CREATE POLICY "Users can delete own avatars" ON storage.objects
+FOR DELETE TO authenticated
+USING (
+    bucket_id = 'avatars' AND 
+    (storage.foldername(name))[1] = (SELECT auth.uid()::text)
 );

@@ -1,19 +1,38 @@
-create table if not exists profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  full_name text,
-  avatar_url text, 
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+-- Create user_profiles table with enhanced constraints
+CREATE TABLE public.user_profiles (
+    id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    full_name text,
+    avatar_url text,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now()
 );
 
-alter table profiles enable row level security;
-create policy "Users can update their own profile" on profiles for update using (auth.uid() = id);
-create policy "Users can delete their own profile" on profiles for delete using (auth.uid() = id);
-create policy "Users can insert their own profile" on profiles for insert with check (auth.uid() = id);
+-- Enable Row Level Security
+ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 
+-- Create trigger for automatic updated_at (assumes moddatetime function exists)
+CREATE TRIGGER update_user_profiles_modtime
+BEFORE UPDATE ON public.user_profiles
+FOR EACH ROW EXECUTE PROCEDURE moddatetime(updated_at);
 
-create trigger
-  handle_updated_at before update
-on profiles
-for each row execute
-  procedure moddatetime(updated_at);
+-- RLS Policies
+-- SELECT: Allow users to view their own profile
+CREATE POLICY "Users can view own profile" ON public.user_profiles
+FOR SELECT TO authenticated
+USING ((select auth.uid()) = id);
+
+-- INSERT: Enforce that users can only create their own profile
+CREATE POLICY "Users can insert own profile" ON public.user_profiles
+FOR INSERT TO authenticated
+WITH CHECK ((select auth.uid()) = id);
+
+-- UPDATE: Allow users to update their own profile
+CREATE POLICY "Users can update own profile" ON public.user_profiles
+FOR UPDATE TO authenticated
+USING ((select auth.uid()) = id)
+WITH CHECK ((select auth.uid()) = id);
+
+-- DELETE: Allow users to delete their own profile
+CREATE POLICY "Users can delete own profile" ON public.user_profiles
+FOR DELETE TO authenticated
+USING ((select auth.uid()) = id);

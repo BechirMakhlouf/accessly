@@ -20,12 +20,10 @@ import { MicrosoftIcon } from '@/components/icons/microsoft'
 import { AppleIcon } from '@/components/icons/apple'
 import { Separator } from '@/components/ui/separator'
 import { routes } from '@/lib/routes'
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import { useMutation } from '@tanstack/react-query'
-import { signInMutationOptions, signInWithOAuthMutationOptions } from '../queries'
-import { SupabaseCSRClient } from '@/lib/supabase/client'
-import { getQueryClient } from '@/lib/query-client'
+import { useAuth } from '@/lib/auth/hooks/useAuth' // <-- useAuth hook
+import { useState } from 'react'
 
 export const signInSchema = z.object({
   email: z.string().email(),
@@ -34,55 +32,69 @@ export const signInSchema = z.object({
 
 export function SignInForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const router = useRouter()
-  const locale = useLocale()
   const t = useTranslations('auth')
-  const queryClient = getQueryClient()
-  const supabase = SupabaseCSRClient // your client instance
-
-  // TanStack Query Mutations
-  const signInMutation = useMutation(
-    signInMutationOptions(supabase, queryClient, locale)
-  )
-  const oauthMutation = useMutation(
-    signInWithOAuthMutationOptions(supabase, queryClient, locale)
-  )
+  const auth = useAuth()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
+    clearErrors,
   } = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
   })
 
-  // On submit: sign in with password
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isOauthLoading, setIsOauthLoading] = useState(false)
+
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    clearErrors('root')
+    setIsSubmitting(true)
     try {
-      await signInMutation.mutateAsync({ email: data.email, password: data.password })
-      router.push(routes.protected.dashboard.root)
+      // useAuth.signInWithPassword returns Supabase response { data, error }.
+      const res = await auth.signInWithPassword({ email: data.email, password: data.password })
+      // handle Supabase error shape
+      const error = res.error
+      if (error) {
+        setError('root', { type: 'server', message: error.message ?? String(error) })
+        return
+      }
+      // success -> navigate to protected dashboard
       reset()
-    } catch (err) {
-      console.error(err)
+      router.push(routes.protected.dashboard.root)
+    } catch (err: unknown) {
+      console.error("error while signing in with oauth", err);
+      setError('root', { type: 'server', message: "error while singing in." })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  // On click: sign in with OAuth provider
   const handleOAuth = async (provider: 'google' | 'azure' | 'apple') => {
+    clearErrors('root')
+    setIsOauthLoading(true)
     try {
-      await oauthMutation.mutateAsync(provider)
+      const res = await auth.signInWithOAuth(provider)
+      const error = res.error
+      if (error) {
+        setError('root', { type: 'server', message: error.message ?? String(error) })
+        return
+      }
+      // With OAuth, Supabase usually redirects you to the provider.
+      // In case your flow returns immediately and you want to navigate:
       router.push(routes.protected.dashboard.root)
-      reset()
-    } catch (err) {
-      console.error(err)
+    } catch (err: unknown) {
+      console.error("error while signing in with oauth", err);
+      setError('root', { type: 'server', message: "error while signing in." })
+    } finally {
+      setIsOauthLoading(false)
     }
   }
 
-  const loading = signInMutation.isPending || oauthMutation.isPending
-  // Show password or OAuth error, if any
-  const errorMessage =
-    (signInMutation.error as { message?: string })?.message ||
-    (oauthMutation.error as { message?: string })?.message
+  const loading = isSubmitting || isOauthLoading
+  const errorMessage = (errors.root?.message as string)
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -172,7 +184,7 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
                 <p className="text-sm text-destructive">{errorMessage}</p>
               )}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? t('signInForm.loggingIn') : t('signInForm.login')}
+                {isSubmitting ? t('signInForm.loggingIn') : t('signInForm.login')}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
@@ -185,5 +197,6 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
         </CardContent>
       </Card>
     </div>
+
   )
 }

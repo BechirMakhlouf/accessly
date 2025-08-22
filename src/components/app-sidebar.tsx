@@ -69,7 +69,6 @@ export function AppSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  console.log(pathname.split("/").at(-1));
   // Active map for quick lookup
   const isActive = useMemo(() => {
     return (item: NavItem) => item.match(pathname || "");
@@ -89,7 +88,6 @@ export function AppSidebar() {
           )}
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
-          aria-expanded={open}
           role="navigation"
         >
           <div className="bg-background relative z-40 flex h-full flex-col text-muted-foreground">

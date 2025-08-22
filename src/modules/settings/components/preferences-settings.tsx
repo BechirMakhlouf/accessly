@@ -8,15 +8,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { localesInfo } from "@/lib/i18n/config"
-import { useMutation } from "@tanstack/react-query"
-import { useUserSettings } from "../hooks" // <-- import your hook!
+import { useUserSettings } from "../hooks"
 
-import {
-  updateUserThemeMutationOptions,
-  updateUserLocaleMutationOptions,
-} from "../queries"; // (adjust import!)
-import { SupabaseCSRClient } from "@/lib/supabase/client"
-import { getQueryClient } from "@/lib/query-client"
 import { Spinner } from "@/components/spinner"
 
 
@@ -24,11 +17,15 @@ export function PreferencesSettings() {
   // Get the settings
   const {
     settings: { data: settings, isLoading: isSettingsLoading },
+    setSettings: { isPending, mutateAsync: setSettings }
   } = useUserSettings();
 
   // Hydrate local state on settings fetch
   const [theme, setTheme] = useState<string>("system")
   const [language, setLanguage] = useState("en")
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (settings) {
@@ -37,27 +34,18 @@ export function PreferencesSettings() {
     }
   }, [settings])
 
-  // Supabase/QueryClient
-  const supabase = SupabaseCSRClient;
-  const queryClient = getQueryClient();
+  const updating = isPending;
 
-  // Mutations
-  const themeMutation = useMutation(updateUserThemeMutationOptions(supabase, queryClient))
-  const localeMutation = useMutation(updateUserLocaleMutationOptions(supabase, queryClient))
-  const updating = themeMutation.isPending || localeMutation.isPending
+  if (!mounted)
+    return <></>
 
   const handleSavePreferences = async () => {
-    const results = await Promise.allSettled([
-      themeMutation.mutateAsync(theme),
-      localeMutation.mutateAsync(language),
-    ])
-    const allSuccess = results.every(r => r.status === "fulfilled")
+    if (!settings) return;
 
-    if (allSuccess) {
-      toast("Preferences updated successfully!")
-    } else {
-      toast.error("Failed to update preferences. Please try again.")
-    }
+    await setSettings({ theme, language, id: settings.id }, {
+      onSuccess: () => toast.success("Preferences updated successfully!"),
+      onError: () => toast.error("Failed to update preferences. Please try again.")
+    });
   }
 
   return (
@@ -78,7 +66,7 @@ export function PreferencesSettings() {
               <Label htmlFor="dark">Dark</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="system" id="system" />
+              <RadioGroupItem className="" value="system" id="system" />
               <Label htmlFor="system">System</Label>
             </div>
           </RadioGroup>

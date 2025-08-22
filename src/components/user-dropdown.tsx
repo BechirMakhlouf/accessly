@@ -13,6 +13,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import { useUserSettings } from "@/modules/settings/hooks"
+import { routes } from "@/lib/routes"
+import { Skeleton } from "./ui/skeleton"
+import { useAuth } from "@/lib/auth/hooks/useAuth"
+import { useEffect, useState, useCallback } from "react"
+import { useRouter } from "next/navigation"
+import { useUserProfile } from "@/modules/profiles/hooks/useUserProfile"
 
 interface UserDropdownProps {
   user?: {
@@ -26,26 +33,30 @@ interface UserDropdownProps {
 }
 
 export default function UserDropdown({
-  user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "/placeholder.svg?height=32&width=32",
-  },
-  onAccountSettings,
-  onCommandMenu,
-  onSignOut,
 }: UserDropdownProps) {
+  const router = useRouter()
   const { setTheme, theme } = useTheme()
+  const { setUserTheme } = useUserSettings()
+  const { profile } = useUserProfile();
+  const { user, signOut } = useAuth()
+
+  // Ensure SSR and first client render match
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  const handleAccountSettings = useCallback(() => {
+    router.push(routes.protected.dashboard.account.settings.root)
+  }, [router])
 
   const handleCommandMenu = () => {
-    onCommandMenu?.()
-    // Trigger command menu programmatically
-    const event = new KeyboardEvent("keydown", {
-      key: "k",
-      ctrlKey: true,
-      metaKey: true,
-    })
+    const event = new KeyboardEvent("keydown", { key: "k", ctrlKey: true, metaKey: true })
     document.dispatchEvent(event)
+  }
+
+  if (!mounted) {
+    return (
+      <Skeleton className="h-8 w-8 rounded-full opacity-80  border" />
+    )
   }
 
   return (
@@ -53,24 +64,24 @@ export default function UserDropdown({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={profile?.data?.avatar_url ?? undefined} alt="user avatar" />
             <AvatarFallback>
               <User className="h-4 w-4 text-foreground" />
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            <p className="text-sm font-medium leading-none">{user?.email || ""}</p>
           </div>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={onAccountSettings}>
+        <DropdownMenuItem onClick={handleAccountSettings}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Account settings</span>
         </DropdownMenuItem>
@@ -83,18 +94,34 @@ export default function UserDropdown({
 
         <DropdownMenuSeparator />
 
-        {/* Theme options moved here */}
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem
+          onClick={() => {
+            setTheme("light")
+            void setUserTheme.mutateAsync("light")
+          }}
+        >
           <Sun className="mr-2 h-4 w-4" />
           <span>Light</span>
           {theme === "light" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+
+        <DropdownMenuItem
+          onClick={() => {
+            setTheme("dark")
+            void setUserTheme.mutateAsync("dark")
+          }}
+        >
           <Moon className="mr-2 h-4 w-4" />
           <span>Dark</span>
           {theme === "dark" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+
+        <DropdownMenuItem
+          onClick={() => {
+            setTheme("system") // fixed typo
+            void setUserTheme.mutateAsync("system")
+          }}
+        >
           <Monitor className="mr-2 h-4 w-4" />
           <span>System</span>
           {theme === "system" && <span className="ml-auto">✓</span>}
@@ -102,7 +129,7 @@ export default function UserDropdown({
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={onSignOut}>
+        <DropdownMenuItem onClick={() => signOut()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>
         </DropdownMenuItem>

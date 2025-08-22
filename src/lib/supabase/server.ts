@@ -9,13 +9,13 @@ export async function createSSRClient(showDebug: boolean = false) {
 
   return createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    env.SUPABASE_SECRET_KEY,
     {
       cookies: {
         getAll() {
           const cookies = cookieStore.getAll();
           if (showDebug)
-            console.debug("Cookies: ", cookies);
+            console.debug("[Supabase] SSR cookies: ", cookies);
 
           return cookies;
         },

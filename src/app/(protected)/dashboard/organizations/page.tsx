@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { OrganizationCard } from '@/modules/organizations/components/org-card'
+import { redirect } from 'next/navigation'
+import { routes } from '@/lib/routes'
 
 // Sample data
 const organizations = [
@@ -109,7 +111,9 @@ export default function OrganizationsPage() {
               </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button>
+                  <Button onClick={() => {
+                    redirect(routes.protected.dashboard.organizations.new)
+                  }}>
                     <Plus className="mr-2 h-4 w-4" />
                     New Organization
                   </Button>

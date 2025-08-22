@@ -8,6 +8,10 @@ export const env = createEnv({
     NEXT_PUBLIC_SITE_URL: z.string().url(),
   },
 
+  server: {
+    SUPABASE_SECRET_KEY: z.string().min(1)
+  },
+
   // For Next.js >= 13.4.4, you only need to destructure client variables:
   experimental__runtimeEnv: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
