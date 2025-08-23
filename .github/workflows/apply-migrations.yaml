@@ -20,4 +20,6 @@ jobs:
           version: latest
 
       - run: supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD
+      - run: echo $SUPABASE_PROJECT_REF
+      - run: echo $SUPABASE_DB_PASSWORD
       - run: supabase db push
