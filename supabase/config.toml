@@ -105,7 +105,7 @@ file_size_limit = "50MiB"
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "env(SITE_URL)"
+site_url = "env(SUPABASE_CONFIG_SITE_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = []
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
@@ -257,9 +257,9 @@ max_frequency = "5s"
 
 [auth.external.google]
 enabled = true
-client_id = "env(OAUTH_GOOGLE_CLIENT_ID)"
+client_id = "env(SUPABASE_CONFIG_OAUTH_GOOGLE_CLIENT_ID)"
 # DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
-secret = "env(OAUTH_GOOGLE_CLIENT_SECRET)"
+secret = "env(SUPABASE_CONFIG_OAUTH_GOOGLE_CLIENT_SECRET)"
 # redirect_uri = "http://127.0.0.1:3000/api/auth/callback"
 # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
 # or any other third-party OIDC providers.
