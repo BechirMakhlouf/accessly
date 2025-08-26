@@ -98,6 +98,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
 
   const signInWithOAuth = useCallback(
     async (provider: Provider, options?: { redirectTo?: string; scopes?: string }) => {
+      console.info("oauth redirecting to: ", getFullRoute(routes.api.auth.callback));
       return await supabase.auth.signInWithOAuth({
         provider,
         options: {
