@@ -167,3 +167,4 @@ FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
 CREATE TRIGGER handle_updated_at_invites
 BEFORE UPDATE ON invites
 FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
+ to millions

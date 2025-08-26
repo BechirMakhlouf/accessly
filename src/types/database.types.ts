@@ -40,19 +40,23 @@ export type Database = {
           email: string
           expires_at: string
           id: string
-          invite_link: string
+          invite_token: string
           invited_by: string
           organization_id: string
+          role: Database["public"]["Enums"]["organization_role"]
+          status: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           email: string
-          expires_at: string
+          expires_at?: string
           id?: string
-          invite_link: string
+          invite_token: string
           invited_by: string
           organization_id: string
+          role?: Database["public"]["Enums"]["organization_role"]
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -60,9 +64,11 @@ export type Database = {
           email?: string
           expires_at?: string
           id?: string
-          invite_link?: string
+          invite_token?: string
           invited_by?: string
           organization_id?: string
+          role?: Database["public"]["Enums"]["organization_role"]
+          status?: string
           updated_at?: string
         }
         Relationships: [
@@ -78,6 +84,8 @@ export type Database = {
       organization_members: {
         Row: {
           created_at: string
+          joined_at: string
+          last_active_at: string | null
           organization_id: string
           role: Database["public"]["Enums"]["organization_role"]
           updated_at: string
@@ -85,6 +93,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          joined_at?: string
+          last_active_at?: string | null
           organization_id: string
           role?: Database["public"]["Enums"]["organization_role"]
           updated_at?: string
@@ -92,6 +102,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          joined_at?: string
+          last_active_at?: string | null
           organization_id?: string
           role?: Database["public"]["Enums"]["organization_role"]
           updated_at?: string
@@ -152,7 +164,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
-          id: string
+          id?: string
           updated_at?: string
         }
         Update: {
@@ -168,22 +180,25 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          language: string | null
-          theme: string | null
+          language: string
+          notifications_enabled: boolean
+          theme: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
-          language?: string | null
-          theme?: string | null
+          language?: string
+          notifications_enabled?: boolean
+          theme?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
-          language?: string | null
-          theme?: string | null
+          language?: string
+          notifications_enabled?: boolean
+          theme?: string
           updated_at?: string
         }
         Relationships: []
@@ -196,7 +211,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      organization_role: "admin" | "member"
+      organization_role: "admin" | "member" | "owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -327,7 +342,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      organization_role: ["admin", "member"],
+      organization_role: ["admin", "member", "owner"],
     },
   },
 } as const

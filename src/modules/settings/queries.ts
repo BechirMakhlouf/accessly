@@ -2,6 +2,7 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import { UserSettings, UpsertUserSettings } from "./types";
 import { QueryClient, UndefinedInitialDataOptions } from "@tanstack/react-query";
 import { getUserSettings, upsertUserSettings } from "./actions";
+import { isNullOrUndefined } from "@/lib/utils";
 
 export const USER_SETTINGS_KEY = ["userSettings"] as const;
 
@@ -9,7 +10,15 @@ export const getUserSettingsQueryOptions: () =>
   UndefinedInitialDataOptions<UserSettings | null> =
   () => ({
     queryKey: USER_SETTINGS_KEY,
-    queryFn: async () => await getUserSettings(),
+    queryFn: async () => {
+      const result = await getUserSettings();
+
+      if (result?.error)
+        throw result.error
+      else if (isNullOrUndefined(result?.data) || isNullOrUndefined(result))
+        return null;
+      else return result.data;
+    },
   })
 
 export const getUserSettingsMutationOptions = (queryClient: QueryClient) => ({

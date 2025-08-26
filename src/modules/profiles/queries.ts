@@ -1,14 +1,23 @@
 import { Profile, UpsertProfile } from "./types";
-import { QueryClient, UndefinedInitialDataOptions } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { deleteUserAvatar, getProfile, uploadUserAvatar, upsertProfile } from "./actions";
+import { isNullOrUndefined } from "@/lib/utils";
 
 export const PROFILE_KEY = ["profile"] as const;
 
-export const getProfileQueryOptions: () =>
-  UndefinedInitialDataOptions<Profile | null> =
+export const getProfileQueryOptions =
   () => ({
     queryKey: PROFILE_KEY,
-    queryFn: async () => await getProfile(),
+    queryFn: async () => {
+      const result = await getProfile()
+
+      if (result?.error)
+        throw result.error
+      else if (isNullOrUndefined(result?.data) || isNullOrUndefined(result))
+        return null;
+      else
+        return result.data;
+    }
   });
 
 export const getProfileMutationOptions = (queryClient: QueryClient) => ({

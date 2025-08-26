@@ -4,29 +4,28 @@ import { createSSRClient } from "@/lib/supabase/server";
 import { assertSignedInAndGetUserId } from "@/lib/auth/server-utils";
 import { UpsertProfile } from "./types";
 import { createAvatarPath } from "./utils";
+import { getUserId } from "@/lib/auth/utils";
 
 export async function getProfile() {
   const supabase = await createSSRClient();
-  const userId = await assertSignedInAndGetUserId();
+  const userId = await getUserId(supabase)
 
-  const result = (
-    await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("id", userId)
-      .limit(1)
-      .maybeSingle()
-      .throwOnError()
-  ).data;
+  if (!userId) return null;
+
+  const result = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle()
 
   return result;
 }
 
 export async function upsertProfile(profile: UpsertProfile) {
   const supabase = await createSSRClient();
-  const userId = await assertSignedInAndGetUserId();
+  const userId = await assertSignedInAndGetUserId()
 
-  return await supabase.from("user_profiles").upsert({ ...profile, id: userId }).throwOnError();
+  return await supabase.from("user_profiles").upsert({ ...profile, id: userId })
 }
 
 export async function deleteUserAvatar() {

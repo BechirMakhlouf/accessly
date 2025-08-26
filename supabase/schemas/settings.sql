@@ -39,7 +39,9 @@ FOR UPDATE
 TO authenticated 
 USING ((SELECT auth.uid()) = id)
 WITH CHECK (
-  (SELECT auth.uid()) = id
+  (SELECT auth.uid()) = id AND 
+  id IS NULL AND  -- Prevent changing id
+  created_at IS NULL  -- Prevent changing created_at
 );
 
 -- DELETE Policy

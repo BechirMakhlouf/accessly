@@ -1,6 +1,6 @@
 -- Create user_profiles table with enhanced constraints
 CREATE TABLE public.user_profiles (
-    id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    id uuid PRIMARY KEY DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name text,
     avatar_url text,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
@@ -16,23 +16,30 @@ BEFORE UPDATE ON public.user_profiles
 FOR EACH ROW EXECUTE PROCEDURE moddatetime(updated_at);
 
 -- RLS Policies
--- SELECT: Allow users to view their own profile
-CREATE POLICY "Users can view own profile" ON public.user_profiles
-FOR SELECT TO authenticated
-USING ((select auth.uid()) = id);
+-- SELECT: Allow anyone to view profiles
+CREATE POLICY "Users can view all profiles" ON public.user_profiles
+FOR SELECT TO anon, authenticated
+USING (true);
 
 -- INSERT: Enforce that users can only create their own profile
 CREATE POLICY "Users can insert own profile" ON public.user_profiles
 FOR INSERT TO authenticated
-WITH CHECK ((select auth.uid()) = id);
+WITH CHECK (
+    (SELECT auth.uid()) = id 
+    AND id IS NOT NULL
+);
 
--- UPDATE: Allow users to update their own profile
+-- UPDATE: Allow users to update their own profile with restrictions
 CREATE POLICY "Users can update own profile" ON public.user_profiles
 FOR UPDATE TO authenticated
-USING ((select auth.uid()) = id)
-WITH CHECK ((select auth.uid()) = id);
+USING ((SELECT auth.uid()) = id)
+WITH CHECK (
+    (SELECT auth.uid()) = id 
+    AND id IS NULL  -- Prevent changing id
+    AND created_at IS NULL  -- Prevent changing created_at
+);
 
 -- DELETE: Allow users to delete their own profile
 CREATE POLICY "Users can delete own profile" ON public.user_profiles
 FOR DELETE TO authenticated
-USING ((select auth.uid()) = id);
+USING ((SELECT auth.uid()) = id);
