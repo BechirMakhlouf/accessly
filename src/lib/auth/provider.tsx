@@ -5,7 +5,7 @@ import type { AuthError, AuthOtpResponse, AuthResponse, AuthTokenResponsePasswor
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { signOut as signOutAction } from "./actions";
-import { routes } from "../routes";
+import { getFullRoute, routes } from "../routes";
 
 
 type AuthContextValue = {
@@ -102,7 +102,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         provider,
         options: {
           ...options,
-          redirectTo: routes.api.auth.callback
+          redirectTo: getFullRoute(routes.api.auth.callback)
         },
       });
     },
