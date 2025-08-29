@@ -107,10 +107,7 @@ enabled = true
 # in emails.
 site_url = "env(SUPABASE_CONFIG_SITE_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = [
-  "http://127.0.0.1:3000/api/auth/callback",
-  "https://www.accessly.me/api/auth/callback",
-]
+additional_redirect_urls = ["http://127.0.0.1:3000", "https://www.accessly.me"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # If disabled, the refresh token will never expire.
@@ -263,6 +260,18 @@ enabled = true
 client_id = "env(SUPABASE_CONFIG_OAUTH_GOOGLE_CLIENT_ID)"
 # DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
 secret = "env(SUPABASE_CONFIG_OAUTH_GOOGLE_CLIENT_SECRET)"
+redirect_uri = "env(SUPABASE_CONFIG_OAUTH_CALLBACK_URI)"
+# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
+# or any other third-party OIDC providers.
+# url = ""
+# If enabled, the nonce check will be skipped. Required for local sign in with Google auth.
+# skip_nonce_check = true
+
+[auth.external.slack]
+enabled = true
+client_id = "env(SUPABASE_CONFIG_OAUTH_SLACK_CLIENT_ID)"
+# DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
+secret = "env(SUPABASE_CONFIG_OAUTH_SLACK_CLIENT_SECRET)"
 redirect_uri = "env(SUPABASE_CONFIG_OAUTH_CALLBACK_URI)"
 # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
 # or any other third-party OIDC providers.
