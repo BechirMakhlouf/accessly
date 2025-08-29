@@ -10,7 +10,12 @@ jiti("./src/lib/env");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: [
+    'http://127.0.0.1:3000',
+    'http://localhost:3000'
+  ],
   experimental: {
+
   }
 }
 

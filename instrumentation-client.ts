@@ -2,10 +2,10 @@ import { initBotId } from 'botid/client/core';
 
 initBotId({
   protect: [
-    {
-      path: '/api/(?!auth/callback).*',
-      method: '*',
-    },
+    // {
+    //   path: '/api/(?!auth/callback).*',
+    //   method: '*',
+    // },
     { path: '/sign-in', method: '*' },
     { path: '/sign-up', method: '*' },
     { path: '/dashboard', method: '*' },
