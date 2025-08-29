@@ -267,7 +267,7 @@ redirect_uri = "env(SUPABASE_CONFIG_OAUTH_CALLBACK_URI)"
 # If enabled, the nonce check will be skipped. Required for local sign in with Google auth.
 # skip_nonce_check = true
 
-[auth.external.slack]
+[auth.external.slack_oidc]
 enabled = true
 client_id = "env(SUPABASE_CONFIG_OAUTH_SLACK_CLIENT_ID)"
 # DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
