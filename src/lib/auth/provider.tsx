@@ -103,7 +103,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         provider,
         options: {
           ...options,
-          redirectTo: "https://www.accessly.me/api/auth/callback"
+          redirectTo: getFullRoute(routes.api.auth.callback)
         },
       });
     },
