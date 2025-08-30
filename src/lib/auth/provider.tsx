@@ -7,7 +7,6 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { signOut as signOutAction } from "./actions";
 import { getFullRoute, routes } from "../routes";
 
-
 type AuthContextValue = {
   user: User | null;
   session: Session | null;

@@ -7,6 +7,7 @@ export default function Page() {
     </div>
   )
 }
+
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
