@@ -1,6 +1,6 @@
 import { isAuthenticated } from "@/lib/auth/actions";
+import { redirect } from "@/lib/i18n/navigation";
 import { routes } from "@/lib/routes";
-import { redirect } from "next/navigation";
 
 export default async function RootLayout({
   children,
@@ -11,8 +11,6 @@ export default async function RootLayout({
   if (!await isAuthenticated())
     redirect(routes.auth.signIn);
 
-  return <>
-    {children}
-  </>
+  return <> {children} </>
 
 }

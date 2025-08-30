@@ -2,6 +2,7 @@ import { initBotId } from 'botid/client/core';
 
 initBotId({
   protect: [
+    //TODO: deal with bot checks on api routes
     // {
     //   path: '/api/(?!auth/callback).*',
     //   method: '*',

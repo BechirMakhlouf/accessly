@@ -1,4 +1,3 @@
-// app/auth/callback/route.ts
 import { NextResponse } from "next/server";
 // import { checkBotId } from "botid/server";
 import { getFullRoute, routes } from "@/lib/routes";
@@ -16,7 +15,7 @@ export async function GET(request: Request) {
   let next = url.searchParams.get("next") ?? routes.auth.signInRedirect;
 
   // ✅ prevent open redirects
-  if (!next.startsWith("/")) next = "/dashboard";
+  if (!next.startsWith("/")) next = routes.auth.signInRedirect;
 
   if (code) {
     const supabase = await createSSRClient();
