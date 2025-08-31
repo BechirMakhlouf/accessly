@@ -89,7 +89,7 @@ export function useLeaveOrganization() {
   
   return useMutation({
     mutationFn: ({ orgId }: { orgId: string }) => leaveOrganization(orgId),
-    onSuccess: (data, { orgId }) => {
+    onSuccess: (data) => {
       if (data.error) {
         toast.error(data.error);
       } else {

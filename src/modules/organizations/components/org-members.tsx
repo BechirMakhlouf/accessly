@@ -20,21 +20,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useActiveOrganization } from "../hooks"
 import { useOrganizationMembers, useUpdateMemberRole, useRemoveMember, useInviteMember } from "../hooks"
-import { toast } from "sonner"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-
-interface Member {
-  user_id: string
-  role: "admin" | "member" | "owner"
-  joined_at: string
-  last_active_at: string | null
-  profiles: {
-    id: string
-    full_name: string
-    email: string
-    avatar_url?: string
-  }
-}
 
 export function OrgMembers() {
   const { activeOrganization: org } = useActiveOrganization();
@@ -118,7 +104,7 @@ export function OrgMembers() {
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              {error === "Not a member of this organization" 
+              {typeof error === "string" && error === "Not a member of this organization" 
                 ? "You are not a member of this organization." 
                 : "Failed to load organization members."}
             </AlertDescription>
@@ -207,7 +193,7 @@ export function OrgMembers() {
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium leading-none">{member.profiles?.full_name || "Unknown User"}</p>
-                    <p className="text-sm text-muted-foreground">{member.profiles?.email || "No email"}</p>
+                    <p className="text-sm text-muted-foreground">{member.email || "No email"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

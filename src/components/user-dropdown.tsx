@@ -13,7 +13,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { useUserSettings } from "@/modules/settings/hooks"
 import { routes } from "@/lib/routes"
 import { Skeleton } from "./ui/skeleton"
 import { useAuth } from "@/lib/auth/hooks/useAuth"

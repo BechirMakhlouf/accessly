@@ -6,25 +6,13 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { routes } from "@/lib/routes"
 import { useActiveOrganization } from "@/modules/organizations"
 import { useOrganizationsStore } from "@/modules/organizations/store"
 import { getUserOrgs } from "@/modules/organizations/actions"
 import { Organization } from "@/modules/organizations/types"
-import { useCurrentUserRole } from "@/modules/organizations/hooks"
 import { useAuth } from "@/lib/auth/hooks/useAuth"
 import { toast } from "sonner"
-
-interface OrganizationWithMembers extends Organization {
-  organization_members: {
-    user_id: string
-    role: "admin" | "member" | "owner"
-    joined_at: string
-    last_active_at: string | null
-  }[]
-}
 
 export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
   const router = useRouter()
@@ -111,7 +99,7 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
   const getUserRole = (org: Organization) => {
     // If the organization has members data, find the current user's role
     if ('organization_members' in org && Array.isArray(org.organization_members) && user) {
-      const membership = org.organization_members.find((m: any) => m.user_id === user.id)
+      const membership = org.organization_members.find((m: { user_id: string; role: string }) => m.user_id === user.id)
       return membership?.role || "member"
     }
     return "member"

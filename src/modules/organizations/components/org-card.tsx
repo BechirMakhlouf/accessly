@@ -25,7 +25,6 @@ import {
 import { Organization } from '../types'
 import { routes } from '@/lib/routes'
 import { useLeaveOrganization } from '../hooks'
-import { toast } from 'sonner'
 
 interface OrganizationWithMembers extends Organization {
   organization_members: {
@@ -153,7 +152,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Leave Organization</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to leave "{organization.name}"? You will lose access to this organization and all its resources.
+              Are you sure you want to leave &quot;{organization.name}&quot;? You will lose access to this organization and all its resources.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

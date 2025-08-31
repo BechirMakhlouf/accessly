@@ -57,7 +57,7 @@ export function PreferencesSettings() {
     try {
       await setUserLocale(newLanguage);
       toast.success("Language updated successfully!");
-    } catch (error) {
+    } catch {
       // Revert on error
       setLanguage(language);
       toast.error("Failed to update language. Please try again.");

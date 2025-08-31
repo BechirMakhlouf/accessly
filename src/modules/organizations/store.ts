@@ -18,7 +18,7 @@ interface OrganizationsState {
   clearError: () => void;
 }
 
-export const useOrganizationsStore = create<OrganizationsState>((set, get) => ({
+export const useOrganizationsStore = create<OrganizationsState>((set) => ({
   organizations: [],
   activeOrganization: null,
   isLoading: false,
