@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useActiveOrg } from "@/modules/organizations/provider"
+import { useActiveOrganization } from "@/modules/organizations"
 import { routes } from "@/lib/routes"
 import { useTranslations } from "next-intl"
 
@@ -13,7 +13,7 @@ interface SidebarLink {
 }
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
-  const { org } = useActiveOrg();
+  const { activeOrganization: org } = useActiveOrganization();
   const pathname = usePathname();
   const t = useTranslations("org.settings");
 

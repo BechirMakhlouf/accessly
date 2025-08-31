@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Plus, MoreHorizontal, Trash2, Mail, User } from "lucide-react"
+import { Search, Plus, MoreHorizontal, Trash2, Mail, User, AlertCircle, Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,96 +20,72 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { useActiveOrg } from "@/modules/organizations/provider"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useActiveOrganization } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
+import { 
+  useOrganizationMembers,
+  useUpdateMemberRole,
+  useRemoveMember,
+  useInviteMember
+} from "@/modules/organizations"
 
-// Mock data for demonstration
-//TODO: remove dummy data
-const mockMembers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    role: "admin",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    role: "member",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-02-20",
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    email: "mike.johnson@example.com",
-    role: "member",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-03-10",
-  },
-  {
-    id: "4",
-    name: "Sarah Wilson",
-    email: "sarah.wilson@example.com",
-    role: "admin",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-01-25",
-  },
-  {
-    id: "5",
-    name: "David Brown",
-    email: "david.brown@example.com",
-    role: "member",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-04-05",
-  },
-  {
-    id: "6",
-    name: "Emily Davis",
-    email: "emily.davis@example.com",
-    role: "member",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-04-12",
-  },
-  {
-    id: "7",
-    name: "Alex Thompson",
-    email: "alex.thompson@example.com",
-    role: "member",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-04-18",
-  },
-  {
-    id: "8",
-    name: "Lisa Anderson",
-    email: "lisa.anderson@example.com",
-    role: "admin",
-    avatar: "/placeholder.svg?height=32&width=32",
-    joinedAt: "2024-02-28",
-  },
-]
+// Type for the member data returned from the API
+interface Member {
+  user_id: string
+  role: "admin" | "member" | "owner"
+  joined_at: string
+  last_active_at: string | null
+  profiles: {
+    id: string
+    full_name: string | null
+    avatar_url: string | null
+  }
+  // Email will come from a different source since it's not in user_profiles
+  email: string
+}
+
+// Helper function to format dates
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+  if (diffDays < 365) return `${Math.ceil(diffDays / 30)} months ago`;
+  return `${Math.ceil(diffDays / 365)} years ago`;
+};
 
 export default function MembersPage() {
-  const { org } = useActiveOrg();
+  const { activeOrganization: org } = useActiveOrganization();
   const t = useTranslations("org.members");
   
-  const [members, setMembers] = useState(mockMembers)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedMembers, setSelectedMembers] = useState<string[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const [inviteEmail, setInviteEmail] = useState("")
-  const [inviteRole, setInviteRole] = useState("member")
+  const [inviteRole, setInviteRole] = useState<"admin" | "member">("member")
 
-  const itemsPerPage = 5
+  const itemsPerPage = 10
+
+  // Fetch organization members
+  const { 
+    data: membersData, 
+    isLoading, 
+    error 
+  } = useOrganizationMembers(org?.id || "");
+
+  const members = (membersData?.data || []) as Member[];
+  const currentUserRole = members.find(m => m.user_id === org?.created_by)?.role;
 
   // Filter members based on search query
   const filteredMembers = members.filter(
     (member) =>
-      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (member.profiles.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
       member.email.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
@@ -118,21 +94,27 @@ export default function MembersPage() {
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedMembers = filteredMembers.slice(startIndex, startIndex + itemsPerPage)
 
+  // Mutations
+  const updateRoleMutation = useUpdateMemberRole();
+  const removeMemberMutation = useRemoveMember();
+  const inviteMemberMutation = useInviteMember();
+
   // Handle role change
-  const handleRoleChange = (memberId: string, newRole: string) => {
-    setMembers((prev) => prev.map((member) => (member.id === memberId ? { ...member, role: newRole } : member)))
+  const handleRoleChange = (memberId: string, newRole: "admin" | "member") => {
+    if (!org) return;
+    updateRoleMutation.mutate({ orgId: org.id, memberId, newRole });
   }
 
   // Handle member deletion
   const handleDeleteMember = (memberId: string) => {
-    setMembers((prev) => prev.filter((member) => member.id !== memberId))
-    setSelectedMembers((prev) => prev.filter((id) => id !== memberId))
+    if (!org) return;
+    removeMemberMutation.mutate({ orgId: org.id, memberId });
   }
 
   // Handle select all
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedMembers(paginatedMembers.map((member) => member.id))
+      setSelectedMembers(paginatedMembers.map((member) => member.user_id))
     } else {
       setSelectedMembers([])
     }
@@ -149,22 +131,50 @@ export default function MembersPage() {
 
   // Handle invite member
   const handleInviteMember = () => {
-    // Here you would typically send an API request to invite the member
-    console.log(`Inviting ${inviteEmail} as ${inviteRole}`)
-    setIsInviteModalOpen(false)
-    setInviteEmail("")
-    setInviteRole("member")
-    // You could add a toast notification here
+    if (!org || !inviteEmail.trim()) return;
+    inviteMemberMutation.mutate({ 
+      orgId: org.id, 
+      email: inviteEmail.trim(), 
+      role: inviteRole 
+    });
+    
+    // Reset form
+    setIsInviteModalOpen(false);
+    setInviteEmail("");
+    setInviteRole("member");
+  }
+
+  // Handle bulk delete
+  const handleBulkDelete = () => {
+    if (selectedMembers.length === 0 || !org) return;
+    selectedMembers.forEach(memberId => {
+      removeMemberMutation.mutate({ orgId: org.id, memberId });
+    });
+    setSelectedMembers([]);
   }
 
   const isAllSelected = paginatedMembers.length > 0 && selectedMembers.length === paginatedMembers.length
+  const canManageMembers = currentUserRole === "admin" || currentUserRole === "owner";
 
   if (!org) {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('errors.orgNotFound')}</h1>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {t('errors.loadError')}
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -175,56 +185,70 @@ export default function MembersPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
-            <p className="text-muted-foreground">{t("description")}</p>
+            <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
+            <p className="text-muted-foreground">
+              {t('description')}
+            </p>
           </div>
-          <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                {t("inviteMember")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>{t("inviteModal.title")}</DialogTitle>
-                <DialogDescription>{t("inviteModal.description")}</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t("inviteModal.emailLabel")}</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder={t("inviteModal.emailPlaceholder")}
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="role">{t("inviteModal.roleLabel")}</Label>
-                  <Select value={inviteRole} onValueChange={setInviteRole}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="member">{t("roles.member")}</SelectItem>
-                      <SelectItem value="admin">{t("roles.admin")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsInviteModalOpen(false)}>
-                  {t("inviteModal.cancel")}
+          {canManageMembers && (
+            <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t('inviteMember')}
                 </Button>
-                <Button onClick={handleInviteMember} disabled={!inviteEmail}>
-                  <Mail className="h-4 w-4 mr-2" />
-                  {t("inviteModal.sendInvite")}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{t('inviteModal.title')}</DialogTitle>
+                  <DialogDescription>
+                    {t('inviteModal.description')}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">{t('inviteModal.emailLabel')}</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder={t('inviteModal.emailPlaceholder')}
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      disabled={inviteMemberMutation.isPending}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">{t('inviteModal.roleLabel')}</Label>
+                    <Select value={inviteRole} onValueChange={(value: "admin" | "member") => setInviteRole(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="member">{t('roles.member')}</SelectItem>
+                        <SelectItem value="admin">{t('roles.admin')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsInviteModalOpen(false)}>
+                    {t('inviteModal.cancel')}
+                  </Button>
+                  <Button 
+                    onClick={handleInviteMember} 
+                    disabled={!inviteEmail.trim() || inviteMemberMutation.isPending}
+                  >
+                    {inviteMemberMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Mail className="h-4 w-4 mr-2" />
+                    )}
+                    {t('inviteModal.sendInvite')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         {/* Search and Actions */}
@@ -232,18 +256,27 @@ export default function MembersPage() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder={t("searchPlaceholder")}
+              placeholder={t('searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
-          {selectedMembers.length > 0 && (
+          {selectedMembers.length > 0 && canManageMembers && (
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">{t("selected", { count: selectedMembers.length })}</Badge>
-              <Button variant="destructive" size="sm">
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t("deleteSelected")}
+              <Badge variant="secondary">{t('selected', { count: selectedMembers.length })}</Badge>
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={handleBulkDelete}
+                disabled={removeMemberMutation.isPending}
+              >
+                {removeMemberMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4 mr-2" />
+                )}
+                {t('deleteSelected')}
               </Button>
             </div>
           )}
@@ -251,81 +284,129 @@ export default function MembersPage() {
 
         {/* Members Table */}
         <div className="border border-border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} aria-label={t("table.selectAll")} />
-                </TableHead>
-                <TableHead>{t("table.member")}</TableHead>
-                <TableHead>{t("table.email")}</TableHead>
-                <TableHead>{t("table.role")}</TableHead>
-                <TableHead className="w-12"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedMembers.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedMembers.includes(member.id)}
-                      onCheckedChange={(checked) => handleSelectMember(member.id, checked as boolean)}
-                      aria-label={`Select ${member.name}`}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
-                        <AvatarFallback>
-                          <User className="text-muted-foreground" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium text-foreground">{member.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{member.email}</TableCell>
-                  <TableCell>
-                    <Select value={member.role} onValueChange={(value) => handleRoleChange(member.id, value)}>
-                      <SelectTrigger className="w-32 text-foreground">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="member">{t("roles.member")}</SelectItem>
-                        <SelectItem value="admin">{t("roles.admin")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteMember(member.id)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="text-destructive h-4 w-4 mr-2" />
-                          {t("actions.deleteMember")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {canManageMembers && (
+                    <TableHead className="w-12">
+                      <Checkbox 
+                        checked={isAllSelected} 
+                        onCheckedChange={handleSelectAll} 
+                        aria-label={t('table.selectAll')} 
+                      />
+                    </TableHead>
+                  )}
+                  <TableHead>{t('table.member')}</TableHead>
+                  <TableHead>{t('table.email')}</TableHead>
+                  <TableHead>{t('table.role')}</TableHead>
+                  <TableHead>{t('tableHeaders.joined')}</TableHead>
+                  <TableHead>{t('tableHeaders.lastActive')}</TableHead>
+                  {canManageMembers && <TableHead className="w-12"></TableHead>}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {paginatedMembers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={canManageMembers ? 7 : 6} className="text-center py-8 text-muted-foreground">
+                      {searchQuery ? t('errors.noMembersMatchingSearch') : t('errors.noMembersFound')}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedMembers.map((member) => (
+                    <TableRow key={member.user_id}>
+                      {canManageMembers && (
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedMembers.includes(member.user_id)}
+                            onCheckedChange={(checked) => handleSelectMember(member.user_id, checked as boolean)}
+                            aria-label={`Select ${member.profiles.full_name || member.email}`}
+                          />
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={member.profiles.avatar_url || undefined} alt={member.profiles.full_name || member.email} />
+                            <AvatarFallback>
+                              <User className="text-muted-foreground" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium text-foreground">
+                            {member.profiles.full_name || t('errors.unnamedUser')}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{member.email}</TableCell>
+                      <TableCell>
+                        {canManageMembers && member.role !== "owner" ? (
+                          <Select 
+                            value={member.role} 
+                            onValueChange={(value: "admin" | "member") => handleRoleChange(member.user_id, value)}
+                            disabled={updateRoleMutation.isPending}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="member">{t('roles.member')}</SelectItem>
+                              <SelectItem value="admin">{t('roles.admin')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge variant={member.role === "owner" ? "default" : "secondary"}>
+                            {t(`roles.${member.role}`)}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {formatDate(member.joined_at)}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {member.last_active_at 
+                          ? formatDate(member.last_active_at)
+                          : "Never"
+                        }
+                      </TableCell>
+                      {canManageMembers && member.role !== "owner" && (
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Open menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteMember(member.user_id)}
+                                className="text-destructive focus:text-destructive"
+                                disabled={removeMemberMutation.isPending}
+                              >
+                                <Trash2 className="text-destructive h-4 w-4 mr-2" />
+                                Delete Member
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
         </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {t("showing", { 
+              {t('showing', { 
                 start: startIndex + 1, 
                 end: Math.min(startIndex + itemsPerPage, filteredMembers.length), 
                 total: filteredMembers.length 
@@ -338,7 +419,7 @@ export default function MembersPage() {
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
-                {t("previous")}
+                {t('previous')}
               </Button>
               <div className="flex items-center space-x-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -359,7 +440,7 @@ export default function MembersPage() {
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
               >
-                {t("next")}
+                {t('next')}
               </Button>
             </div>
           </div>

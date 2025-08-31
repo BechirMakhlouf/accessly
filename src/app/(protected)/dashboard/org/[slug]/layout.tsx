@@ -1,9 +1,9 @@
 import { ReactNode } from 'react'
 import { getOrgBySlug } from '@/modules/organizations/actions'
-import { ActiveOrgProvider } from '@/modules/organizations/provider'
 import { AppSidebar } from '@/components/app-sidebar'
 import { routes } from '@/lib/routes'
 import { redirect } from 'next/navigation'
+import { OrganizationsStoreInitializer } from '@/modules/organizations/components/organizations-store-initializer'
 
 interface Props {
   children: ReactNode
@@ -20,12 +20,12 @@ export default async function OrgLayout({ children, params }: Props) {
 
   return (
     <div className="flex-1 flex overflow-hidden">
-      <ActiveOrgProvider initialOrg={org}>
+      <OrganizationsStoreInitializer initialOrg={org}>
         <AppSidebar />
         <main className="flex-1 overflow-auto">
           {children}
         </main>
-      </ActiveOrgProvider>
+      </OrganizationsStoreInitializer>
     </div>
   )
 }

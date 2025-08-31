@@ -1,40 +1,86 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useUpdateOrganization } from "../hooks"
+import { useActiveOrganization } from "../hooks"
+import { toast } from "sonner"
 
 export function OrgSettings() {
-  const [teamName, setTeamName] = useState("Acme Inc.")
-  const [iconUrl, setIconUrl] = useState("/placeholder.svg?height=64&width=64")
+  const { activeOrganization: org } = useActiveOrganization();
+  const updateOrg = useUpdateOrganization();
+  
+  const [teamName, setTeamName] = useState("")
+  const [iconUrl, setIconUrl] = useState("")
   const [iconBgColor] = useState("bg-blue-500")
-  const [iconDescription, setIconDescription] = useState("The official icon for Acme Inc. team.")
+  const [description, setDescription] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSaveChanges = () => {
-    console.log("Saving changes:", { teamName, iconUrl, iconBgColor, iconDescription })
-    // In a real application, you would send this data to your backend.
+  // Initialize form with current organization data
+  useEffect(() => {
+    if (org) {
+      setTeamName(org.name || "")
+      setIconUrl(org.icon_url || "")
+      setDescription(org.description || "")
+    }
+  }, [org])
+
+  const handleSaveChanges = async () => {
+    if (!org) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const result = await updateOrg.mutateAsync({
+        orgId: org.id,
+        updates: {
+          name: teamName,
+          icon_url: iconUrl,
+          description: description,
+        }
+      });
+      
+      if (result?.error) {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error("Failed to save changes:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const getFallbackText = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
   }
 
+  if (!org) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-center text-muted-foreground">Organization not found</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>General Settings</CardTitle>
-        <CardDescription>Manage your team&apos;s basic information.</CardDescription>
+        <CardDescription>Manage your organization&apos;s basic information.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          <Label>Team Icon</Label>
+          <Label>Organization Icon</Label>
           <div className="flex items-center gap-4">
             <Avatar className={`h-16 w-16 ${iconBgColor}`}>
-              <AvatarImage src={iconUrl || "/placeholder.svg"} alt="Team Icon" />
+              <AvatarImage src={iconUrl || "/placeholder.svg"} alt="Organization Icon" />
               <AvatarFallback className="text-foreground text-lg">{getFallbackText(teamName)}</AvatarFallback>
             </Avatar>
             <div className="grid gap-2">
@@ -44,7 +90,10 @@ export function OrgSettings() {
                 onChange={(e) => setIconUrl(e.target.value)}
                 placeholder="Enter icon URL"
               />
-              <Button variant="outline" onClick={() => alert("Upload icon functionality not implemented.")}>
+              <Button 
+                variant="outline" 
+                onClick={() => toast.info("Icon upload functionality coming soon")}
+              >
                 Change Icon
               </Button>
             </div>
@@ -52,27 +101,32 @@ export function OrgSettings() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="teamName">Team Name</Label>
+          <Label htmlFor="teamName">Organization Name</Label>
           <Input
             id="teamName"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
-            placeholder="Enter team name"
+            placeholder="Enter organization name"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="Team Description">Team Description</Label>
+          <Label htmlFor="description">Description</Label>
           <Textarea
-            id="iconDescription"
-            value={iconDescription}
-            onChange={(e) => setIconDescription(e.target.value)}
-            placeholder="Describe your team icon"
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe your organization"
             rows={3}
           />
         </div>
       </CardContent>
       <CardFooter className="border-t pt-6">
-        <Button onClick={handleSaveChanges}>Save changes</Button>
+        <Button 
+          onClick={handleSaveChanges} 
+          disabled={isLoading || updateOrg.isPending}
+        >
+          {isLoading || updateOrg.isPending ? "Saving..." : "Save changes"}
+        </Button>
       </CardFooter>
     </Card>
   )

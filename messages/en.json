@@ -1,4 +1,26 @@
 {
+  "organizations": {
+    "title": "Organizations",
+    "description": "Manage your organizations and collaborate with your team.",
+    "search": {
+      "placeholder": "Search organizations...",
+      "noResults": {
+        "title": "No organizations found",
+        "description": "No organizations match your search query \"{query}\"."
+      },
+      "clear": "Clear search"
+    },
+    "empty": {
+      "title": "No organizations yet",
+      "description": "Get started by creating your first organization to collaborate with your team."
+    },
+    "actions": {
+      "create": "New Organization",
+      "updated": "Organization updated successfully",
+      "updateError": "Failed to update organization"
+    },
+    "loading": "Loading organizations..."
+  },
   "org": {
     "notFound": "Organization not found",
     "overview": {
@@ -34,7 +56,7 @@
       }
     },
     "members": {
-      "title": "Team Members",
+      "title": "Organization Members",
       "description": "Manage your organization members and their roles",
       "inviteMember": "Invite Member",
       "searchPlaceholder": "Search members by name or email...",
@@ -59,12 +81,32 @@
         "selectAll": "Select all members"
       },
       "actions": {
-        "deleteMember": "Delete Member"
+        "deleteMember": "Delete Member",
+        "roleUpdated": "Member role updated successfully",
+        "roleUpdateError": "Failed to update member role",
+        "memberRemoved": "Member removed successfully",
+        "memberRemoveError": "Failed to remove member",
+        "leftOrganization": "Left organization successfully",
+        "leaveOrganizationError": "Failed to leave organization",
+        "invitationSent": "Invitation sent successfully",
+        "invitationError": "Failed to send invitation"
       },
       "roles": {
         "admin": "Admin",
         "member": "Member",
         "owner": "Owner"
+      },
+      "errors": {
+        "orgNotFound": "Organization not found",
+        "loadError": "Failed to load organization members. Please try again.",
+        "noMembersFound": "No members found",
+        "noMembersMatchingSearch": "No members found matching your search",
+        "unnamedUser": "Unnamed User",
+        "never": "Never"
+      },
+      "tableHeaders": {
+        "joined": "Joined",
+        "lastActive": "Last Active"
       }
     },
     "settings": {

@@ -14,11 +14,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useActiveOrg } from "@/modules/organizations/provider"
+import { useActiveOrganization } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 
 export default function GeneralSettingsPage() {
-  const { org } = useActiveOrg();
+  const { activeOrganization: org } = useActiveOrganization();
   const t = useTranslations("org.settings.general");
   const [orgName, setOrgName] = useState(org?.name || "");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

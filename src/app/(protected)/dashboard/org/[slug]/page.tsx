@@ -1,18 +1,22 @@
 "use client";
 
-import { useActiveOrg } from "@/modules/organizations/provider";
+import { useActiveOrganization } from "@/modules/organizations";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Calendar, Activity, Settings, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { routes } from "@/lib/routes";
 import { useTranslations } from "next-intl";
+import { useOrganizationMembers } from "@/modules/organizations";
 
 export default function OrgPage() {
-  const { org } = useActiveOrg();
+  const { activeOrganization } = useActiveOrganization();
   const t = useTranslations("org.overview");
+  
+  const { data: membersData } = useOrganizationMembers(activeOrganization?.id || "");
+  const memberCount = membersData?.data?.length || 0;
 
-  if (!org) {
+  if (!activeOrganization) {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="text-center">
@@ -32,22 +36,22 @@ export default function OrgPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">{org.name}</h1>
-            <p className="text-muted-foreground">{org.description || t("description")}</p>
+            <h1 className="text-3xl font-bold text-foreground">{activeOrganization.name}</h1>
+            <p className="text-muted-foreground">{activeOrganization.description || t("description")}</p>
           </div>
           <div className="flex gap-2">
             <Button asChild>
-              <Link href={routes.protected.dashboard.org.slug.members(org.slug)}>
+              <Link href={routes.protected.dashboard.org.slug.members(activeOrganization.slug)}>
                 <UserPlus className="h-4 w-4 mr-2" />
-                {t("membersCount", { count: "0" })}
+                {t("membersCount", { count: memberCount.toString() })}
               </Link>
             </Button>
-                          <Button variant="outline" asChild>
-                <Link href={routes.protected.dashboard.org.slug.settings.root(org.slug)}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  {t("settings")}
-                </Link>
-              </Button>
+            <Button variant="outline" asChild>
+              <Link href={routes.protected.dashboard.org.slug.settings.root(activeOrganization.slug)}>
+                <Settings className="h-4 w-4 mr-2" />
+                {t("settings")}
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -59,7 +63,7 @@ export default function OrgPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{memberCount}</div>
               <p className="text-xs text-muted-foreground">{t("stats.totalMembers.description")}</p>
             </CardContent>
           </Card>
@@ -70,8 +74,8 @@ export default function OrgPage() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatDate(org.created_at)}</div>
-              <p className="text-xs text-muted-foreground">{t("createdAt", { date: formatDate(org.created_at) })}</p>
+              <div className="text-2xl font-bold">{formatDate(activeOrganization.created_at)}</div>
+              <p className="text-xs text-muted-foreground">{t("createdAt", { date: formatDate(activeOrganization.created_at) })}</p>
             </CardContent>
           </Card>
 
@@ -81,8 +85,8 @@ export default function OrgPage() {
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatDate(org.updated_at)}</div>
-              <p className="text-xs text-muted-foreground">{t("lastActive", { date: formatDate(org.updated_at) })}</p>
+              <div className="text-2xl font-bold">{formatDate(activeOrganization.updated_at)}</div>
+              <p className="text-xs text-muted-foreground">{t("lastActive", { date: formatDate(activeOrganization.updated_at) })}</p>
             </CardContent>
           </Card>
         </div>
@@ -96,7 +100,7 @@ export default function OrgPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-start">
-                <Link href={routes.protected.dashboard.org.slug.members(org.slug)}>
+                <Link href={routes.protected.dashboard.org.slug.members(activeOrganization.slug)}>
                   <Users className="h-6 w-6 mb-2" />
                   <span className="font-medium">{t("quickActions.manageMembers.title")}</span>
                   <span className="text-sm text-muted-foreground">{t("quickActions.manageMembers.description")}</span>
@@ -104,7 +108,7 @@ export default function OrgPage() {
               </Button>
               
               <Button asChild variant="outline" className="h-auto p-4 flex flex-col items-start">
-                <Link href={routes.protected.dashboard.org.slug.settings.root(org.slug)}>
+                <Link href={routes.protected.dashboard.org.slug.settings.root(activeOrganization.slug)}>
                   <Settings className="h-6 w-6 mb-2" />
                   <span className="font-medium">{t("quickActions.orgSettings.title")}</span>
                   <span className="text-sm text-muted-foreground">{t("quickActions.orgSettings.description")}</span>
