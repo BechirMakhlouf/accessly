@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,73 +14,110 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useActiveOrg } from "@/modules/organizations/provider"
+import { useTranslations } from "next-intl"
 
 export default function GeneralSettingsPage() {
+  const { org } = useActiveOrg();
+  const t = useTranslations("org.settings.general");
+  const [orgName, setOrgName] = useState(org?.name || "");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  if (!org) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSaveChanges = () => {
+    // Here you would typically send an API request to update the organization
+    console.log("Saving organization changes:", { name: orgName });
+    // You could add a toast notification here
+  };
+
+  const handleDeleteOrganization = () => {
+    // Here you would typically send an API request to delete the organization
+    console.log("Deleting organization:", org.id);
+    setIsDeleteDialogOpen(false);
+    // You could add a toast notification here
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Organization Name</CardTitle>
-          <CardDescription>This is the name of your organization visible to all members.</CardDescription>
+          <CardTitle>{t("orgName.title")}</CardTitle>
+          <CardDescription>{t("orgName.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="org-name">Name</Label>
-            <Input id="org-name" defaultValue="Acme Inc." />
+            <Label htmlFor="org-name">{t("orgName.label")}</Label>
+            <Input 
+              id="org-name" 
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
+            />
           </div>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button>Save changes</Button>
+          <Button onClick={handleSaveChanges}>{t("orgName.saveChanges")}</Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Organization Slug</CardTitle>
+          <CardTitle>{t("orgSlug.title")}</CardTitle>
           <CardDescription>
-            The unique identifier for your organization. This cannot be changed once set.
+            {t("orgSlug.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="org-slug">Slug</Label>
-            <Input id="org-slug" defaultValue="acme-inc" disabled />
+            <Label htmlFor="org-slug">{t("orgSlug.label")}</Label>
+            <Input id="org-slug" value={org.slug} disabled />
           </div>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button disabled>Save changes</Button>
+          <Button disabled>{t("orgSlug.saveChanges")}</Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Danger Zone</CardTitle>
-          <CardDescription>Irreversible actions that will affect your organization.</CardDescription>
+          <CardTitle>{t("dangerZone.title")}</CardTitle>
+          <CardDescription>{t("dangerZone.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-semibold">Delete Organization</h3>
+                <h3 className="text-base font-semibold">{t("dangerZone.deleteOrg.title")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Permanently delete your organization and all its data. This action cannot be undone.
+                  {t("dangerZone.deleteOrg.description")}
                 </p>
               </div>
-              <Dialog>
+              <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="destructive">Delete Organization</Button>
+                  <Button variant="destructive">{t("dangerZone.deleteOrg.button")}</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                    <DialogTitle>{t("dangerZone.deleteOrg.confirmTitle")}</DialogTitle>
                     <DialogDescription>
-                      This action cannot be undone. This will permanently delete your organization and remove your data
-                      from our servers.
+                      {t("dangerZone.deleteOrg.confirmDescription")}
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
-                    <Button variant="outline">Cancel</Button>
-                    <Button variant="destructive">Delete</Button>
+                    <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                      {t("dangerZone.deleteOrg.cancel")}
+                    </Button>
+                    <Button variant="destructive" onClick={handleDeleteOrganization}>
+                      {t("dangerZone.deleteOrg.confirm")}
+                    </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

@@ -72,6 +72,7 @@ export const routes = {
             general: (slug: string) => `/dashboard/org/${slug}/settings/general`,
             billing: (slug: string) => `/dashboard/org/${slug}/settings/billing`,
             security: (slug: string) => `/dashboard/org/${slug}/settings/security`,
+            integrations: (slug: string) => `/dashboard/org/${slug}/settings/integrations`,
           },
         }
       }

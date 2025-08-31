@@ -10,31 +10,39 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Organization } from '../types'
+import { routes } from '@/lib/routes'
 
-interface Organization {
-  id: string
-  name: string
-  description: string
-  plan: "Free" | "Pro" | "Team" | "Enterprise"
-  members: number
-  projects: number
-  createdAt: string
-  avatar?: string
-  isOwner: boolean
+interface OrganizationWithMembers extends Organization {
+  organization_members: {
+    user_id: string
+    role: "admin" | "member" | "owner"
+    joined_at: string
+    last_active_at: string | null
+  }[]
 }
 
 interface OrganizationCardProps {
-  organization: Organization
+  organization: OrganizationWithMembers
 }
 
 export function OrganizationCard({ organization }: OrganizationCardProps) {
-  const planColors = {
-    Free: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-    Pro: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    Team: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-    Enterprise: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
+  // Get member count from the organization_members array
+  const memberCount = organization.organization_members?.length || 0
+  
+  // Check if current user is owner (has admin role)
+  const isOwner = organization.organization_members?.some(member => 
+    member.role === 'admin'
+  ) || false
+
+  // Format creation date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      year: 'numeric' 
+    })
   }
 
   return (
@@ -43,7 +51,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={organization.avatar || "/placeholder.svg"} alt={organization.name} />
+              <AvatarImage src={organization.icon_url || "/placeholder.svg"} alt={organization.name} />
               <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                 {organization.name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
@@ -51,20 +59,17 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <CardTitle className="text-base leading-none">
-                  <Link
-                    href={`/organizations/${organization.id}`}
-                    className="hover:underline"
-                  >
+                  <Link href={routes.protected.dashboard.org.slug.root(organization.slug || '')} className="hover:underline">
                     {organization.name}
                   </Link>
                 </CardTitle>
-                {organization.isOwner && (
+                {isOwner && (
                   <Crown className="h-3 w-3 text-yellow-500" />
                 )}
               </div>
-              <Badge variant="secondary" className={planColors[organization.plan]}>
-                {organization.plan}
-              </Badge>
+              <div className="text-xs text-muted-foreground">
+                {organization.slug}
+              </div>
             </div>
           </div>
           <DropdownMenu>
@@ -76,12 +81,12 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>
-                <Link href={`/organizations/${organization.id}`}>
+                <Link href={routes.protected.dashboard.org.slug.root(organization.slug || '')}>
                   View organization
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href={`/organizations/${organization.id}/settings`}>
+                <Link href={routes.protected.dashboard.org.slug.settings.root(organization.slug || '')}>
                   Settings
                 </Link>
               </DropdownMenuItem>
@@ -95,21 +100,18 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
       </CardHeader>
       <CardContent className="pt-0">
         <CardDescription className="mb-4 line-clamp-2">
-          {organization.description}
+          {organization.description || 'No description provided'}
         </CardDescription>
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
               <Users className="h-3 w-3" />
-              <span>{organization.members} members</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span>{organization.projects} projects</span>
+              <span>{memberCount} member{memberCount !== 1 ? 's' : ''}</span>
             </div>
           </div>
           <div className="flex items-center space-x-1">
             <Calendar className="h-3 w-3" />
-            <span>{organization.createdAt}</span>
+            <span>{formatDate(organization.created_at)}</span>
           </div>
         </div>
       </CardContent>

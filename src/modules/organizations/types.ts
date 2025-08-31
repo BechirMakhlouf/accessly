@@ -5,3 +5,6 @@ export type OrganizationInsert = Database["public"]["Tables"]["organizations"]["
 export type OrganizationUpdate = Database["public"]["Tables"]["organizations"]["Update"];
 export type OrganizationRole = Database["public"]["Enums"]["organization_role"];
 export type OrganizationMembership = Database["public"]["Tables"]["organization_members"]["Row"];
+export type OrganizationInsertWithOptionalSlug = Omit<OrganizationInsert, "slug"> & {
+  slug?: string;
+};

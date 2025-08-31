@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,6 +16,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { DownloadIcon } from "lucide-react"
+import { useActiveOrg } from "@/modules/organizations/provider"
+import { useTranslations } from "next-intl"
+import { Badge } from "@/components/ui/badge"
 
 const invoices = [
   {
@@ -44,57 +48,81 @@ const invoices = [
 ]
 
 export default function BillingSettingsPage() {
+  const { org } = useActiveOrg();
+  const t = useTranslations("org.settings.billing");
+  const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false);
+
+  if (!org) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
+        </div>
+      </div>
+    );
+  }
+
+  const handleChangePlan = () => {
+    // Here you would typically handle plan changes
+    console.log("Changing plan for organization:", org.id);
+    setIsChangePlanDialogOpen(false);
+    // You could add a toast notification here
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Current Subscription Plan</CardTitle>
-          <CardDescription>Manage your organization&apos;s subscription plan.</CardDescription>
+          <CardTitle>{t("currentPlan.title")}</CardTitle>
+          <CardDescription>{t("currentPlan.description")}</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-between">
           <div>
-            <p className="text-lg font-semibold">Pro Plan</p>
-            <p className="text-sm text-muted-foreground">Billed monthly at $100</p>
+            <p className="text-lg font-semibold">{t("currentPlan.planName")}</p>
+            <p className="text-sm text-muted-foreground">{t("currentPlan.planDescription")}</p>
           </div>
-          <Dialog>
+          <Dialog open={isChangePlanDialogOpen} onOpenChange={setIsChangePlanDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline">Change Plan</Button>
+              <Button variant="outline">{t("currentPlan.changePlan")}</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Change Subscription Plan</DialogTitle>
-                <DialogDescription>Select a new plan for your organization.</DialogDescription>
+                <DialogTitle>{t("currentPlan.modalTitle")}</DialogTitle>
+                <DialogDescription>{t("currentPlan.modalDescription")}</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <p className="text-sm text-muted-foreground">This is a placeholder for plan selection.</p>
+                <p className="text-sm text-muted-foreground">{t("currentPlan.placeholder")}</p>
               </div>
               <DialogFooter>
-                <Button variant="outline">Cancel</Button>
-                <Button>Update Plan</Button>
+                <Button variant="outline" onClick={() => setIsChangePlanDialogOpen(false)}>
+                  {t("currentPlan.cancel")}
+                </Button>
+                <Button onClick={handleChangePlan}>
+                  {t("currentPlan.updatePlan")}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
           <p className="text-sm text-muted-foreground">
-            You can pay annually if you upgrade to an Enterprise plan. The Enterprise plan offers increased performance,
-            collaboration, and security needs. [^3]
+            {t("currentPlan.enterpriseDescription")}
           </p>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Past Invoices</CardTitle>
-          <CardDescription>View and download your past invoices.</CardDescription>
+          <CardTitle>{t("pastInvoices.title")}</CardTitle>
+          <CardDescription>{t("pastInvoices.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Invoice Number</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t("pastInvoices.invoiceNumber")}</TableHead>
+                <TableHead>{t("pastInvoices.amount")}</TableHead>
+                <TableHead>{t("pastInvoices.status")}</TableHead>
                 <TableHead className="text-right"></TableHead>
               </TableRow>
             </TableHeader>
@@ -103,9 +131,13 @@ export default function BillingSettingsPage() {
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.id}</TableCell>
                   <TableCell>{invoice.amount}</TableCell>
-                  <TableCell>{invoice.status}</TableCell>
+                  <TableCell>
+                    <Badge variant={invoice.status === "Paid" ? "default" : "secondary"}>
+                      {invoice.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" aria-label={`Download invoice ${invoice.id}`}>
+                    <Button variant="ghost" size="sm" aria-label={t("pastInvoices.download")}>
                       <DownloadIcon className="h-4 w-4" />
                     </Button>
                   </TableCell>
@@ -118,18 +150,18 @@ export default function BillingSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Invoice Email Recipient</CardTitle>
-          <CardDescription>The email address that will receive your organization&apos;s invoices.</CardDescription>
+          <CardTitle>{t("invoiceEmailRecipient.title")}</CardTitle>
+          <CardDescription>{t("invoiceEmailRecipient.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="invoice-email">Email Address</Label>
-            <Input id="invoice-email" type="email" defaultValue="billing@acmeinc.com" />
+            <Label htmlFor="invoice-email">{t("invoiceEmailRecipient.emailAddress")}</Label>
+            <Input id="invoice-email" type="email" defaultValue={t("invoiceEmailRecipient.defaultEmail")} />
           </div>
         </CardContent>
-        <CardFooter className="border-t px-6 py-4">
-          <Button>Save changes</Button>
-        </CardFooter>
+                  <CardFooter className="border-t px-6 py-4">
+            <Button>{t("saveChanges")}</Button>
+          </CardFooter>
       </Card>
     </div>
   )
