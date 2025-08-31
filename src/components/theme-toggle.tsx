@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useThemeManager } from "@/modules/settings/hooks"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useTranslations } from "next-intl"
 
-export function ThemeToggle() {
-  const { setTheme } = useTheme()
+export const ThemeToggle = React.memo(function ThemeToggle() {
+  const { switchTheme } = useThemeManager()
   const t = useTranslations("themeToggle");
 
   return (
@@ -27,16 +27,16 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="border-none">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => switchTheme("light")}>
           {t("light")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => switchTheme("dark")}>
           {t("dark")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => switchTheme("system")}>
           {t("system")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
+})

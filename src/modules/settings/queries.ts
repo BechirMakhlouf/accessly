@@ -19,14 +19,17 @@ export const getUserSettingsQueryOptions: () =>
         return null;
       else return result.data;
     },
+    // Add caching optimizations
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   })
 
 export const getUserSettingsMutationOptions = (queryClient: QueryClient) => ({
   mutationFn: async (settings: Partial<UpsertUserSettings>) => await upsertUserSettings(settings),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: USER_SETTINGS_KEY }),
 })
-
-
 
 // Update user theme mutation
 export const updateUserThemeMutationOptions = (
@@ -45,7 +48,6 @@ export const updateUserLocaleMutationOptions = (
   },
   onSuccess: () => queryClient.invalidateQueries({ queryKey: USER_SETTINGS_KEY }),
 });
-
 
 export const upsertUserPhone = async (supabase: TypedSupabaseClient, phone: string) => {
   return await supabase.auth.updateUser({

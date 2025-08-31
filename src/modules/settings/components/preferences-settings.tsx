@@ -8,20 +8,20 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { localesInfo } from "@/lib/i18n/config"
-import { useUserSettings } from "../hooks"
-
+import { useUserSettings, useThemeManager } from "../hooks"
 import { Spinner } from "@/components/spinner"
-
 
 export function PreferencesSettings() {
   // Get the settings
   const {
     settings: { data: settings, isLoading: isSettingsLoading },
-    setSettings: { isPending, mutateAsync: setSettings }
+    setUserLocale: { isPending: isLocaleUpdating, mutateAsync: setUserLocale }
   } = useUserSettings();
 
+  const { currentTheme, switchTheme, isUpdating: isThemeUpdating } = useThemeManager();
+
   // Hydrate local state on settings fetch
-  const [theme, setTheme] = useState<string>("system")
+  const [localTheme, setLocalTheme] = useState<string>("system")
   const [language, setLanguage] = useState("en")
   const [mounted, setMounted] = useState(false);
 
@@ -29,24 +29,40 @@ export function PreferencesSettings() {
 
   useEffect(() => {
     if (settings) {
-      setTheme(settings.theme ?? "system")
+      setLocalTheme(settings.theme ?? "system")
       setLanguage(settings.language ?? "en")
     }
   }, [settings])
 
-  const updating = isPending;
+  // Sync local theme with current theme from next-themes
+  useEffect(() => {
+    if (currentTheme && currentTheme !== localTheme) {
+      setLocalTheme(currentTheme);
+    }
+  }, [currentTheme, localTheme]);
+
+  const updating = isThemeUpdating || isLocaleUpdating;
 
   if (!mounted)
     return <></>
 
-  const handleSavePreferences = async () => {
-    if (!settings) return;
+  const handleThemeChange = (newTheme: string) => {
+    setLocalTheme(newTheme);
+    switchTheme(newTheme);
+  };
 
-    await setSettings({ theme, language, id: settings.id }, {
-      onSuccess: () => toast.success("Preferences updated successfully!"),
-      onError: () => toast.error("Failed to update preferences. Please try again.")
-    });
-  }
+  const handleLanguageChange = async (newLanguage: string) => {
+    setLanguage(newLanguage);
+    
+    try {
+      await setUserLocale(newLanguage);
+      toast.success("Language updated successfully!");
+    } catch (error) {
+      // Revert on error
+      setLanguage(language);
+      toast.error("Failed to update language. Please try again.");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -56,7 +72,7 @@ export function PreferencesSettings() {
           <CardDescription>Choose your preferred theme for the application.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <RadioGroup value={theme} onValueChange={setTheme}>
+          <RadioGroup value={localTheme} onValueChange={handleThemeChange}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="light" id="light" />
               <Label htmlFor="light">Light</Label>
@@ -81,7 +97,7 @@ export function PreferencesSettings() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="language">Language</Label>
-            <Select value={language} onValueChange={setLanguage} >
+            <Select value={language} onValueChange={handleLanguageChange} >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -95,9 +111,10 @@ export function PreferencesSettings() {
       </Card>
 
       <div className="flex justify-end">
-        <Button onClick={handleSavePreferences} disabled={updating || isSettingsLoading}>
-          {updating ?? <Spinner />}
-          Save Changes</Button>
+        <Button disabled={updating || isSettingsLoading}>
+          {updating && <Spinner />}
+          {updating ? "Updating..." : "All changes saved automatically"}
+        </Button>
       </div>
     </div>
   )

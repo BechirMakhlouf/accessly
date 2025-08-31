@@ -2,7 +2,7 @@
 import { User, Settings, Command, Monitor, Sun, Moon, LogOut } from "lucide-react"
 import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-import { useTheme } from "next-themes"
+import { useThemeManager } from "@/modules/settings/hooks"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -35,8 +35,7 @@ interface UserDropdownProps {
 export default function UserDropdown({
 }: UserDropdownProps) {
   const router = useRouter()
-  const { setTheme, theme } = useTheme()
-  const { setUserTheme } = useUserSettings()
+  const { currentTheme, switchTheme } = useThemeManager()
   const { profile } = useUserProfile();
   const { user, signOut } = useAuth()
 
@@ -95,36 +94,27 @@ export default function UserDropdown({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={() => {
-            setTheme("light")
-            void setUserTheme.mutateAsync("light")
-          }}
+          onClick={() => switchTheme("light")}
         >
           <Sun className="mr-2 h-4 w-4" />
           <span>Light</span>
-          {theme === "light" && <span className="ml-auto">✓</span>}
+          {currentTheme === "light" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => {
-            setTheme("dark")
-            void setUserTheme.mutateAsync("dark")
-          }}
+          onClick={() => switchTheme("dark")}
         >
           <Moon className="mr-2 h-4 w-4" />
           <span>Dark</span>
-          {theme === "dark" && <span className="ml-auto">✓</span>}
+          {currentTheme === "dark" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => {
-            setTheme("system") // fixed typo
-            void setUserTheme.mutateAsync("system")
-          }}
+          onClick={() => switchTheme("system")}
         >
           <Monitor className="mr-2 h-4 w-4" />
           <span>System</span>
-          {theme === "system" && <span className="ml-auto">✓</span>}
+          {currentTheme === "system" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
