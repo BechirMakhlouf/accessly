@@ -2,9 +2,10 @@ import { routes } from "@/lib/routes"
 import { redirect } from "next/navigation"
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
-export default function SettingsRootPage({ params }: Props) {
-  redirect(routes.protected.dashboard.org.slug.settings.general(params.slug))
+export default async function SettingsRootPage({ params }: Props) {
+  const { slug } = await params
+  redirect(routes.protected.dashboard.org.slug.settings.general(slug))
 }

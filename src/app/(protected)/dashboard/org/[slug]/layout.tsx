@@ -7,11 +7,12 @@ import { redirect } from 'next/navigation'
 
 interface Props {
   children: ReactNode
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export default async function OrgLayout({ children, params }: Props) {
-  const orgRes = await getOrgBySlug(params.slug);
+  const { slug } = await params
+  const orgRes = await getOrgBySlug(slug);
   const org = orgRes?.data ?? null;
   if (!org) {
     redirect(routes.protected.dashboard.organizations.root);
