@@ -11,17 +11,7 @@ import { getUserOrgs } from '@/modules/organizations/actions'
 import { useTranslations } from 'next-intl'
 import { useOrganizationsStore } from '@/modules/organizations/store'
 
-import { Organization } from '@/modules/organizations/types'
-
-//TODO: this belongs to types.ts
-interface OrganizationWithMembers extends Organization {
-  organization_members: {
-    user_id: string
-    role: "admin" | "member" | "owner"
-    joined_at: string
-    last_active_at: string | null
-  }[]
-}
+import {  OrganizationWithMembers } from '@/modules/organizations/types'
 
 export default function OrganizationsPage() {
   const router = useRouter()

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Search, Plus, MoreHorizontal, Trash2, Mail, User, AlertCircle, Loader2 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -23,27 +23,13 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useActiveOrganization } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
-import { 
+import {
   useOrganizationMembers,
   useUpdateMemberRole,
   useRemoveMember,
   useInviteMember
 } from "@/modules/organizations"
-
-// Type for the member data returned from the API
-interface Member {
-  user_id: string
-  role: "admin" | "member" | "owner"
-  joined_at: string
-  last_active_at: string | null
-  profiles: {
-    id: string
-    full_name: string | null
-    avatar_url: string | null
-  }
-  // Email will come from a different source since it's not in user_profiles
-  email: string
-}
+import { Member } from "@/modules/organizations/types"
 
 // Helper function to format dates
 const formatDate = (dateString: string) => {
@@ -85,8 +71,7 @@ export default function MembersPage() {
   // Filter members based on search query
   const filteredMembers = members.filter(
     (member) =>
-      (member.profiles.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
-      member.email.toLowerCase().includes(searchQuery.toLowerCase()),
+      member.user_id.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   // Pagination
@@ -324,24 +309,23 @@ export default function MembersPage() {
                           <Checkbox
                             checked={selectedMembers.includes(member.user_id)}
                             onCheckedChange={(checked) => handleSelectMember(member.user_id, checked as boolean)}
-                            aria-label={`Select ${member.profiles.full_name || member.email}`}
+                            aria-label={`Select ${member.user_id}`}
                           />
                         </TableCell>
                       )}
                       <TableCell>
                         <div className="flex items-center space-x-3">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={member.profiles.avatar_url || undefined} alt={member.profiles.full_name || member.email} />
                             <AvatarFallback>
                               <User className="text-muted-foreground" />
                             </AvatarFallback>
                           </Avatar>
                           <span className="font-medium text-foreground">
-                            {member.profiles.full_name || t('errors.unnamedUser')}
+                            {member.user_id}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{member.email}</TableCell>
+                      <TableCell className="text-muted-foreground">{member.user_id}</TableCell>
                       <TableCell>
                         {canManageMembers && member.role !== "owner" ? (
                           <Select 

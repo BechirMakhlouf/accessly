@@ -8,3 +8,19 @@ export type OrganizationMembership = Database["public"]["Tables"]["organization_
 export type OrganizationInsertWithOptionalSlug = Omit<OrganizationInsert, "slug"> & {
   slug?: string;
 };
+
+export interface OrganizationWithMembers extends Organization {
+  organization_members: {
+    user_id: string
+    role: "admin" | "member" | "owner"
+    joined_at: string
+    last_active_at: string | null
+  }[]
+}
+
+export interface Member {
+  user_id: string
+  role: "admin" | "member" | "owner"
+  joined_at: string
+  last_active_at: string | null
+}

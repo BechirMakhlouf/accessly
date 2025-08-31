@@ -30,17 +30,13 @@ export default function NewOrganizationPage() {
         description: formData.description || null,
       })
       
-      if (isNullOrUndefined(result) || result.error) {
+      if (isNullOrUndefined(result) || result.error || !result.data) {
         console.error("error while creating an organization: ", result);
         toast.error("Error while creating an organization, try again later..")
         return
       }
 
       toast.success("Organization created successfully!")
-      if (isNullOrUndefined(result.data?.slug)) {
-        toast.error("Error while creating an organization, try again later..")
-        return
-      }
       router.push(routes.protected.dashboard.org.slug.root(result.data.slug))
     } catch (error) {
       console.error("Error creating organization:", error)

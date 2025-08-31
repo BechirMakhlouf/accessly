@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import {
@@ -21,9 +21,11 @@ import { MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useActiveOrganization } from "../hooks"
 import { useOrganizationMembers, useUpdateMemberRole, useRemoveMember, useInviteMember } from "../hooks"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useAuth } from "@/lib/auth/hooks"
 
 export function OrgMembers() {
   const { activeOrganization: org } = useActiveOrganization();
+  const { user } = useAuth();
   const [newMemberEmail, setNewMemberEmail] = useState("")
   const [newMemberRole, setNewMemberRole] = useState<"admin" | "member" | "owner">("member")
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
@@ -34,7 +36,7 @@ export function OrgMembers() {
   const inviteMember = useInviteMember();
 
   const members = membersData?.data || [];
-  const currentUserRole = members.find(m => m.user_id === "current-user-id")?.role; // TODO: Get actual current user ID
+  const currentUserRole = members.find(m => m.user_id === user?.id)?.role;
 
   const handleRoleChange = async (memberId: string, newRole: "admin" | "member" | "owner") => {
     if (!org) return;
@@ -188,12 +190,11 @@ export function OrgMembers() {
               <div key={member.user_id} className="flex items-center justify-between gap-4 border-b pb-3 last:border-b-0 last:pb-0">
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={member.profiles?.avatar_url || "/placeholder.svg"} alt={`@${member.profiles?.full_name}`} />
-                    <AvatarFallback>{getFallbackText(member.profiles?.full_name || "Unknown")}</AvatarFallback>
+                    <AvatarFallback>{getFallbackText(member.user_id)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium leading-none">{member.profiles?.full_name || "Unknown User"}</p>
-                    <p className="text-sm text-muted-foreground">{member.email || "No email"}</p>
+                    <p className="text-sm font-medium leading-none">{member.user_id}</p>
+                    <p className="text-sm text-muted-foreground">User ID</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

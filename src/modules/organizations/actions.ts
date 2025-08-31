@@ -22,52 +22,20 @@ export async function getOrgBySlug(slug: string) {
 
 export async function createOrgWithoutSlug(newOrg: OrganizationInsertWithOptionalSlug) {
   const supabase = await createSSRClient();
-  const userId = await assertSignedInAndGetUserId();
-  
-  if (!userId) {
-    return { error: "User not authenticated" };
-  }
-
   const slug = await genUniqueOrgSlug(newOrg.name, supabase);
 
   if (isNullOrUndefined(slug)) {
     console.error("error while generating slug");
-    return { error: "Failed to generate unique slug" };
+    return
   }
 
-  // Start a transaction to create organization and add user as owner
-  const { data: orgData, error: orgError } = await supabase
-    .from("organizations")
-    .insert({ 
-      ...newOrg, 
-      slug,
-      created_by: userId 
-    })
-    .select()
-    .single();
-
-  if (orgError) {
-    console.error("error while creating organization: ", orgError);
-    return { error: "Failed to create organization" };
+  const insertResult = await supabase.from("organizations").insert({ ...newOrg, slug });
+  if (insertResult.error) {
+    console.error("error while creating errors: ", insertResult.error);
+    return;
   }
 
-  // Add the creator as an owner member
-  const { error: memberError } = await supabase
-    .from("organization_members")
-    .insert({
-      user_id: userId,
-      organization_id: orgData.id,
-      role: "owner"
-    });
-
-  if (memberError) {
-    console.error("error while adding user as member: ", memberError);
-    // Try to clean up the created organization
-    await supabase.from("organizations").delete().eq("id", orgData.id);
-    return { error: "Failed to add user as member" };
-  }
-
-  return await getOrgBySlug(slug);
+  return await getOrgBySlug(slug)
 }
 
 export async function isSlugUnique(slug: string) {
@@ -117,20 +85,9 @@ export async function getUserOrgs() {
 
 export async function updateOrganization(orgId: string, updates: OrganizationUpdate) {
   const supabase = await createSSRClient();
-  const userId = await assertSignedInAndGetUserId();
+  await assertSignedInAndGetUserId();
 
   // Check if user has permission to update this organization
-  const { data: membership } = await supabase
-    .from('organization_members')
-    .select('role')
-    .eq('organization_id', orgId)
-    .eq('user_id', userId)
-    .single();
-
-  if (!membership || (membership.role !== 'admin' && membership.role !== 'owner')) {
-    return { error: 'Insufficient permissions' };
-  }
-
   const { data, error } = await supabase
     .from('organizations')
     .update({ ...updates, updated_at: new Date().toISOString() })
@@ -140,6 +97,10 @@ export async function updateOrganization(orgId: string, updates: OrganizationUpd
 
   if (error) {
     console.error('Failed to update organization:', error);
+
+    if (error.code === 'PGRST116') {
+      return { error: 'Not permitted to update this organization' };
+    }
     return { error: 'Failed to update organization' };
   }
 
@@ -162,8 +123,7 @@ export async function getOrganizationMembers(orgId: string) {
     return { error: 'Not a member of this organization' };
   }
 
-  // First get organization members
-  const { data: membersData, error: membersError } = await supabase
+  const { data, error } = await supabase
     .from('organization_members')
     .select(`
       user_id,
@@ -173,34 +133,12 @@ export async function getOrganizationMembers(orgId: string) {
     `)
     .eq('organization_id', orgId);
 
-  if (membersError) {
-    console.error('Failed to load organization members:', membersError);
+  if (error) {
+    console.error('Failed to load organization members:', error);
     return { error: 'Failed to load members' };
   }
 
-  // Then get user profiles for each member
-  const membersWithProfiles = await Promise.all(
-    membersData.map(async (member) => {
-      // Get user profile
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('id, full_name, avatar_url')
-        .eq('id', member.user_id)
-        .single();
-
-      // Get user email from auth.users (this requires admin privileges)
-      // For now, we'll use a placeholder since we can't directly access auth.users
-      const email = profile?.full_name ? `${profile.full_name.toLowerCase().replace(/\s+/g, '.')}@example.com` : `user-${member.user_id.slice(0, 8)}@example.com`;
-
-      return {
-        ...member,
-        profiles: profile || { id: member.user_id, full_name: null, avatar_url: null },
-        email
-      };
-    })
-  );
-
-  return { data: membersWithProfiles };
+  return { data };
 }
 
 export async function updateMemberRole(orgId: string, memberId: string, newRole: "admin" | "member" | "owner") {
@@ -339,10 +277,10 @@ export async function inviteMember(orgId: string, email: string, role: "admin" |
     .from('invites')
     .insert({
       organization_id: orgId,
-      invited_by: userId,
       invite_token: inviteToken,
       email,
       role,
+      invited_by: userId,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
     })
     .select()
@@ -353,7 +291,7 @@ export async function inviteMember(orgId: string, email: string, role: "admin" |
     return { error: 'Failed to create invite' };
   }
 
-  // TODO: Send email invitation
+  // TODO: Implement email invitation service
   console.log('Invite created:', data);
 
   return { data };
