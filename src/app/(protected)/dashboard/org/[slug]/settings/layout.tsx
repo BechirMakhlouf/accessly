@@ -2,31 +2,49 @@
 
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { usePathname } from "next/navigation" // This will make the component a client component
-
-// This component needs to be a client component to use usePathname
-// It's better to extract the navigation into its own client component
-// and keep the layout as a server component if possible.
-// However, for simplicity and directness, I'll mark this layout as client.
-// A more robust solution would be to pass the pathname as a prop to a client nav component.
-// For this example, I'll make the layout a client component.
-
-import type React from "react"
+import { usePathname } from "next/navigation"
+import { useActiveOrg } from "@/modules/organizations/provider"
+import { routes } from "@/lib/routes"
+import { useTranslations } from "next-intl"
 
 interface SidebarLink {
   href: string
   label: string
 }
 
-const sidebarLinks: SidebarLink[] = [
-  { href: "/dashboard/org/3/settings/general", label: "General" },
-  { href: "/dashboard/org/3/settings/security", label: "Security" },
-  { href: "/dashboard/org/3/settings/billing", label: "Billing" },
-  { href: "/dashboard/org/3/settings/integrations", label: "Integrations" },
-]
-
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
+  const { org } = useActiveOrg();
+  const pathname = usePathname();
+  const t = useTranslations("org.settings");
+
+  if (!org) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
+        </div>
+      </div>
+    );
+  }
+
+  const sidebarLinks: SidebarLink[] = [
+    { 
+      href: routes.protected.dashboard.org.slug.settings.general(org.slug), 
+      label: t("general.title") 
+    },
+    { 
+      href: routes.protected.dashboard.org.slug.settings.security(org.slug), 
+      label: t("security.title") 
+    },
+    { 
+      href: routes.protected.dashboard.org.slug.settings.billing(org.slug), 
+      label: t("billing.title") 
+    },
+    { 
+      href: routes.protected.dashboard.org.slug.settings.integrations(org.slug), 
+      label: t("integrations.title") 
+    },
+  ]
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] w-full flex-col md:flex-row">

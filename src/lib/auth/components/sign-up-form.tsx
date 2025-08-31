@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Separator } from '@/components/ui/separator'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { AppleIcon } from '@/components/icons/apple'
 import { GoogleIcon } from '@/components/icons/google'
 import { MicrosoftIcon } from '@/components/icons/microsoft'
@@ -27,6 +28,7 @@ import { signUpMutationOptions, signInWithOAuthMutationOptions } from '../querie
 import { SupabaseCSRClient } from '@/lib/supabase/client'
 import { getQueryClient } from '@/lib/query-client'
 import { AuthError } from '@supabase/supabase-js'
+import { useState } from 'react'
 
 export const signUpSchema = z.object({
   email: z.string().email(),
@@ -87,6 +89,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     }
   };
 
+  const [showPassword, setShowPassword] = useState(false)
   const loading = signUpMutation.isPending || oauthMutation.isPending;
   const errorMessage =
     (signUpMutation.error as AuthError)?.message ??
@@ -139,27 +142,45 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">{t('passwordLabel')}</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  {...register('password')}
-                  autoComplete="new-password"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    {...register('password')}
+                    autoComplete="new-password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-muted-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 {errors.password && <p className="text-sm text-destructive">{t("errors.pwShort")}</p>}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="repeat-password">{t('signUpForm.repeatPasswordLabel')}</Label>
                 <Input
                   id="repeat-password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   {...register('repeatPassword')}
                   autoComplete="new-password"
                 />
                 {errors.repeatPassword && <p className="text-sm text-destructive">{t("signUpForm.errors.passwordsMismatch")}</p>}
               </div>
-              {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+              {errorMessage && <p className="text-sm text-destructive" role="alert" aria-live="assertive">{errorMessage}</p>}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? t('signUpForm.creatingAccount') : t('signUpForm.signUp')}
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('signUpForm.creatingAccount')}
+                  </>
+                ) : (
+                  t('signUpForm.signUp')
+                )}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

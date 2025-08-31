@@ -24,6 +24,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth/hooks/useAuth' // <-- useAuth hook
 import { useState } from 'react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
 export const signInSchema = z.object({
   email: z.string().email(),
@@ -48,6 +49,7 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isOauthLoading, setIsOauthLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     clearErrors('root')
@@ -170,21 +172,39 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
                     {t('signInForm.forgotPassword')}
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  {...register('password')}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    {...register('password')}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-muted-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-sm text-destructive">{t('errors.pwShort')}</p>
                 )}
               </div>
               {errorMessage && (
-                <p className="text-sm text-destructive">{errorMessage}</p>
+                <p className="text-sm text-destructive" role="alert" aria-live="assertive">{errorMessage}</p>
               )}
               <Button type="submit" className="w-full" disabled={loading}>
-                {isSubmitting ? t('signInForm.loggingIn') : t('signInForm.login')}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('signInForm.loggingIn')}
+                  </>
+                ) : (
+                  t('signInForm.login')
+                )}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

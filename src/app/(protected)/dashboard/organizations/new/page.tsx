@@ -1,50 +1,57 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ExternalLink } from 'lucide-react'
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createOrg } from "@/modules/organizations/actions"
-import { useAuth } from "@/lib/auth/hooks/useAuth"
+import { createOrgWithoutSlug } from "@/modules/organizations/actions"
+import { isNullOrUndefined } from "@/lib/utils"
+import { toast } from "sonner"
+import { routes } from "@/lib/routes"
 
 export default function NewOrganizationPage() {
   const router = useRouter()
-  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
-    type: "personal",
-    plan: "free"
+    description: ""
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically submit the form data
-    if (!user) return;
+    setIsSubmitting(true)
 
-    const { error } = await createOrg({
-      name: formData.name,
-      description: formData.name,
-      slug: formData.name,
-      created_by: user.id
-    })
-    console.log(error);
-    // router.push(routes.protected.dashboard.org.slug.root())
+    try {
+      const result = await createOrgWithoutSlug({
+        name: formData.name,
+        description: formData.description || null,
+      })
+      
+      if (isNullOrUndefined(result) || result.error) {
+        console.error("error while creating an organization: ", result);
+        toast.error("Error while creating an organization, try again later..")
+        return
+      }
+
+      toast.success("Organization created successfully!")
+      if (isNullOrUndefined(result.data?.slug)) {
+        toast.error("Error while creating an organization, try again later..")
+        return
+      }
+      router.push(routes.protected.dashboard.org.slug.root(result.data.slug))
+    } catch (error) {
+      console.error("Error creating organization:", error)
+      toast.error("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleCancel = () => {
-    router.push("/")
+    router.push(routes.protected.dashboard.organizations.root)
   }
 
   return (
@@ -59,7 +66,7 @@ export default function NewOrganizationPage() {
           <CardContent className="space-y-8">
             <div className="space-y-2">
               <p className="text-foreground">
-                This is your organization within Supabase.
+                This is your organization within Accessly.
               </p>
               <p className="text-muted-foreground">
                 For example, you can use the name of your company or department.
@@ -69,15 +76,16 @@ export default function NewOrganizationPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-3">
                 <Label htmlFor="name" className="text-base font-medium">
-                  Name
+                  Organization Name *
                 </Label>
                 <Input
                   id="name"
-                  placeholder="Organization name"
+                  placeholder="Enter organization name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="h-11"
                   required
+                  disabled={isSubmitting}
                 />
                 <p className="text-sm text-muted-foreground">
                   What&apos;s the name of your company or team?
@@ -85,58 +93,19 @@ export default function NewOrganizationPage() {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="type" className="text-base font-medium">
-                  Type
+                <Label htmlFor="description" className="text-base font-medium">
+                  Description
                 </Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => setFormData({ ...formData, type: value })}
-                >
-                  <SelectTrigger className="h-11">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="personal">Personal</SelectItem>
-                    <SelectItem value="company">Company</SelectItem>
-                    <SelectItem value="team">Team</SelectItem>
-                    <SelectItem value="educational">Educational</SelectItem>
-                    <SelectItem value="non-profit">Non-profit</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Textarea
+                  id="description"
+                  placeholder="Describe your organization (optional)"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
+                  disabled={isSubmitting}
+                />
                 <p className="text-sm text-muted-foreground">
-                  What would best describe your organization?
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="plan" className="text-base font-medium">
-                    Plan
-                  </Label>
-                  <Link
-                    href="/pricing"
-                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Pricing
-                    <ExternalLink className="h-3 w-3" />
-                  </Link>
-                </div>
-                <Select
-                  value={formData.plan}
-                  onValueChange={(value) => setFormData({ ...formData, plan: value })}
-                >
-                  <SelectTrigger className="h-11">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="free">Free - $0/month</SelectItem>
-                    <SelectItem value="pro">Pro - $25/month</SelectItem>
-                    <SelectItem value="team">Team - $125/month</SelectItem>
-                    <SelectItem value="enterprise">Enterprise - Contact us</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-sm text-muted-foreground">
-                  The Plan applies to your new organization.
+                  A brief description of what your organization does.
                 </p>
               </div>
 
@@ -146,19 +115,21 @@ export default function NewOrganizationPage() {
                   variant="outline"
                   onClick={handleCancel}
                   className="px-6"
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
                 <div className="flex items-center gap-4">
                   <p className="text-sm text-muted-foreground">
-                    You can rename your organization later
+                    You can edit your organization details later
                   </p>
                   <Button
-                    variant={"default"}
+                    variant="default"
                     type="submit"
-                    className="px-6 "
+                    className="px-6"
+                    disabled={isSubmitting || !formData.name.trim()}
                   >
-                    Create organization
+                    {isSubmitting ? "Creating..." : "Create organization"}
                   </Button>
                 </div>
               </div>

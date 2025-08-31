@@ -208,7 +208,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_unique_organization_slug: {
+        Args: { p_name: string }
+        Returns: string
+      }
+      is_org_member: {
+        Args: { org_id: string }
+        Returns: boolean
+      }
+      is_organization_slugunique: {
+        Args: { p_slug: string }
+        Returns: boolean
+      }
     }
     Enums: {
       organization_role: "admin" | "member" | "owner"

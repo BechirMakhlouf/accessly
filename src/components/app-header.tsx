@@ -16,6 +16,7 @@ import { AppSearchBar } from "./app-search-bar"
 import UserDropdown from "./user-dropdown"
 import { NotificationsPopover } from "./notification-popover"
 
+
 const organizations = ["Acme Inc", "Globex Corp", "Soylent Corp"]
 
 export function AppHeader() {

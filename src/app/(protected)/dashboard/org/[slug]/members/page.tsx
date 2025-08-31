@@ -20,8 +20,11 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { useActiveOrg } from "@/modules/organizations/provider"
+import { useTranslations } from "next-intl"
 
 // Mock data for demonstration
+//TODO: remove dummy data
 const mockMembers = [
   {
     id: "1",
@@ -90,6 +93,9 @@ const mockMembers = [
 ]
 
 export default function MembersPage() {
+  const { org } = useActiveOrg();
+  const t = useTranslations("org.members");
+  
   const [members, setMembers] = useState(mockMembers)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedMembers, setSelectedMembers] = useState<string[]>([])
@@ -152,7 +158,16 @@ export default function MembersPage() {
   }
 
   const isAllSelected = paginatedMembers.length > 0 && selectedMembers.length === paginatedMembers.length
-  // const isIndeterminate = selectedMembers.length > 0 && selectedMembers.length < paginatedMembers.length
+
+  if (!org) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -160,52 +175,52 @@ export default function MembersPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Team Members</h1>
-            <p className="text-muted-foreground">Manage your organization members and their roles</p>
+            <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
+            <p className="text-muted-foreground">{t("description")}</p>
           </div>
           <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Invite Member
+                {t("inviteMember")}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Invite Team Member</DialogTitle>
-                <DialogDescription>Send an invitation to a new team member via email.</DialogDescription>
+                <DialogTitle>{t("inviteModal.title")}</DialogTitle>
+                <DialogDescription>{t("inviteModal.description")}</DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
+                  <Label htmlFor="email">{t("inviteModal.emailLabel")}</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter email address"
+                    placeholder={t("inviteModal.emailPlaceholder")}
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
+                  <Label htmlFor="role">{t("inviteModal.roleLabel")}</Label>
                   <Select value={inviteRole} onValueChange={setInviteRole}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="member">Member</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="member">{t("roles.member")}</SelectItem>
+                      <SelectItem value="admin">{t("roles.admin")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsInviteModalOpen(false)}>
-                  Cancel
+                  {t("inviteModal.cancel")}
                 </Button>
                 <Button onClick={handleInviteMember} disabled={!inviteEmail}>
                   <Mail className="h-4 w-4 mr-2" />
-                  Send Invite
+                  {t("inviteModal.sendInvite")}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -217,7 +232,7 @@ export default function MembersPage() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search members by name or email..."
+              placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -225,10 +240,10 @@ export default function MembersPage() {
           </div>
           {selectedMembers.length > 0 && (
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">{selectedMembers.length} selected</Badge>
+              <Badge variant="secondary">{t("selected", { count: selectedMembers.length })}</Badge>
               <Button variant="destructive" size="sm">
                 <Trash2 className="h-4 w-4 mr-2" />
-                Delete Selected
+                {t("deleteSelected")}
               </Button>
             </div>
           )}
@@ -240,11 +255,11 @@ export default function MembersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">
-                  <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} aria-label="Select all members" />
+                  <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} aria-label={t("table.selectAll")} />
                 </TableHead>
-                <TableHead>Member</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
+                <TableHead>{t("table.member")}</TableHead>
+                <TableHead>{t("table.email")}</TableHead>
+                <TableHead>{t("table.role")}</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -276,8 +291,8 @@ export default function MembersPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="member">Member</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="member">{t("roles.member")}</SelectItem>
+                        <SelectItem value="admin">{t("roles.admin")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -295,7 +310,7 @@ export default function MembersPage() {
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="text-destructive h-4 w-4 mr-2" />
-                          Delete Member
+                          {t("actions.deleteMember")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -310,8 +325,11 @@ export default function MembersPage() {
         {totalPages > 1 && (
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredMembers.length)} of{" "}
-              {filteredMembers.length} members
+              {t("showing", { 
+                start: startIndex + 1, 
+                end: Math.min(startIndex + itemsPerPage, filteredMembers.length), 
+                total: filteredMembers.length 
+              })}
             </p>
             <div className="flex items-center space-x-2">
               <Button
@@ -320,7 +338,7 @@ export default function MembersPage() {
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
-                Previous
+                {t("previous")}
               </Button>
               <div className="flex items-center space-x-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -341,7 +359,7 @@ export default function MembersPage() {
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
               >
-                Next
+                {t("next")}
               </Button>
             </div>
           </div>

@@ -1,4 +1,162 @@
 {
+  "org": {
+    "notFound": "Organization not found",
+    "overview": {
+      "title": "Organization Overview",
+      "description": "Manage your organization and its settings",
+      "membersCount": "{count} members",
+      "createdAt": "Created {date}",
+      "lastActive": "Last active {date}",
+      "quickActions": {
+        "title": "Quick Actions",
+        "description": "Common tasks for managing your organization",
+        "manageMembers": {
+          "title": "Manage Members",
+          "description": "Invite, remove, and manage team roles"
+        },
+        "orgSettings": {
+          "title": "Organization Settings",
+          "description": "Configure security, billing, and preferences"
+        }
+      },
+      "settings": "Settings",
+      "stats": {
+        "totalMembers": {
+          "title": "Total Members",
+          "description": "Active team members"
+        },
+        "created": {
+          "title": "Created"
+        },
+        "lastActive": {
+          "title": "Last Active"
+        }
+      }
+    },
+    "members": {
+      "title": "Team Members",
+      "description": "Manage your organization members and their roles",
+      "inviteMember": "Invite Member",
+      "searchPlaceholder": "Search members by name or email...",
+      "deleteSelected": "Delete Selected",
+      "selected": "{count} selected",
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing {start} to {end} of {total} members",
+      "inviteModal": {
+        "title": "Invite Team Member",
+        "description": "Send an invitation to a new team member via email.",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Enter email address",
+        "roleLabel": "Role",
+        "cancel": "Cancel",
+        "sendInvite": "Send Invite"
+      },
+      "table": {
+        "member": "Member",
+        "email": "Email",
+        "role": "Role",
+        "selectAll": "Select all members"
+      },
+      "actions": {
+        "deleteMember": "Delete Member"
+      },
+      "roles": {
+        "admin": "Admin",
+        "member": "Member",
+        "owner": "Owner"
+      }
+    },
+    "settings": {
+      "title": "Organization Settings",
+      "general": {
+        "title": "General",
+        "orgName": {
+          "title": "Organization Name",
+          "description": "This is the name of your organization visible to all members.",
+          "label": "Name",
+          "saveChanges": "Save changes"
+        },
+        "orgSlug": {
+          "title": "Organization Slug",
+          "description": "The unique identifier for your organization. This cannot be changed once set.",
+          "label": "Slug",
+          "saveChanges": "Save changes"
+        },
+        "dangerZone": {
+          "title": "Danger Zone",
+          "description": "Irreversible actions that will affect your organization.",
+          "deleteOrg": {
+            "title": "Delete Organization",
+            "description": "Permanently delete your organization and all its data. This action cannot be undone.",
+            "button": "Delete Organization",
+            "confirmTitle": "Are you absolutely sure?",
+            "confirmDescription": "This action cannot be undone. This will permanently delete your organization and remove your data from our servers.",
+            "cancel": "Cancel",
+            "confirm": "Delete"
+          }
+        }
+      },
+      "security": {
+        "title": "Security",
+        "twoFactorAuth": {
+          "title": "Two-Factor Authentication (2FA)",
+          "description": "Enhance your organization's security by enforcing 2FA for all members.",
+          "enforceLabel": "Enforce 2FA for all users",
+          "enforceDescription": "When enabled, all members will be required to set up 2FA to access the organization."
+        }
+      },
+      "billing": {
+        "title": "Billing",
+        "currentPlan": {
+          "title": "Current Subscription Plan",
+          "description": "Manage your organization's subscription plan.",
+          "planName": "Pro Plan",
+          "planDescription": "Billed monthly at $100",
+          "changePlan": "Change Plan",
+          "modalTitle": "Change Subscription Plan",
+          "modalDescription": "Select a new plan for your organization.",
+          "placeholder": "This is a placeholder for plan selection.",
+          "cancel": "Cancel",
+          "updatePlan": "Update Plan",
+          "enterpriseDescription": "You can pay annually if you upgrade to an Enterprise plan. The Enterprise plan offers increased performance, collaboration, and security needs."
+        },
+        "pastInvoices": {
+          "title": "Past Invoices",
+          "description": "View and download your past invoices.",
+          "invoiceNumber": "Invoice Number",
+          "amount": "Amount",
+          "status": "Status",
+          "download": "Download",
+          "statuses": {
+            "paid": "Paid",
+            "pending": "Pending"
+          }
+        },
+        "invoiceEmailRecipient": {
+          "title": "Invoice Email Recipient",
+          "description": "The email address that will receive your organization's invoices.",
+          "emailAddress": "Email Address",
+          "saveChanges": "Save changes",
+          "defaultEmail": "billing@acmeinc.com"
+        },
+        "saveChanges": "Save changes"
+      },
+      "integrations": {
+        "title": "Integrations",
+        "description": "Connect your organization with third-party services.",
+        "comingSoon": "Integrations coming soon!"
+      }
+    }
+  },
+  "sidebar": {
+    "overview": "Overview",
+    "members": "Members",
+    "settings": "Settings",
+    "billing": "Billing",
+    "dashboard": "Dashboard",
+    "organizations": "Organizations"
+  },
   "auth": {
     "orContinueWith": "Or continue with",
     "emailLabel": "Email",
@@ -22,6 +180,8 @@
       "microsoft": "Microsoft",
       "apple": "Apple"
     },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "signUpForm": {
       "signUpTitle": "Sign up",
       "signUpDescription": "Create a new account",
