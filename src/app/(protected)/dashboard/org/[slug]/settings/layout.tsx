@@ -6,25 +6,53 @@ import { usePathname } from "next/navigation"
 import { useActiveOrganization } from "@/modules/organizations"
 import { routes } from "@/lib/routes"
 import { useTranslations } from "next-intl"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useEffect, useState } from "react"
 
 interface SidebarLink {
   href: string
   label: string
 }
 
+function SettingsLayoutSkeleton() {
+  return (
+    <div className="flex min-h-[calc(100vh-64px)] w-full flex-col md:flex-row">
+      <aside className="w-full border-border border-b p-4 md:w-64 md:border-r md:border-b-0 md:p-6">
+        <nav className="flex flex-row gap-2 md:flex-col">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-10 w-full md:w-auto" />
+          ))}
+        </nav>
+      </aside>
+      <main className="flex-1 p-4 md:p-6">
+        <div className="space-y-6">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   const { activeOrganization: org } = useActiveOrganization();
   const pathname = usePathname();
   const t = useTranslations("org.settings");
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!org) {
-    return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
-        </div>
-      </div>
-    );
+  // Add a small delay to allow the store to initialize
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show skeleton while loading or if no active organization
+  if (isLoading || !org) {
+    return <SettingsLayoutSkeleton />;
   }
 
   const sidebarLinks: SidebarLink[] = [

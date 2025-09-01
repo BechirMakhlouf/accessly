@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,21 +16,83 @@ import {
 } from "@/components/ui/dialog"
 import { useActiveOrganization } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
+import { Skeleton } from "@/components/ui/skeleton"
+
+function GeneralSettingsSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+        <CardFooter className="border-t px-6 py-4">
+          <Skeleton className="h-10 w-32" />
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-24" />
+          <Skeleton className="h-4 w-80" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+        <CardFooter className="border-t px-6 py-4">
+          <Skeleton className="h-10 w-32" />
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-28" />
+          <Skeleton className="h-4 w-72" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-4 w-64" />
+              </div>
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 export default function GeneralSettingsPage() {
   const { activeOrganization: org } = useActiveOrganization();
   const t = useTranslations("org.settings.general");
   const [orgName, setOrgName] = useState(org?.name || "");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!org) {
-    return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
-        </div>
-      </div>
-    );
+  // Add a small delay to allow the store to initialize
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show skeleton while loading or if no active organization
+  if (isLoading || !org) {
+    return <GeneralSettingsSkeleton />;
   }
 
   const handleSaveChanges = () => {

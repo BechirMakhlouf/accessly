@@ -13,7 +13,7 @@
     "start": "next start",
     "lint": "next lint",
     "-- SUPABASE --": "",
-    "supabase:types:local": "supabase gen types typescript --local > src/types/database.types.ts",
+    "supabase:types:local": "supabase gen types typescript --local --schema public,auth,storage > src/types/database.types.ts",
     "supabase:stop": "supabase stop",
     "supabase:start": "supabase start",
     "supabase:restart": "run-s supabase:stop supabase:start",

@@ -10,10 +10,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useUpdateOrganization } from "../hooks"
 import { useActiveOrganization } from "../hooks"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 export function OrgSettings() {
   const { activeOrganization: org } = useActiveOrganization();
   const updateOrg = useUpdateOrganization();
+  const t = useTranslations('organizations');
   
   const [teamName, setTeamName] = useState("")
   const [iconUrl, setIconUrl] = useState("")
@@ -47,9 +49,12 @@ export function OrgSettings() {
       
       if (result?.error) {
         toast.error(result.error);
+      } else {
+        toast.success(t('actions.updated'));
       }
     } catch (error) {
       console.error("Failed to save changes:", error);
+      toast.error(t('actions.updateError'));
     } finally {
       setIsLoading(false);
     }

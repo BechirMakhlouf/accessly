@@ -23,13 +23,16 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useActiveOrganization } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import {
   useOrganizationMembers,
   useUpdateMemberRole,
   useRemoveMember,
-  useInviteMember
+  useInviteMember,
+  useCurrentUserRole,
+  OrgRole,
+  canManageMembers
 } from "@/modules/organizations"
-import { Member } from "@/modules/organizations/types"
 
 // Helper function to format dates
 const formatDate = (dateString: string) => {
@@ -54,7 +57,7 @@ export default function MembersPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const [inviteEmail, setInviteEmail] = useState("")
-  const [inviteRole, setInviteRole] = useState<"admin" | "member">("member")
+  const [inviteRole, setInviteRole] = useState<OrgRole>("member")
 
   const itemsPerPage = 10
 
@@ -65,8 +68,8 @@ export default function MembersPage() {
     error 
   } = useOrganizationMembers(org?.id || "");
 
-  const members = (membersData?.data || []) as Member[];
-  const currentUserRole = members.find(m => m.user_id === org?.created_by)?.role;
+  const members = membersData || [];
+  const currentUserRole = useCurrentUserRole(org?.id || "");
 
   // Filter members based on search query
   const filteredMembers = members.filter(
@@ -85,15 +88,41 @@ export default function MembersPage() {
   const inviteMemberMutation = useInviteMember();
 
   // Handle role change
-  const handleRoleChange = (memberId: string, newRole: "admin" | "member") => {
+  const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
     if (!org) return;
-    updateRoleMutation.mutate({ orgId: org.id, memberId, newRole });
+    // Only allow changing to admin or member roles (not owner)
+    if (newRole === "owner") return;
+    
+    try {
+      const result = await updateRoleMutation.mutateAsync({ orgId: org.id, memberId, newRole });
+      
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('actions.roleUpdated'));
+      }
+    } catch (error) {
+      console.error("Failed to update role:", error);
+      toast.error(t('actions.roleUpdateError'));
+    }
   }
 
   // Handle member deletion
-  const handleDeleteMember = (memberId: string) => {
+  const handleDeleteMember = async (memberId: string) => {
     if (!org) return;
-    removeMemberMutation.mutate({ orgId: org.id, memberId });
+    
+    try {
+      const result = await removeMemberMutation.mutateAsync({ orgId: org.id, memberId });
+      
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('actions.memberRemoved'));
+      }
+    } catch (error) {
+      console.error("Failed to remove member:", error);
+      toast.error(t('actions.memberRemoveError'));
+    }
   }
 
   // Handle select all
@@ -115,31 +144,54 @@ export default function MembersPage() {
   }
 
   // Handle invite member
-  const handleInviteMember = () => {
+  const handleInviteMember = async () => {
     if (!org || !inviteEmail.trim()) return;
-    inviteMemberMutation.mutate({ 
-      orgId: org.id, 
-      email: inviteEmail.trim(), 
-      role: inviteRole 
-    });
     
-    // Reset form
-    setIsInviteModalOpen(false);
-    setInviteEmail("");
-    setInviteRole("member");
+    try {
+      const result = await inviteMemberMutation.mutateAsync({ 
+        orgId: org.id, 
+        email: inviteEmail.trim(), 
+        role: inviteRole 
+      });
+      
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('actions.invitationSent'));
+        // Reset form
+        setIsInviteModalOpen(false);
+        setInviteEmail("");
+        setInviteRole("member");
+      }
+    } catch (error) {
+      console.error("Failed to invite member:", error);
+      toast.error(t('actions.invitationError'));
+    }
   }
 
   // Handle bulk delete
-  const handleBulkDelete = () => {
+  const handleBulkDelete = async () => {
     if (selectedMembers.length === 0 || !org) return;
-    selectedMembers.forEach(memberId => {
-      removeMemberMutation.mutate({ orgId: org.id, memberId });
-    });
-    setSelectedMembers([]);
+    
+    try {
+      // Process all deletions sequentially
+      for (const memberId of selectedMembers) {
+        const result = await removeMemberMutation.mutateAsync({ orgId: org.id, memberId });
+        if (result?.error) {
+          toast.error(`Failed to remove member ${memberId}: ${result.error}`);
+        }
+      }
+      
+      toast.success(t('actions.memberRemoved'));
+      setSelectedMembers([]);
+    } catch (error) {
+      console.error("Failed to bulk delete members:", error);
+      toast.error(t('actions.memberRemoveError'));
+    }
   }
 
   const isAllSelected = paginatedMembers.length > 0 && selectedMembers.length === paginatedMembers.length
-  const canManageMembers = currentUserRole === "admin" || currentUserRole === "owner";
+  const canManageMembersRole = currentUserRole ? canManageMembers(currentUserRole.role): false;
 
   if (!org) {
     return (
@@ -175,7 +227,7 @@ export default function MembersPage() {
               {t('description')}
             </p>
           </div>
-          {canManageMembers && (
+          {canManageMembersRole && (
             <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -247,7 +299,7 @@ export default function MembersPage() {
               className="pl-10"
             />
           </div>
-          {selectedMembers.length > 0 && canManageMembers && (
+          {selectedMembers.length > 0 && canManageMembersRole && (
             <div className="flex items-center gap-2">
               <Badge variant="secondary">{t('selected', { count: selectedMembers.length })}</Badge>
               <Button 
@@ -277,7 +329,7 @@ export default function MembersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  {canManageMembers && (
+                  {canManageMembersRole && (
                     <TableHead className="w-12">
                       <Checkbox 
                         checked={isAllSelected} 
@@ -291,20 +343,20 @@ export default function MembersPage() {
                   <TableHead>{t('table.role')}</TableHead>
                   <TableHead>{t('tableHeaders.joined')}</TableHead>
                   <TableHead>{t('tableHeaders.lastActive')}</TableHead>
-                  {canManageMembers && <TableHead className="w-12"></TableHead>}
+                  {canManageMembersRole && <TableHead className="w-12"></TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedMembers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={canManageMembers ? 7 : 6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={canManageMembersRole ? 7 : 6} className="text-center py-8 text-muted-foreground">
                       {searchQuery ? t('errors.noMembersMatchingSearch') : t('errors.noMembersFound')}
                     </TableCell>
                   </TableRow>
                 ) : (
                   paginatedMembers.map((member) => (
                     <TableRow key={member.user_id}>
-                      {canManageMembers && (
+                      {canManageMembersRole && (
                         <TableCell>
                           <Checkbox
                             checked={selectedMembers.includes(member.user_id)}
@@ -327,10 +379,10 @@ export default function MembersPage() {
                       </TableCell>
                       <TableCell className="text-muted-foreground">{member.user_id}</TableCell>
                       <TableCell>
-                        {canManageMembers && member.role !== "owner" ? (
+                        {canManageMembersRole && member.role !== "owner" ? (
                           <Select 
                             value={member.role} 
-                            onValueChange={(value: "admin" | "member") => handleRoleChange(member.user_id, value)}
+                            onValueChange={(value: OrgRole) => handleRoleChange(member.user_id, value)}
                             disabled={updateRoleMutation.isPending}
                           >
                             <SelectTrigger className="w-32">
@@ -356,7 +408,7 @@ export default function MembersPage() {
                           : "Never"
                         }
                       </TableCell>
-                      {canManageMembers && member.role !== "owner" && (
+                      {canManageMembersRole && member.role !== "owner" && (
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

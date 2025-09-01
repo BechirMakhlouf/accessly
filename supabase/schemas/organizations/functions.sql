@@ -52,7 +52,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
     INSERT INTO public.organization_members (organization_id, user_id, role)
-    VALUES (NEW.id, NEW.created_by, 'owner');
+    VALUES (NEW.id, NEW.created_by, 'admin');
     RETURN NEW;
 END;
 $$;

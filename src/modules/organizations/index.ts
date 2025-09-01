@@ -13,7 +13,8 @@ export {
   useLeaveOrganization,
   useInviteMember,
   useUpdateOrganization,
-  useActiveOrganization
+  useActiveOrganization,
+  useCurrentUserRole
 } from './hooks';
 
 // Store
@@ -26,8 +27,13 @@ export type {
   OrganizationUpdate,
   OrganizationRole,
   OrganizationMembership,
-  OrganizationInsertWithOptionalSlug
+  OrganizationInsertWithOptionalSlug,
+  OrgMember,
+  OrgRole
 } from './types';
+
+// Utility functions
+export { isAdminRole, canManageMembers } from './types';
 
 // Actions
 export {

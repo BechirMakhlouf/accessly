@@ -25,6 +25,9 @@ import {
 import { Organization } from '../types'
 import { routes } from '@/lib/routes'
 import { useLeaveOrganization } from '../hooks'
+import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 
 interface OrganizationWithMembers extends Organization {
   organization_members: {
@@ -42,6 +45,8 @@ interface OrganizationCardProps {
 export function OrganizationCard({ organization }: OrganizationCardProps) {
   const [showLeaveDialog, setShowLeaveDialog] = useState(false)
   const leaveOrg = useLeaveOrganization()
+  const t = useTranslations('org.members')
+  const router = useRouter()
   
   // Get member count from the organization_members array
   const memberCount = organization.organization_members?.length || 0
@@ -62,10 +67,19 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
 
   const handleLeaveOrganization = async () => {
     try {
-      await leaveOrg.mutateAsync({ orgId: organization.id })
-      setShowLeaveDialog(false)
+      const result = await leaveOrg.mutateAsync({ orgId: organization.id })
+      
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('actions.leftOrganization'));
+        setShowLeaveDialog(false);
+        // Redirect to organizations list
+        router.push(routes.protected.dashboard.organizations.root);
+      }
     } catch (error) {
       console.error("Failed to leave organization:", error)
+      toast.error(t('actions.leaveOrganizationError'));
     }
   }
 

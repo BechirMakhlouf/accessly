@@ -1,5 +1,5 @@
-import { TypedSupabaseClient } from "@/lib/supabase/type";
 import type { Provider } from "@supabase/supabase-js";
+import { TypedSupabaseClient } from "@/lib/supabase/type";
 import { translateErrorCode } from 'supabase-error-translator-js';
 import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n/config";

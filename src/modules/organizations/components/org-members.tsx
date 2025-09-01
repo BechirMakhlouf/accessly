@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -20,12 +21,30 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useActiveOrganization } from "../hooks"
 import { useOrganizationMembers, useUpdateMemberRole, useRemoveMember, useInviteMember } from "../hooks"
+
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/lib/auth/hooks"
+import { toast } from "sonner"
 
 export function OrgMembers() {
   const { activeOrganization: org } = useActiveOrganization();
   const { user } = useAuth();
+  const t = useTranslations();
+  
+  // Helper function to translate error keys
+  const translateError = (errorKey: string): string => {
+    // Check if it's an organization error key
+    if (errorKey.startsWith('org.')) {
+      try {
+        return t('org.members.errors.loadError');
+      } catch {
+        return 'An error occurred';
+      }
+    }
+    // Fallback for other errors
+    return 'An error occurred';
+  };
+  
   const [newMemberEmail, setNewMemberEmail] = useState("")
   const [newMemberRole, setNewMemberRole] = useState<"admin" | "member" | "owner">("member")
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
@@ -35,20 +54,27 @@ export function OrgMembers() {
   const removeMember = useRemoveMember();
   const inviteMember = useInviteMember();
 
-  const members = membersData?.data || [];
+  const members = membersData || [];
   const currentUserRole = members.find(m => m.user_id === user?.id)?.role;
 
   const handleRoleChange = async (memberId: string, newRole: "admin" | "member" | "owner") => {
     if (!org) return;
     
     try {
-      await updateRole.mutateAsync({
+      const result = await updateRole.mutateAsync({
         orgId: org.id,
         memberId,
         newRole
       });
+      
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('org.members.actions.roleUpdated'));
+      }
     } catch (error) {
       console.error("Failed to update role:", error);
+      toast.error(t('org.members.actions.roleUpdateError'));
     }
   }
 
@@ -56,12 +82,19 @@ export function OrgMembers() {
     if (!org) return;
     
     try {
-      await removeMember.mutateAsync({
+      const result = await removeMember.mutateAsync({
         orgId: org.id,
         memberId
       });
+      
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('org.members.actions.memberRemoved'));
+      }
     } catch (error) {
       console.error("Failed to remove member:", error);
+      toast.error(t('org.members.actions.memberRemoveError'));
     }
   }
 
@@ -69,17 +102,23 @@ export function OrgMembers() {
     if (!org || !newMemberEmail || !newMemberRole) return;
     
     try {
-      await inviteMember.mutateAsync({
+      const result = await inviteMember.mutateAsync({
         orgId: org.id,
         email: newMemberEmail,
         role: newMemberRole
       });
       
-      setNewMemberEmail("");
-      setNewMemberRole("member");
-      setIsInviteDialogOpen(false);
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('org.members.actions.invitationSent'));
+        setNewMemberEmail("");
+        setNewMemberRole("member");
+        setIsInviteDialogOpen(false);
+      }
     } catch (error) {
       console.error("Failed to invite member:", error);
+      toast.error(t('org.members.actions.invitationError'));
     }
   }
 
@@ -106,9 +145,7 @@ export function OrgMembers() {
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              {typeof error === "string" && error === "Not a member of this organization" 
-                ? "You are not a member of this organization." 
-                : "Failed to load organization members."}
+              {typeof error === "string" ? translateError(error) : translateError('org.members.failedToLoad')}
             </AlertDescription>
           </Alert>
         </CardContent>

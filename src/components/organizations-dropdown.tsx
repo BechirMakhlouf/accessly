@@ -71,7 +71,7 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
     setOrg(selectedOrg)
     setOpen(false)
     setSearchQuery("")
-    
+
     // Navigate to the selected organization
     router.push(routes.protected.dashboard.org.slug.root(selectedOrg.slug || ""))
   }
@@ -145,7 +145,7 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
               />
             </div>
           </div>
-          
+
           <div className="max-h-60 overflow-y-auto">
             {filteredOrganizations.length > 0 ? (
               <div className="p-1">
@@ -153,7 +153,7 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
                   const isSelected = org?.id === organization.id
                   const userRole = getUserRole(organization)
                   const memberCount = getMemberCount(organization)
-                  
+
                   return (
                     <div
                       key={organization.id}
@@ -164,8 +164,8 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
                       <div className="flex flex-col flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium truncate">{organization.name}</span>
-                          {userRole === "owner" && (
-                            <Crown className="h-3 w-3 text-yellow-500 flex-shrink-0" />
+                          {userRole === "admin" && (
+                            <Crown className="h-3 w-3 flex-shrink-0" />
                           )}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -188,9 +188,9 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
               </div>
             )}
           </div>
-          
+
           <Separator />
-          
+
           <div className="p-1 space-y-1">
             <div
               className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
@@ -199,7 +199,7 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
               <Plus className="h-4 w-4" />
               <span>Create organization</span>
             </div>
-            
+
             {organizations.length > 0 && (
               <div
                 className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"

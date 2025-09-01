@@ -19,7 +19,42 @@
       "updated": "Organization updated successfully",
       "updateError": "Failed to update organization"
     },
-    "loading": "Loading organizations..."
+    "loading": "Loading organizations...",
+    "errors": {
+      "org": {
+        "notFound": "Organization not found",
+        "unauthorized": "You are not authorized to access this organization", 
+        "failedToLoad": "Failed to load organization",
+        "failedToUpdate": "Failed to update organization",
+        "failedToCreate": "Failed to create organization",
+        "failedToDelete": "Failed to delete organization",
+        "members": {
+          "unauthorized": "You are not authorized to view members of this organization",
+          "failedToLoad": "Failed to load organization members",
+          "failedToUpdate": "Failed to update member role",
+          "failedToRemove": "Failed to remove member", 
+          "failedToAdd": "Failed to add member",
+          "notMember": "You are not a member of this organization",
+          "cannotRemoveOwner": "Cannot remove organization owner",
+          "cannotAssignOwner": "Cannot assign owner role",
+          "insufficientPermissions": "Insufficient permissions to perform this action"
+        },
+        "leave": {
+          "unauthorized": "You are not authorized to leave this organization",
+          "failedToLeave": "Failed to leave organization",
+          "ownerCannotLeave": "Owner cannot leave organization. Transfer ownership first.",
+          "notMember": "You are not a member of this organization",
+          "failedToCheckMembership": "Failed to check membership status"
+        },
+        "invite": {
+          "unauthorized": "You are not authorized to create invites for this organization",
+          "failedToCreate": "Failed to create invite",
+          "failedToSend": "Failed to send invitation",
+          "invalidEmail": "Invalid email address",
+          "alreadyMember": "User is already a member of this organization"
+        }
+      }
+    }
   },
   "org": {
     "notFound": "Organization not found",
