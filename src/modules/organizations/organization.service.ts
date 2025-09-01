@@ -284,8 +284,6 @@ export class OrganizationService {
       return { error: "org.members.unauthorized" };
     }
 
-
-
     const { error } = await this.supabase
       .from('organization_members')
       .delete()

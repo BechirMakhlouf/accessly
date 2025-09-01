@@ -1,3 +1,4 @@
+"use client";
 import { MoreHorizontal, Users, Calendar, LogOut } from 'lucide-react'
 import Link from "next/link"
 import { useState } from "react"

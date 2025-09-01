@@ -92,6 +92,7 @@
     "members": {
       "title": "Organization Members",
       "description": "Manage your organization members and their roles",
+      "loading": "Loading members...",
       "inviteMember": "Invite Member",
       "searchPlaceholder": "Search members by name or email...",
       "deleteSelected": "Delete Selected",

@@ -53,7 +53,7 @@ export async function getOrganizationMembers(orgId: string) {
   return await orgService.getMembers(orgId);
 }
 
-export async function updateMemberRole(orgId: string, memberId: string, newRole: "admin" | "member") {
+export async function updateMemberRole(orgId: string, memberId: string, newRole: OrgRole) {
   const orgService = await createOrgService();
   return await orgService.updateMemberRole(orgId, memberId, newRole);
 }

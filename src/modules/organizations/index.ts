@@ -8,6 +8,11 @@ export { OrganizationsHeader } from './components/organizations-header';
 export { OrganizationsGrid } from './components/organizations-grid';
 export { OrganizationsEmptyState } from './components/organizations-empty-state';
 export { OrganizationsLoadingState } from './components/organizations-loading-state';
+export { MembersHeader } from './components/members-header';
+export { MembersSearchBar } from './components/members-search-bar';
+export { MembersTable } from './components/members-table';
+export { InviteMemberModal } from './components/invite-member-modal';
+export { MembersPagination } from './components/members-pagination';
 
 // Hooks
 export { 
@@ -21,6 +26,7 @@ export {
   useCurrentUserRole
 } from './hooks';
 export { useOrganizationsPage } from './hooks/use-organizations-page';
+export { useMembersPage } from './hooks/use-members-page';
 
 // Store
 export { useOrganizationsStore } from './store';
@@ -30,7 +36,6 @@ export type {
   Organization,
   OrganizationInsert,
   OrganizationUpdate,
-  OrganizationRole,
   OrganizationMembership,
   OrganizationInsertWithOptionalSlug,
   OrgMember,
