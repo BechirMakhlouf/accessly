@@ -4,6 +4,10 @@ export { OrgMembers } from './components/org-members';
 export { OrgSettings } from './components/org-settings';
 export { NewOrgForm } from './components/new-org-form';
 export { OrganizationsStoreInitializer } from './components/organizations-store-initializer';
+export { OrganizationsHeader } from './components/organizations-header';
+export { OrganizationsGrid } from './components/organizations-grid';
+export { OrganizationsEmptyState } from './components/organizations-empty-state';
+export { OrganizationsLoadingState } from './components/organizations-loading-state';
 
 // Hooks
 export { 
@@ -16,6 +20,7 @@ export {
   useActiveOrganization,
   useCurrentUserRole
 } from './hooks';
+export { useOrganizationsPage } from './hooks/use-organizations-page';
 
 // Store
 export { useOrganizationsStore } from './store';
