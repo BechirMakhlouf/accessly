@@ -25,28 +25,17 @@ import { useOrganizationMembers, useUpdateMemberRole, useRemoveMember, useInvite
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/lib/auth/hooks"
 import { toast } from "sonner"
+import { OrgRole } from "../types"
 
 export function OrgMembers() {
   const { activeOrganization: org } = useActiveOrganization();
   const { user } = useAuth();
   const t = useTranslations();
   
-  // Helper function to translate error keys
-  const translateError = (errorKey: string): string => {
-    // Check if it's an organization error key
-    if (errorKey.startsWith('org.')) {
-      try {
-        return t('org.members.errors.loadError');
-      } catch {
-        return 'An error occurred';
-      }
-    }
-    // Fallback for other errors
-    return 'An error occurred';
-  };
+
   
   const [newMemberEmail, setNewMemberEmail] = useState("")
-  const [newMemberRole, setNewMemberRole] = useState<"admin" | "member" | "owner">("member")
+  const [newMemberRole, setNewMemberRole] = useState<OrgRole>("member")
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
 
   const { data: membersData, isLoading, error } = useOrganizationMembers(org?.id || "");
@@ -57,7 +46,7 @@ export function OrgMembers() {
   const members = membersData || [];
   const currentUserRole = members.find(m => m.user_id === user?.id)?.role;
 
-  const handleRoleChange = async (memberId: string, newRole: "admin" | "member" | "owner") => {
+  const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
     if (!org) return;
     
     try {
@@ -126,7 +115,7 @@ export function OrgMembers() {
     return name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
   }
 
-  const canManageMembers = currentUserRole === "admin" || currentUserRole === "owner";
+  const canManageMembers = currentUserRole === "admin";
 
   if (!org) {
     return (
@@ -145,7 +134,7 @@ export function OrgMembers() {
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              {typeof error === "string" ? translateError(error) : translateError('org.members.failedToLoad')}
+              {typeof error === "string" ? error : "Failed to load members"}
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -192,14 +181,13 @@ export function OrgMembers() {
                     <Label htmlFor="role" className="text-right">
                       Role
                     </Label>
-                    <Select value={newMemberRole} onValueChange={(value: "admin" | "member" | "owner") => setNewMemberRole(value)}>
+                    <Select value={newMemberRole} onValueChange={(value: OrgRole) => setNewMemberRole(value)}>
                       <SelectTrigger id="role" className="col-span-3">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="admin">Admin</SelectItem>
                         <SelectItem value="member">Member</SelectItem>
-                        <SelectItem value="owner">Owner</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -238,14 +226,12 @@ export function OrgMembers() {
                   {canManageMembers ? (
                     <Select 
                       value={member.role} 
-                      onValueChange={(value: "admin" | "member" | "owner") => handleRoleChange(member.user_id, value)}
-                      disabled={member.role === "owner"}
+                      onValueChange={(value: "admin" | "member") => handleRoleChange(member.user_id, value)}
                     >
                       <SelectTrigger className="w-[120px]">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="owner">Owner</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                         <SelectItem value="member">Member</SelectItem>
                       </SelectContent>
@@ -256,7 +242,7 @@ export function OrgMembers() {
                     </span>
                   )}
                   
-                  {canManageMembers && member.role !== "owner" && (
+                  {canManageMembers && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8">

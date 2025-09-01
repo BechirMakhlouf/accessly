@@ -1,7 +1,7 @@
 "use server";
 
 import { createOrgService } from './organization-factory';
-import { OrganizationInsertWithOptionalSlug, OrganizationUpdate, OrgRole } from './types';
+import { OrganizationUpdate, OrgRole, OrganizationInsertWithOptionalSlug } from './types';
 
 export async function getOrgBySlug(slug: string) {
   const orgService = await createOrgService();
@@ -53,7 +53,7 @@ export async function getOrganizationMembers(orgId: string) {
   return await orgService.getMembers(orgId);
 }
 
-export async function updateMemberRole(orgId: string, memberId: string, newRole: "admin" | "member" | "owner") {
+export async function updateMemberRole(orgId: string, memberId: string, newRole: "admin" | "member") {
   const orgService = await createOrgService();
   return await orgService.updateMemberRole(orgId, memberId, newRole);
 }
@@ -81,7 +81,7 @@ export async function inviteOrAddMember(
   organizationId: string,
   email: string,
   invitedBy: string,
-  role: "admin" | "member" | "owner" = "member"
+  role: "admin" | "member" = "member"
 ): Promise<{ success: true; message: string } | { error: string }> {
   const orgService = await createOrgService();
   const result = await orgService.inviteOrAddMember(organizationId, email, invitedBy, role);

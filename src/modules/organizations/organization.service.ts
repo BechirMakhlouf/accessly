@@ -1,5 +1,5 @@
 import { TypedSupabaseClient } from '@/lib/supabase/type';
-import { OrganizationInsertWithOptionalSlug, OrganizationUpdate, OrgErrorKeys, OrgRole, Organization, OrganizationWithMembers, OrgMember, Invite, OrganizationMembership } from './types';
+import { OrganizationInsertWithOptionalSlug, OrganizationUpdate, OrgRole, Organization, OrganizationWithMembers, OrgMember, Invite, OrganizationMembership } from './types';
 import { isNullOrUndefined } from '@/lib/utils';
 import { isRlsError } from '@/lib/supabase/utils';
 
@@ -11,7 +11,7 @@ export interface OrganizationServiceOptions {
 
 export interface ServiceResult<T> {
   data?: T;
-  error?: OrgErrorKeys
+  error?: string
 }
 
 /**
@@ -254,10 +254,7 @@ export class OrganizationService {
       return { error: "org.members.unauthorized" };
     }
 
-    // Prevent changing owner role
-    if (newRole === 'owner') {
-      return { error: "org.members.cannotAssignOwner" };
-    }
+
 
     const { data, error } = await this.supabase
       .from('organization_members')
@@ -287,26 +284,7 @@ export class OrganizationService {
       return { error: "org.members.unauthorized" };
     }
 
-    // Check if target member is owner
-    const { data: targetMember, error: memberError } = await this.supabase
-      .from('organization_members')
-      .select('role')
-      .eq('organization_id', orgId)
-      .eq('user_id', memberId)
-      .single();
 
-    if (memberError) {
-      console.error('Failed to check target member:', memberError);
-      const rlsInfo = isRlsError(memberError);
-      if (rlsInfo.isRls) {
-        return { error: "org.unauthorized" };
-      }
-      return { error: "org.failedToLoad" };
-    }
-
-    if (targetMember?.role === 'owner') {
-      return { error: "org.members.cannotRemoveOwner" };
-    }
 
     const { error } = await this.supabase
       .from('organization_members')
@@ -334,7 +312,7 @@ export class OrganizationService {
       return { error: "org.leave.unauthorized" };
     }
 
-    // Check if user is owner
+
     const { data: membership, error: membershipError } = await this.supabase
       .from('organization_members')
       .select('role')
@@ -355,9 +333,7 @@ export class OrganizationService {
       return { error: "org.leave.notMember" };
     }
 
-    if (membership.role === 'owner') {
-      return { error: "org.leave.ownerCannotLeave" };
-    }
+
 
     const { error } = await this.supabase
       .from('organization_members')
@@ -441,7 +417,7 @@ export class OrganizationService {
     organizationId: string,
     email: string,
     invitedBy: string,
-    role: "admin" | "member" | "owner" = "member"
+    role: "admin" | "member" = "member"
   ): Promise<ServiceResult<{ success: true; message: string }>> {
     if (!this.adminSupabase) {
       return { error: "org.invite.unauthorized" };

@@ -28,7 +28,7 @@ interface Member {
 }
 
 const initialMembers: Member[] = [
-  { id: "1", name: "Alice Johnson", email: "alice@example.com", role: "Owner", avatar: "/placeholder.svg?height=32&width=32" },
+  { id: "1", name: "Alice Johnson", email: "alice@example.com", role: "Admin", avatar: "/placeholder.svg?height=32&width=32" },
   { id: "2", name: "Bob Smith", email: "bob@example.com", role: "Admin", avatar: "/placeholder.svg?height=32&width=32" },
   { id: "3", name: "Charlie Brown", email: "charlie@example.com", role: "Member", avatar: "/placeholder.svg?height=32&width=32" },
   { id: "4", name: "Diana Prince", email: "diana@example.com", role: "Viewer", avatar: "/placeholder.svg?height=32&width=32" },
@@ -114,7 +114,7 @@ export function OrgMembers() {
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Owner">Owner</SelectItem>
+
                       <SelectItem value="Admin">Admin</SelectItem>
                       <SelectItem value="Member">Member</SelectItem>
                       <SelectItem value="Viewer">Viewer</SelectItem>
@@ -148,7 +148,7 @@ export function OrgMembers() {
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Owner">Owner</SelectItem>
+
                     <SelectItem value="Admin">Admin</SelectItem>
                     <SelectItem value="Member">Member</SelectItem>
                     <SelectItem value="Viewer">Viewer</SelectItem>

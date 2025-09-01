@@ -41,8 +41,8 @@ ON public.organizations
 FOR SELECT TO authenticated
 USING ( public.is_org_member(organizations.id) );
 
-/* UPDATE – owners & admins can update */
-CREATE POLICY "Owners/Admins update organization"
+/* UPDATE – admins can update */
+CREATE POLICY "Admins update organization"
 ON public.organizations
 FOR UPDATE TO authenticated
 USING (
@@ -51,7 +51,7 @@ USING (
     FROM public.organization_members om
     WHERE om.organization_id = organizations.id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
+      AND om.role = 'admin'::organization_role
   )
 )
 WITH CHECK (
@@ -60,12 +60,12 @@ WITH CHECK (
     FROM public.organization_members om
     WHERE om.organization_id = organizations.id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
+      AND om.role = 'admin'::organization_role
   )
 );
 
-/* DELETE – only owners can delete */
-CREATE POLICY "Owner delete organization"
+/* DELETE – only admins can delete */
+CREATE POLICY "Admin delete organization"
 ON public.organizations
 FOR DELETE TO authenticated
 USING (
@@ -74,7 +74,7 @@ USING (
     FROM public.organization_members om
     WHERE om.organization_id = organizations.id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = 'owner'::organization_role
+      AND om.role = 'admin'::organization_role
   )
 );
 
@@ -88,8 +88,8 @@ ON public.organization_members
 FOR SELECT TO authenticated
 USING ( public.is_org_member(organization_members.organization_id) );
 
-/* INSERT – owners & admins can add members (cannot create a second owner) */
-CREATE POLICY "Owners/Admins insert member"
+/* INSERT – admins can add members */
+CREATE POLICY "Admins insert member"
 ON public.organization_members
 FOR INSERT TO authenticated
 WITH CHECK (
@@ -98,20 +98,12 @@ WITH CHECK (
     FROM public.organization_members om
     WHERE om.organization_id = organization_id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
-  )
-  AND NOT (
-    role = 'owner'::organization_role
-    AND (
-      SELECT COUNT(*) FROM public.organization_members om2
-      WHERE om2.organization_id = organization_id
-        AND om2.role = 'owner'::organization_role
-    ) >= 1
+      AND om.role = 'admin'::organization_role
   )
 );
 
-/* UPDATE – owners & admins can modify rows (cannot demote the last owner) */
-CREATE POLICY "Owners/Admins update member"
+/* UPDATE – admins can modify rows */
+CREATE POLICY "Admins update member"
 ON public.organization_members
 FOR UPDATE TO authenticated
 USING (
@@ -120,7 +112,7 @@ USING (
     FROM public.organization_members om
     WHERE om.organization_id = organization_members.organization_id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
+      AND om.role = 'admin'::organization_role
   )
 )
 WITH CHECK (
@@ -129,20 +121,12 @@ WITH CHECK (
     FROM public.organization_members om
     WHERE om.organization_id = organization_members.organization_id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
-  )
-  AND NOT (
-    organization_members.role = 'owner'::organization_role
-    AND (
-      SELECT COUNT(*) FROM public.organization_members om2
-      WHERE om2.organization_id = organization_members.organization_id
-        AND om2.role = 'owner'::organization_role
-    ) <= 1
+      AND om.role = 'admin'::organization_role
   )
 );
 
-/* DELETE – owners & admins can delete membership rows */
-CREATE POLICY "Owners/Admins delete member"
+/* DELETE – admins can delete membership rows */
+CREATE POLICY "Admins delete member"
 ON public.organization_members
 FOR DELETE TO authenticated
 USING (
@@ -151,7 +135,7 @@ USING (
     FROM public.organization_members om
     WHERE om.organization_id = organization_members.organization_id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
+      AND om.role = 'admin'::organization_role
   )
 );
 
@@ -159,8 +143,8 @@ USING (
    Policies for "invites"
    ------------------------------------------------- */
 
-/* INSERT – owners & admins can create invites */
-CREATE POLICY "Owners/Admins create invite"
+/* INSERT – admins can create invites */
+CREATE POLICY "Admins create invite"
 ON public.invites
 FOR INSERT TO authenticated
 WITH CHECK (
@@ -169,12 +153,12 @@ WITH CHECK (
     FROM public.organization_members om
     WHERE om.organization_id = invites.organization_id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
+      AND om.role = 'admin'::organization_role
   )
 );
 
-/* SELECT – invite creator, owners & admins can view */
-CREATE POLICY "Invite viewer (owner/admin/creator)"
+/* SELECT – invite creator, admins can view */
+CREATE POLICY "Invite viewer (admin/creator)"
 ON public.invites
 FOR SELECT TO authenticated
 USING (
@@ -184,12 +168,12 @@ USING (
     FROM public.organization_members om
     WHERE om.organization_id = invites.organization_id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
+      AND om.role = 'admin'::organization_role
   )
 );
 
-/* DELETE – owners & admins can delete invites */
-CREATE POLICY "Owners/Admins delete invite"
+/* DELETE – admins can delete invites */
+CREATE POLICY "Admins delete invite"
 ON public.invites
 FOR DELETE TO authenticated
 USING (
@@ -198,6 +182,6 @@ USING (
     FROM public.organization_members om
     WHERE om.organization_id = invites.organization_id
       AND om.user_id = (SELECT auth.uid())
-      AND om.role = ANY (ARRAY['owner'::organization_role, 'admin'::organization_role])
+      AND om.role = 'admin'::organization_role
   )
 );

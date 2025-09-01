@@ -5,10 +5,10 @@ CREATE INDEX IF NOT EXISTS idx_om_org_user
 -- Keep only if you need look‑ups by user_id alone
 CREATE INDEX IF NOT EXISTS idx_om_user ON public.organization_members (user_id);
 
--- Partial index for owner/admin checks (optional but efficient)
-CREATE INDEX IF NOT EXISTS idx_om_org_owner_admin
+-- Partial index for admin checks (efficient for admin role queries)
+CREATE INDEX IF NOT EXISTS idx_om_org_admin
     ON public.organization_members (organization_id, user_id)
-    WHERE role = ANY ('{owner,admin}'::organization_role[]);
+    WHERE role = 'admin';
 
 -- invites
 CREATE INDEX IF NOT EXISTS idx_invites_org

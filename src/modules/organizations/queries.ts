@@ -1,5 +1,5 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { Organization, OrganizationUpdate, OrganizationWithMembers, OrgMember } from "./types";
+import { Organization, OrganizationUpdate, OrganizationWithMembers, OrgMember, OrgRole } from "./types";
 import { QueryClient, UndefinedInitialDataOptions } from "@tanstack/react-query";
 import { 
   getUserOrgs, 
@@ -36,6 +36,7 @@ export const getUserOrganizationsQueryOptions: () =>
       }
       
       return result;
+
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -132,7 +133,7 @@ export const updateMemberRoleMutationOptions = (queryClient: QueryClient) => ({
   }: { 
     orgId: string; 
     memberId: string; 
-    newRole: "admin" | "member" | "owner" 
+    newRole: "admin" | "member" 
   }) => await updateMemberRole(orgId, memberId, newRole),
   onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
     if (!data?.error) {
@@ -177,7 +178,7 @@ export const inviteMemberMutationOptions = (queryClient: QueryClient) => ({
   }: { 
     orgId: string; 
     email: string; 
-    role: "admin" | "member" | "owner" 
+    role: OrgRole 
   }) => await inviteMember(orgId, email, role),
   onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
     if (!data?.error) {

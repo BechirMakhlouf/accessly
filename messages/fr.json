@@ -93,8 +93,7 @@
       },
       "roles": {
         "admin": "Admin",
-        "member": "Membre",
-        "owner": "Propriétaire"
+        "member": "Membre"
       },
       "errors": {
         "orgNotFound": "Organisation introuvable",

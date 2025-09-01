@@ -50,10 +50,9 @@ This document outlines the coding standards and best practices for the Accessly 
   - Avoid using the client-side Supabase client inside React components. Perform Supabase calls on the server (API routes, Next.js server actions, or middleware) and expose necessary data via your own endpoints or loaders. Only use the client-side client for real-time subscriptions when required.
 - **Supabase keys:**
   - Never expose service role or secret keys on the client. Use environment variables.
-- **Strict Migration Policy:**
-  - Every database change (tables, columns, buckets, indexes, enums, etc.) **must** be represented by a SQL migration file in `supabase/migrations/`.
-  - Do **not** manually modify the database via the UI or CLI without creating a matching migration.
-  - Name migrations descriptively (e.g., `20250717121500_add_profile_table.sql`).
+- **Strict DB Schema Policy:**
+  - Every database change (tables, columns, buckets, indexes, enums, etc.) **must** be represented in a supabase/schema folder
+  - Do **not** manually modify the database via the UI or CLI without creating a matching schema change.
 
 ## 4. Environment Variables
 
@@ -191,3 +190,4 @@ Local Supabase project configuration:
 - Prefer Server Actions over API routes for data fetching and mutations. Use routes only when necessary (where server actions aren't suitable).
 - Prefer Zustand for state management over React Context. Use Zustand stores scoped to each feature module.
 - Prefer SupabaseSSR Over accessing Supabase directly in client components.
+- Never Use explicit or implicity any.s

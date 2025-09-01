@@ -90,8 +90,6 @@ export default function MembersPage() {
   // Handle role change
   const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
     if (!org) return;
-    // Only allow changing to admin or member roles (not owner)
-    if (newRole === "owner") return;
     
     try {
       const result = await updateRoleMutation.mutateAsync({ orgId: org.id, memberId, newRole });
@@ -379,7 +377,7 @@ export default function MembersPage() {
                       </TableCell>
                       <TableCell className="text-muted-foreground">{member.user_id}</TableCell>
                       <TableCell>
-                        {canManageMembersRole && member.role !== "owner" ? (
+                        {canManageMembersRole ? (
                           <Select 
                             value={member.role} 
                             onValueChange={(value: OrgRole) => handleRoleChange(member.user_id, value)}
@@ -394,7 +392,7 @@ export default function MembersPage() {
                             </SelectContent>
                           </Select>
                         ) : (
-                          <Badge variant={member.role === "owner" ? "default" : "secondary"}>
+                          <Badge variant="secondary">
                             {t(`roles.${member.role}`)}
                           </Badge>
                         )}
@@ -408,7 +406,7 @@ export default function MembersPage() {
                           : "Never"
                         }
                       </TableCell>
-                      {canManageMembersRole && member.role !== "owner" && (
+                      {canManageMembersRole && (
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

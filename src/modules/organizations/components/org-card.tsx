@@ -1,4 +1,4 @@
-import { MoreHorizontal, Users, Calendar, Crown, LogOut } from 'lucide-react'
+import { MoreHorizontal, Users, Calendar, LogOut } from 'lucide-react'
 import Link from "next/link"
 import { useState } from "react"
 
@@ -51,10 +51,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
   // Get member count from the organization_members array
   const memberCount = organization.organization_members?.length || 0
   
-  // Check if current user is owner (has admin role)
-  const isOwner = organization.organization_members?.some(member => 
-    member.role === 'owner'
-  ) || false
+
 
   // Format creation date
   const formatDate = (dateString: string) => {
@@ -102,9 +99,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
                       {organization.name}
                     </Link>
                   </CardTitle>
-                  {isOwner && (
-                    <Crown className="h-3 w-3 text-yellow-500" />
-                  )}
+
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {organization.slug}
@@ -133,7 +128,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
                 <DropdownMenuItem 
                   className="text-destructive"
                   onClick={() => setShowLeaveDialog(true)}
-                  disabled={isOwner}
+
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Leave organization

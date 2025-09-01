@@ -35,14 +35,13 @@
           "failedToRemove": "Failed to remove member", 
           "failedToAdd": "Failed to add member",
           "notMember": "You are not a member of this organization",
-          "cannotRemoveOwner": "Cannot remove organization owner",
-          "cannotAssignOwner": "Cannot assign owner role",
+
           "insufficientPermissions": "Insufficient permissions to perform this action"
         },
         "leave": {
           "unauthorized": "You are not authorized to leave this organization",
           "failedToLeave": "Failed to leave organization",
-          "ownerCannotLeave": "Owner cannot leave organization. Transfer ownership first.",
+
           "notMember": "You are not a member of this organization",
           "failedToCheckMembership": "Failed to check membership status"
         },
@@ -127,9 +126,8 @@
         "invitationError": "Failed to send invitation"
       },
       "roles": {
-        "admin": "Admin",
-        "member": "Member",
-        "owner": "Owner"
+                "admin": "Admin",
+        "member": "Member"
       },
       "errors": {
         "orgNotFound": "Organization not found",

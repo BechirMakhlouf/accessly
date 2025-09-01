@@ -44,8 +44,8 @@ BEGIN
 END;
 $$;
 
--- Function to add the creating user as an owner in organization_members
-CREATE OR REPLACE FUNCTION public.add_owner_to_organization()
+-- Function to add the creating user as an admin in organization_members
+CREATE OR REPLACE FUNCTION public.add_creator_to_organization()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER

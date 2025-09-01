@@ -1,7 +1,7 @@
--- 1. Create more comprehensive ENUM for organization roles
+-- 1.  ENUM for organization roles 
 CREATE TYPE organization_role AS ENUM (
-    'admin',    -- Can manage members, settings
-    'member'   -- Standard access
+    'admin',    
+    'member'
 );
 
 -- 2. Create organizations table with additional constraints and fields
