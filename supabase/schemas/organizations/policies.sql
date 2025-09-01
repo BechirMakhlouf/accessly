@@ -11,7 +11,7 @@ ALTER TABLE public.invites ENABLE ROW LEVEL SECURITY;
 CREATE OR REPLACE FUNCTION public.is_org_member(org_id uuid)
 RETURNS boolean
 LANGUAGE sql
-SECURITY DEFINER      -- runs as owner, bypasses RLS on organization_members
+SECURITY DEFINER      -- bypasses RLS on organization_members
 STABLE
 AS $$
   SELECT EXISTS (
