@@ -8,6 +8,7 @@ import { routes } from "@/lib/routes"
 import { useTranslations } from "next-intl"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useState } from "react"
+import { isAdminRole } from "@/modules/organizations/utils"
 
 interface SidebarLink {
   href: string
@@ -36,7 +37,7 @@ function SettingsLayoutSkeleton() {
 }
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
-  const { activeOrganization: org } = useActiveOrganization();
+  const { activeOrganization: org, currentUserRole } = useActiveOrganization();
   const pathname = usePathname();
   const t = useTranslations("org.settings");
   const [isLoading, setIsLoading] = useState(true);
@@ -64,10 +65,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       href: routes.protected.dashboard.org.slug.settings.security(org.slug), 
       label: t("security.title") 
     },
-    { 
+    // Only show billing link for admins
+    ...(currentUserRole && isAdminRole(currentUserRole) ? [{
       href: routes.protected.dashboard.org.slug.settings.billing(org.slug), 
       label: t("billing.title") 
-    },
+    }] : []),
     { 
       href: routes.protected.dashboard.org.slug.settings.integrations(org.slug), 
       label: t("integrations.title") 

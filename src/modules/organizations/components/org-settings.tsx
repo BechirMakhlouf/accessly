@@ -15,7 +15,7 @@ export function OrgSettings() {
   const { organization: org, updateOrganization, isUpdating } = useActiveOrganization();
   const t = useTranslations('organizations');
   
-  const [teamName, setTeamName] = useState("")
+  const [orgName, setOrgName] = useState("")
   const [iconUrl, setIconUrl] = useState("")
   const [iconBgColor] = useState("bg-blue-500")
   const [description, setDescription] = useState("")
@@ -24,7 +24,7 @@ export function OrgSettings() {
   // Initialize form with current organization data
   useEffect(() => {
     if (org) {
-      setTeamName(org.name || "")
+      setOrgName(org.name || "")
       setIconUrl(org.icon_url || "")
       setDescription(org.description || "")
     }
@@ -37,7 +37,7 @@ export function OrgSettings() {
     
     try {
       await updateOrganization({
-        name: teamName,
+        name: orgName,
         icon_url: iconUrl,
         description: description,
       });
@@ -77,7 +77,7 @@ export function OrgSettings() {
           <div className="flex items-center gap-4">
             <Avatar className={`h-16 w-16 ${iconBgColor}`}>
               <AvatarImage src={iconUrl || "/placeholder.svg"} alt="Organization Icon" />
-              <AvatarFallback className="text-foreground text-lg">{getFallbackText(teamName)}</AvatarFallback>
+              <AvatarFallback className="text-foreground text-lg">{getFallbackText(orgName)}</AvatarFallback>
             </Avatar>
             <div className="grid gap-2">
               <Input
@@ -97,11 +97,11 @@ export function OrgSettings() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="teamName">{t('settings.name.label')}</Label>
+          <Label htmlFor="orgName">{t('settings.name.label')}</Label>
           <Input
-            id="teamName"
-            value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
+            id="orgName"
+            value={orgName}
+            onChange={(e) => setOrgName(e.target.value)}
             placeholder={t('settings.name.placeholder')}
           />
         </div>
@@ -124,6 +124,6 @@ export function OrgSettings() {
           {isLoading || isUpdating ? t('settings.buttons.saving') : t('settings.buttons.saveChanges')}
         </Button>
       </CardFooter>
-    </Card>
+</Card>
   )
 }

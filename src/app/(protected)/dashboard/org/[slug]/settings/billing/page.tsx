@@ -19,6 +19,7 @@ import { DownloadIcon } from "lucide-react"
 import { useActiveOrganization } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { Badge } from "@/components/ui/badge"
+import { isAdminRole } from "@/modules/organizations/utils"
 
 const invoices = [
   {
@@ -48,7 +49,7 @@ const invoices = [
 ]
 
 export default function BillingSettingsPage() {
-  const { organization: org } = useActiveOrganization();
+  const { organization: org, currentUserRole } = useActiveOrganization();
   const t = useTranslations("org.settings.billing");
   const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false);
 
@@ -57,6 +58,18 @@ export default function BillingSettingsPage() {
       <div className="container mx-auto py-8 px-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
+        </div>
+      </div>
+    );
+  }
+
+  // Hide billing settings for non-admins
+  if (!currentUserRole || !isAdminRole(currentUserRole)) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground">Access Denied</h1>
+          <p className="text-muted-foreground mt-2">Only admins can access billing settings</p>
         </div>
       </div>
     );

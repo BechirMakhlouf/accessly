@@ -17,6 +17,8 @@ import {
 import { useActiveOrganization } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { isAdminRole } from "@/modules/organizations/utils"
 
 function GeneralSettingsSkeleton() {
   return (
@@ -75,7 +77,7 @@ function GeneralSettingsSkeleton() {
 }
 
 export default function GeneralSettingsPage() {
-  const { activeOrganization: org } = useActiveOrganization();
+  const { activeOrganization: org, currentUserRole } = useActiveOrganization();
   const t = useTranslations("org.settings.general");
   const [orgName, setOrgName] = useState(org?.name || "");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -164,7 +166,21 @@ export default function GeneralSettingsPage() {
               </div>
               <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="destructive">{t("dangerZone.deleteOrg.button")}</Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="destructive" 
+                        disabled={!currentUserRole || !isAdminRole(currentUserRole)}
+                      >
+                        {t("dangerZone.deleteOrg.button")}
+                      </Button>
+                    </TooltipTrigger>
+                    {(!currentUserRole || !isAdminRole(currentUserRole)) && (
+                      <TooltipContent>
+                        <p>Only admins can delete organizations</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
