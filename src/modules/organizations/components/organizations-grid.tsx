@@ -1,8 +1,8 @@
 import { OrganizationCard } from './org-card'
-import { OrganizationWithMembers } from '../types'
+import { OrgWithMembers } from '../types'
 
 interface OrganizationsGridProps {
-  organizations: OrganizationWithMembers[]
+  organizations: OrgWithMembers[]
 }
 
 export function OrganizationsGrid({ organizations }: OrganizationsGridProps) {

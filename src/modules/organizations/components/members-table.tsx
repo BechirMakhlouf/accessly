@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { OrgRole, OrgMember } from "@/modules/organizations";
-import { useFormatRelativeDate } from "../utils/date-utils";
+import { useFormatRelativeDate } from "@/lib/utils/date-utils";
 
 interface MembersTableProps {
   members: OrgMember[];

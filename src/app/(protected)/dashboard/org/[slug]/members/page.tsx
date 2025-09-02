@@ -11,6 +11,8 @@ import {
   InviteMemberModal,
   MembersPagination
 } from "@/modules/organizations"
+import { redirect } from "next/navigation"
+import { routes } from "@/lib/routes"
 
 export default function MembersPage() {
   const t = useTranslations("org.members");
@@ -56,14 +58,8 @@ export default function MembersPage() {
     inviteMemberMutation,
   } = useMembersPage();
 
-  if (!org) {
-    return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">{t('errors.orgNotFound')}</h1>
-        </div>
-      </div>
-    );
+  if (!org && !isLoading) {
+    redirect(routes.protected.dashboard.organizations.root);
   }
 
   if (error) {

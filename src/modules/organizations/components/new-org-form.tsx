@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { routes } from "@/lib/routes";
 
 export function NewOrgForm() {
   const router = useRouter();
+  const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -24,7 +26,7 @@ export function NewOrgForm() {
     e.preventDefault();
     
     if (!formData.name.trim()) {
-      toast.error("Organization name is required");
+      toast.error(t("organizations.form.errors.nameRequired"));
       return;
     }
 
@@ -38,14 +40,14 @@ export function NewOrgForm() {
       });
 
       if (result?.data) {
-        toast.success("Organization created successfully!");
+        toast.success(t("organizations.form.success"));
         router.push(routes.protected.dashboard.org.slug.root(result.data.slug || ""));
       } else {
-        toast.error("Failed to create organization");
+        toast.error(t("organizations.form.errors.createFailed"));
       }
     } catch (error) {
       console.error("Error creating organization:", error);
-      toast.error("An error occurred while creating the organization");
+      toast.error(t("organizations.form.errors.genericError"));
     } finally {
       setIsLoading(false);
     }
@@ -59,54 +61,54 @@ export function NewOrgForm() {
     <div className="max-w-2xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Create New Organization</CardTitle>
+          <CardTitle>{t("organizations.form.title")}</CardTitle>
           <CardDescription>
-            Set up a new organization to collaborate with your team.
+            {t("organizations.form.subtitle")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Organization Name *</Label>
+              <Label htmlFor="name">{t("organizations.form.name.label")} *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Enter organization name"
+                placeholder={t("organizations.form.name.placeholder")}
                 required
                 maxLength={100}
               />
               <p className="text-xs text-muted-foreground">
-                This will be displayed to your team members and used to generate a unique URL.
+                {t("organizations.form.name.helpText")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t("organizations.form.description.label")}</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange("description", e.target.value)}
-                placeholder="Describe what this organization is for"
+                placeholder={t("organizations.form.description.placeholder")}
                 rows={3}
                 maxLength={500}
               />
               <p className="text-xs text-muted-foreground">
-                Optional: Help your team understand the purpose of this organization.
+                {t("organizations.form.description.helpText")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="icon_url">Icon URL</Label>
+              <Label htmlFor="icon_url">{t("organizations.form.iconUrl.label")}</Label>
               <Input
                 id="icon_url"
                 type="url"
                 value={formData.icon_url}
                 onChange={(e) => handleInputChange("icon_url", e.target.value)}
-                placeholder="https://example.com/icon.png"
+                placeholder={t("organizations.form.iconUrl.placeholder")}
               />
               <p className="text-xs text-muted-foreground">
-                Optional: Add a custom icon for your organization.
+                {t("organizations.form.iconUrl.helpText")}
               </p>
             </div>
 
@@ -117,14 +119,14 @@ export function NewOrgForm() {
                 onClick={() => router.back()}
                 disabled={isLoading}
               >
-                Cancel
+                {t("organizations.form.buttons.cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading || !formData.name.trim()}
                 className="flex-1"
               >
-                {isLoading ? "Creating..." : "Create Organization"}
+                {isLoading ? t("organizations.form.buttons.creating") : t("organizations.form.buttons.create")}
               </Button>
             </div>
           </form>

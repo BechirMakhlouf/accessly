@@ -23,31 +23,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Organization } from '../types'
+import { OrgWithMembers } from '../types'
 import { routes } from '@/lib/routes'
 import { useLeaveOrganization } from '../hooks'
 import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
-interface OrganizationWithMembers extends Organization {
-  organization_members: {
-    user_id: string
-    role: "admin" | "member" | "owner"
-    joined_at: string
-    last_active_at: string | null
-  }[]
-}
-
 interface OrganizationCardProps {
-  organization: OrganizationWithMembers
+  organization: OrgWithMembers
 }
 
 export function OrganizationCard({ organization }: OrganizationCardProps) {
   const [showLeaveDialog, setShowLeaveDialog] = useState(false)
   const leaveOrg = useLeaveOrganization()
-  const t = useTranslations('org.members')
+  const t = useTranslations('organizations')
   const router = useRouter()
+  const locale = useLocale()
   
   // Get member count from the organization_members array
   const memberCount = organization.organization_members?.length || 0
@@ -57,7 +49,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
   // Format creation date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(locale, { 
       month: 'short', 
       year: 'numeric' 
     })
@@ -70,14 +62,14 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
       if (result?.error) {
         toast.error(result.error);
       } else {
-        toast.success(t('actions.leftOrganization'));
+        toast.success(t('members.actions.leftOrganization'));
         setShowLeaveDialog(false);
         // Redirect to organizations list
         router.push(routes.protected.dashboard.organizations.root);
       }
     } catch (error) {
       console.error("Failed to leave organization:", error)
-      toast.error(t('actions.leaveOrganizationError'));
+      toast.error(t('members.actions.leaveOrganizationError'));
     }
   }
 
@@ -111,18 +103,18 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">{t('card.openMenu')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>
                   <Link href={routes.protected.dashboard.org.slug.root(organization.slug || '')}>
-                    View organization
+                    {t('card.viewOrganization')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link href={routes.protected.dashboard.org.slug.settings.root(organization.slug || '')}>
-                    Settings
+                    {t('card.settings')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -132,7 +124,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
 
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Leave organization
+                  {t('card.leaveOrganization')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -140,13 +132,13 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
         </CardHeader>
         <CardContent className="pt-0">
           <CardDescription className="mb-4 line-clamp-2">
-            {organization.description || 'No description provided'}
+            {organization.description || t('card.noDescription')}
           </CardDescription>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <Users className="h-3 w-3" />
-                <span>{memberCount} member{memberCount !== 1 ? 's' : ''}</span>
+                <span>{memberCount} {memberCount !== 1 ? t('card.members') : t('card.member')}</span>
               </div>
             </div>
             <div className="flex items-center space-x-1">
@@ -160,19 +152,19 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
       <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Leave Organization</AlertDialogTitle>
+            <AlertDialogTitle>{t('card.leaveDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to leave &quot;{organization.name}&quot;? You will lose access to this organization and all its resources.
+              {t('card.leaveDialog.description', { name: organization.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('card.leaveDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleLeaveOrganization}
               disabled={leaveOrg.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {leaveOrg.isPending ? "Leaving..." : "Leave Organization"}
+              {leaveOrg.isPending ? t('card.leaveDialog.leaving') : t('card.leaveDialog.leave')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

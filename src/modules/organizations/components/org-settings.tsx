@@ -68,7 +68,7 @@ export function OrgSettings() {
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">Organization not found</p>
+          <p className="text-center text-muted-foreground">{t('settings.notFound')}</p>
         </CardContent>
       </Card>
     );
@@ -77,12 +77,12 @@ export function OrgSettings() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>General Settings</CardTitle>
-        <CardDescription>Manage your organization&apos;s basic information.</CardDescription>
+        <CardTitle>{t('settings.title')}</CardTitle>
+        <CardDescription>{t('settings.subtitle')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          <Label>Organization Icon</Label>
+          <Label>{t('settings.icon.label')}</Label>
           <div className="flex items-center gap-4">
             <Avatar className={`h-16 w-16 ${iconBgColor}`}>
               <AvatarImage src={iconUrl || "/placeholder.svg"} alt="Organization Icon" />
@@ -93,34 +93,34 @@ export function OrgSettings() {
                 id="iconUrl"
                 value={iconUrl}
                 onChange={(e) => setIconUrl(e.target.value)}
-                placeholder="Enter icon URL"
+                placeholder={t('settings.icon.placeholder')}
               />
               <Button 
                 variant="outline" 
-                onClick={() => toast.info("Icon upload functionality coming soon")}
+                onClick={() => toast.info(t('settings.icon.uploadComingSoon'))}
               >
-                Change Icon
+                {t('settings.icon.changeButton')}
               </Button>
             </div>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="teamName">Organization Name</Label>
+          <Label htmlFor="teamName">{t('settings.name.label')}</Label>
           <Input
             id="teamName"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
-            placeholder="Enter organization name"
+            placeholder={t('settings.name.placeholder')}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t('settings.description.label')}</Label>
           <Textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe your organization"
+            placeholder={t('settings.description.placeholder')}
             rows={3}
           />
         </div>
@@ -130,7 +130,7 @@ export function OrgSettings() {
           onClick={handleSaveChanges} 
           disabled={isLoading || updateOrg.isPending}
         >
-          {isLoading || updateOrg.isPending ? "Saving..." : "Save changes"}
+          {isLoading || updateOrg.isPending ? t('settings.buttons.saving') : t('settings.buttons.saveChanges')}
         </Button>
       </CardFooter>
     </Card>

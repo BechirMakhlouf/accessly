@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Organization } from './types';
+import { Organization, OrgUpdate } from './types';
 
 interface OrganizationsState {
   organizations: Organization[];
@@ -11,7 +11,7 @@ interface OrganizationsState {
   setOrganizations: (organizations: Organization[]) => void;
   setActiveOrganization: (org: Organization | null) => void;
   addOrganization: (org: Organization) => void;
-  updateOrganization: (orgId: string, updates: Partial<Organization>) => void;
+  updateOrganization: (orgId: string, updates: OrgUpdate) => void;
   removeOrganization: (orgId: string) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;

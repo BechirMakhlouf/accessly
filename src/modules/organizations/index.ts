@@ -34,16 +34,16 @@ export { useOrganizationsStore } from './store';
 // Types
 export type { 
   Organization,
-  OrganizationInsert,
-  OrganizationUpdate,
-  OrganizationMembership,
-  OrganizationInsertWithOptionalSlug,
+  OrgInsert as OrganizationInsert,
+  OrgUpdate as OrganizationUpdate,
+  OrgMember as OrganizationMembership,
+  OrgInsertWithOptionalSlug as OrganizationInsertWithOptionalSlug,
   OrgMember,
   OrgRole
 } from './types';
 
 // Utility functions
-export { isAdminRole, canManageMembers } from './types';
+export { isAdminRole, canManageMembers } from './utils';
 
 // Actions
 export {

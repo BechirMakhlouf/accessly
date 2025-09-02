@@ -30,7 +30,7 @@ import { OrgRole } from "../types"
 export function OrgMembers() {
   const { activeOrganization: org } = useActiveOrganization();
   const { user } = useAuth();
-  const t = useTranslations();
+  const t = useTranslations('organizations');
   
 
   
@@ -59,11 +59,11 @@ export function OrgMembers() {
       if (result?.error) {
         toast.error(result.error);
       } else {
-        toast.success(t('org.members.actions.roleUpdated'));
+        toast.success(t('members.actions.roleUpdated'));
       }
     } catch (error) {
       console.error("Failed to update role:", error);
-      toast.error(t('org.members.actions.roleUpdateError'));
+      toast.error(t('members.actions.roleUpdateError'));
     }
   }
 
@@ -79,11 +79,11 @@ export function OrgMembers() {
       if (result?.error) {
         toast.error(result.error);
       } else {
-        toast.success(t('org.members.actions.memberRemoved'));
+        toast.success(t('members.actions.memberRemoved'));
       }
     } catch (error) {
       console.error("Failed to remove member:", error);
-      toast.error(t('org.members.actions.memberRemoveError'));
+      toast.error(t('members.actions.memberRemoveError'));
     }
   }
 
@@ -100,14 +100,14 @@ export function OrgMembers() {
       if (result?.error) {
         toast.error(result.error);
       } else {
-        toast.success(t('org.members.actions.invitationSent'));
+        toast.success(t('members.actions.invitationSent'));
         setNewMemberEmail("");
         setNewMemberRole("member");
         setIsInviteDialogOpen(false);
       }
     } catch (error) {
       console.error("Failed to invite member:", error);
-      toast.error(t('org.members.actions.invitationError'));
+      toast.error(t('members.actions.invitationError'));
     }
   }
 
@@ -121,7 +121,7 @@ export function OrgMembers() {
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">Organization not found</p>
+          <p className="text-center text-muted-foreground">{t('members.notFound')}</p>
         </CardContent>
       </Card>
     );
@@ -134,7 +134,7 @@ export function OrgMembers() {
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              {typeof error === "string" ? error : "Failed to load members"}
+              {typeof error === "string" ? error : t('members.loadError')}
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -145,49 +145,49 @@ export function OrgMembers() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Organization Members</CardTitle>
-        <CardDescription>Manage your organization members and their roles.</CardDescription>
+        <CardTitle>{t('members.title')}</CardTitle>
+        <CardDescription>{t('members.description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Current Members</h3>
+          <h3 className="text-lg font-semibold">{t('members.currentMembers')}</h3>
           {canManageMembers && (
             <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
               <DialogTrigger asChild>
-                <Button>Invite Member</Button>
+                <Button>{t('members.inviteMember')}</Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Invite New Member</DialogTitle>
+                  <DialogTitle>{t('members.inviteDialog.title')}</DialogTitle>
                   <DialogDescription>
-                    Enter the email and assign a role for the new organization member.
+                    {t('members.inviteDialog.description')}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="email" className="text-right">
-                      Email
+                      {t('members.inviteDialog.emailLabel')}
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={newMemberEmail}
                       onChange={(e) => setNewMemberEmail(e.target.value)}
-                      placeholder="member@example.com"
+                      placeholder={t('members.inviteDialog.emailPlaceholder')}
                       className="col-span-3"
                     />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="role" className="text-right">
-                      Role
+                      {t('members.inviteDialog.roleLabel')}
                     </Label>
                     <Select value={newMemberRole} onValueChange={(value: OrgRole) => setNewMemberRole(value)}>
                       <SelectTrigger id="role" className="col-span-3">
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder={t('members.inviteDialog.selectRole')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="admin">{t('members.roles.admin')}</SelectItem>
+                        <SelectItem value="member">{t('members.roles.member')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -197,7 +197,7 @@ export function OrgMembers() {
                     onClick={handleInviteMember}
                     disabled={inviteMember.isPending}
                   >
-                    {inviteMember.isPending ? "Inviting..." : "Invite"}
+                    {inviteMember.isPending ? t('members.inviteDialog.inviting') : t('members.inviteDialog.invite')}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -207,7 +207,7 @@ export function OrgMembers() {
 
         {isLoading ? (
           <div className="text-center py-8">
-            <p className="text-muted-foreground">Loading members...</p>
+            <p className="text-muted-foreground">{t('members.loading')}</p>
           </div>
         ) : (
           <div className="grid gap-4">
@@ -219,7 +219,7 @@ export function OrgMembers() {
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium leading-none">{member.user_id}</p>
-                    <p className="text-sm text-muted-foreground">User ID</p>
+                    <p className="text-sm text-muted-foreground">{t('members.errors.unnamedUser')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -229,11 +229,11 @@ export function OrgMembers() {
                       onValueChange={(value: "admin" | "member") => handleRoleChange(member.user_id, value)}
                     >
                       <SelectTrigger className="w-[120px]">
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder={t('members.inviteDialog.selectRole')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="admin">{t('members.roles.admin')}</SelectItem>
+                        <SelectItem value="member">{t('members.roles.member')}</SelectItem>
                       </SelectContent>
                     </Select>
                   ) : (
@@ -247,7 +247,7 @@ export function OrgMembers() {
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Actions</span>
+                          <span className="sr-only">{t('members.actionsLabel')}</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -255,7 +255,7 @@ export function OrgMembers() {
                           onClick={() => handleDeleteMember(member.user_id)}
                           className="text-destructive"
                         >
-                          Remove
+                          {t('members.remove')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -266,7 +266,7 @@ export function OrgMembers() {
             
             {members.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">No members found</p>
+                <p className="text-muted-foreground">{t('members.noMembers')}</p>
               </div>
             )}
           </div>

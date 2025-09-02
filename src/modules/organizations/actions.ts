@@ -1,14 +1,14 @@
 "use server";
 
 import { createOrgService } from './organization-factory';
-import { OrganizationUpdate, OrgRole, OrganizationInsertWithOptionalSlug } from './types';
+import { OrgUpdate, OrgRole, OrgInsertWithOptionalSlug } from './types';
 
 export async function getOrgBySlug(slug: string) {
   const orgService = await createOrgService();
   return await orgService.getBySlug(slug);
 }
 
-export async function createOrgWithoutSlug(newOrg: OrganizationInsertWithOptionalSlug) {
+export async function createOrgWithoutSlug(newOrg: OrgInsertWithOptionalSlug) {
   const orgService = await createOrgService();
   const result = await orgService.create(newOrg);
   
@@ -43,7 +43,7 @@ export async function getUserOrgs() {
   return result.data;
 }
 
-export async function updateOrganization(orgId: string, updates: OrganizationUpdate) {
+export async function updateOrganization(orgId: string, updates: OrgUpdate) {
   const orgService = await createOrgService();
   return await orgService.update(orgId, updates);
 }
@@ -81,7 +81,7 @@ export async function inviteOrAddMember(
   organizationId: string,
   email: string,
   invitedBy: string,
-  role: "admin" | "member" = "member"
+  role: OrgRole = "member"
 ): Promise<{ success: true; message: string } | { error: string }> {
   const orgService = await createOrgService();
   const result = await orgService.inviteOrAddMember(organizationId, email, invitedBy, role);

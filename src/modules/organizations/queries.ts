@@ -1,5 +1,5 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { Organization, OrganizationUpdate, OrganizationWithMembers, OrgMember, OrgRole } from "./types";
+import { Organization, OrgUpdate, OrgWithMembers, OrgMember, OrgRole } from "./types";
 import { QueryClient, UndefinedInitialDataOptions } from "@tanstack/react-query";
 import { 
   getUserOrgs, 
@@ -25,7 +25,7 @@ export const ORGANIZATION_MEMBERS_KEY = (orgId: string) => ["organization-member
 
 // Get user organizations query
 export const getUserOrganizationsQueryOptions: () =>
-  UndefinedInitialDataOptions<OrganizationWithMembers[] | null> =
+  UndefinedInitialDataOptions<OrgWithMembers[] | null> =
   () => ({
     queryKey: USER_ORGANIZATIONS_KEY,
     queryFn: async () => {
@@ -45,7 +45,7 @@ export const getUserOrganizationsQueryOptions: () =>
   });
 
 // Get organization by ID query
-export const getOrganizationQueryOptions = (orgId: string): UndefinedInitialDataOptions<OrganizationWithMembers | null> => ({
+export const getOrganizationQueryOptions = (orgId: string): UndefinedInitialDataOptions<OrgWithMembers | null> => ({
   queryKey: ORGANIZATION_KEY(orgId),
   queryFn: async () => {
     // This would need a getOrganization action to be implemented
@@ -114,7 +114,7 @@ export const createOrganizationMutationOptions = (queryClient: QueryClient) => (
 
 // Update organization mutation
 export const updateOrganizationMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async ({ orgId, updates }: { orgId: string; updates: OrganizationUpdate }) => 
+  mutationFn: async ({ orgId, updates }: { orgId: string; updates: OrgUpdate }) => 
     await updateOrganization(orgId, updates),
   onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
     if (!data?.error) {

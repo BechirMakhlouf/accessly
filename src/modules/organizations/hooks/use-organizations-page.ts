@@ -3,12 +3,12 @@ import { useRouter } from 'next/navigation'
 import { routes } from '@/lib/routes'
 import { getUserOrgs } from '../actions'
 import { useOrganizationsStore } from '../store'
-import { OrganizationWithMembers } from '../types'
+import { OrgWithMembers } from '../types'
 
 export function useOrganizationsPage() {
   const router = useRouter()
   const { setOrganizations, isLoading, setLoading, setError } = useOrganizationsStore()
-  const [organizations, setLocalOrganizations] = useState<OrganizationWithMembers[]>([])
+  const [organizations, setLocalOrganizations] = useState<OrgWithMembers[]>([])
   const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {

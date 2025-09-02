@@ -1,5 +1,5 @@
 import { TypedSupabaseClient } from '@/lib/supabase/type';
-import { OrganizationInsertWithOptionalSlug, OrganizationUpdate, OrgRole, Organization, OrganizationWithMembers, OrgMember, Invite, OrganizationMembership } from './types';
+import { OrgInsertWithOptionalSlug, OrgUpdate, OrgRole, Organization, OrgWithMembers, OrgMember, Invite } from './types';
 import { isNullOrUndefined } from '@/lib/utils';
 import { isRlsError } from '@/lib/supabase/utils';
 
@@ -86,7 +86,7 @@ export class OrganizationService {
   /**
    * Create organization with auto-generated slug
    */
-  async create(newOrg: OrganizationInsertWithOptionalSlug): Promise<ServiceResult<Organization>> {
+  async create(newOrg: OrgInsertWithOptionalSlug): Promise<ServiceResult<Organization>> {
 
     let slug = newOrg.slug ?? await this.generateUniqueSlug(newOrg.name);
 
@@ -114,7 +114,7 @@ export class OrganizationService {
   /**
    * Update organization
    */
-  async update(orgId: string, updates: OrganizationUpdate): Promise<ServiceResult<Organization>> {
+  async update(orgId: string, updates: OrgUpdate): Promise<ServiceResult<Organization>> {
     if (!this.userId) {
       return { error: "org.unauthorized" };
     }
@@ -162,7 +162,7 @@ export class OrganizationService {
   /**
    * Get user's organizations
    */
-  async getUserOrganizations(): Promise<ServiceResult<OrganizationWithMembers[]>> {
+  async getUserOrganizations(): Promise<ServiceResult<OrgWithMembers[]>> {
     if (!this.userId) {
       return { error: "org.unauthorized" };
     }
@@ -226,12 +226,7 @@ export class OrganizationService {
 
     const { data, error } = await this.supabase
       .from('organization_members')
-      .select(`
-        user_id,
-        role,
-        joined_at,
-        last_active_at
-      `)
+      .select('*')
       .eq('organization_id', orgId);
 
     if (error) {
@@ -249,7 +244,7 @@ export class OrganizationService {
   /**
    * Update member role
    */
-  async updateMemberRole(orgId: string, memberId: string, newRole: OrgRole): Promise<ServiceResult<OrganizationMembership>> {
+  async updateMemberRole(orgId: string, memberId: string, newRole: OrgRole): Promise<ServiceResult<OrgMember>> {
     if (!this.userId) {
       return { error: "org.members.unauthorized" };
     }

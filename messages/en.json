@@ -19,6 +19,115 @@
       "updated": "Organization updated successfully",
       "updateError": "Failed to update organization"
     },
+    "form": {
+      "title": "Create New Organization",
+      "subtitle": "Set up a new organization to collaborate with your team.",
+      "name": {
+        "label": "Organization Name",
+        "placeholder": "Enter organization name",
+        "required": "Organization name is required",
+        "helpText": "This will be displayed to your team members and used to generate a unique URL."
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe what this organization is for",
+        "helpText": "Optional: Help your team understand the purpose of this organization."
+      },
+      "iconUrl": {
+        "label": "Icon URL",
+        "placeholder": "https://example.com/icon.png",
+        "helpText": "Optional: Add a custom icon for your organization."
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "creating": "Creating...",
+        "create": "Create Organization"
+      },
+      "success": "Organization created successfully!",
+      "errors": {
+        "nameRequired": "Organization name is required",
+        "createFailed": "Failed to create organization",
+        "genericError": "An error occurred while creating the organization"
+      }
+    },
+    "settings": {
+      "title": "General Settings",
+      "subtitle": "Manage your organization's basic information.",
+      "icon": {
+        "label": "Organization Icon",
+        "placeholder": "Enter icon URL",
+        "changeButton": "Change Icon",
+        "uploadComingSoon": "Icon upload functionality coming soon"
+      },
+      "name": {
+        "label": "Organization Name",
+        "placeholder": "Enter organization name"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe your organization"
+      },
+      "buttons": {
+        "saving": "Saving...",
+        "saveChanges": "Save changes"
+      },
+      "notFound": "Organization not found"
+    },
+    "card": {
+      "openMenu": "Open menu",
+      "viewOrganization": "View organization",
+      "settings": "Settings",
+      "leaveOrganization": "Leave organization",
+      "noDescription": "No description provided",
+      "member": "member",
+      "members": "members",
+      "leaveDialog": {
+        "title": "Leave Organization",
+        "description": "Are you sure you want to leave \"{name}\"? You will lose access to this organization and all its resources.",
+        "cancel": "Cancel",
+        "leaving": "Leaving...",
+        "leave": "Leave Organization"
+      }
+    },
+    "members": {
+      "title": "Organization Members",
+      "description": "Manage your organization members and their roles.",
+      "currentMembers": "Current Members",
+      "inviteMember": "Invite Member",
+      "inviteDialog": {
+        "title": "Invite New Member",
+        "description": "Enter the email and assign a role for the new organization member.",
+        "emailLabel": "Email",
+        "emailPlaceholder": "member@example.com",
+        "roleLabel": "Role",
+        "selectRole": "Select role",
+        "inviting": "Inviting...",
+        "invite": "Invite"
+      },
+      "loading": "Loading members...",
+      "noMembers": "No members found",
+      "notFound": "Organization not found",
+      "loadError": "Failed to load members",
+      "actionsLabel": "Actions",
+      "remove": "Remove",
+      "roles": {
+        "admin": "Admin",
+        "member": "Member"
+      },
+      "actions": {
+        "roleUpdated": "Member role updated successfully",
+        "roleUpdateError": "Failed to update member role",
+        "memberRemoved": "Member removed successfully",
+        "memberRemoveError": "Failed to remove member",
+        "leftOrganization": "Left organization successfully",
+        "leaveOrganizationError": "Failed to leave organization",
+        "invitationSent": "Invitation sent successfully",
+        "invitationError": "Failed to send invitation"
+      },
+      "errors": {
+        "unnamedUser": "Unnamed User"
+      }
+    },
     "loading": "Loading organizations...",
     "errors": {
       "org": {
@@ -35,13 +144,11 @@
           "failedToRemove": "Failed to remove member", 
           "failedToAdd": "Failed to add member",
           "notMember": "You are not a member of this organization",
-
           "insufficientPermissions": "Insufficient permissions to perform this action"
         },
         "leave": {
           "unauthorized": "You are not authorized to leave this organization",
           "failedToLeave": "Failed to leave organization",
-
           "notMember": "You are not a member of this organization",
           "failedToCheckMembership": "Failed to check membership status"
         },

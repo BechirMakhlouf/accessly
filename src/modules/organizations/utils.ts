@@ -1,4 +1,5 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
+import { OrgRole, AdminRole } from "./types";
 
 function slugify(text: string): string {
   return text
@@ -36,4 +37,13 @@ export async function generateUniqueOrganizationSlug(supabase: TypedSupabaseClie
     suffix++;
     slug = `${base}-${suffix}`;
   }
+}
+
+// Utility functions for role checking
+export const isAdminRole = (role: OrgRole): role is AdminRole => {
+  return role === "admin"
+};
+
+export const canManageMembers = (role: OrgRole): boolean => {
+  return isAdminRole(role);
 }
