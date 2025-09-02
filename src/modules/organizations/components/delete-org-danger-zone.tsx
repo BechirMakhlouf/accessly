@@ -25,7 +25,6 @@ import { useRouter } from "next/navigation"
 import { routes } from "@/lib/routes"
 import { isAdminRole } from "../utils"
 import { createDeleteOrgConfirmationSchema, type DeleteOrgConfirmationFormData } from "../schemas"
-import type { TranslationFunction } from "@/lib/i18n/types"
 
 export function DeleteOrgDangerZone() {
   const { activeOrganization: org, currentUserRole } = useActiveOrganization();
@@ -38,7 +37,7 @@ export function DeleteOrgDangerZone() {
 
   const canDelete = currentUserRole && isAdminRole(currentUserRole);
 
-  const deleteOrgConfirmationSchema = createDeleteOrgConfirmationSchema(t as TranslationFunction);
+  const deleteOrgConfirmationSchema = createDeleteOrgConfirmationSchema();
   
   const form = useForm<DeleteOrgConfirmationFormData>({
     resolver: zodResolver(deleteOrgConfirmationSchema),

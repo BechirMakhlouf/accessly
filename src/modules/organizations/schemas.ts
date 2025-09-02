@@ -30,12 +30,10 @@ export const createOrgSlugSchema = (t: TranslationFunction) => {
   });
 };
 
-// Function to create localized delete organization confirmation schema
-export const createDeleteOrgConfirmationSchema = (t: TranslationFunction) => {
+export const createDeleteOrgConfirmationSchema = () => {
   return z.object({
     confirmName: z
       .string()
-      .min(1, t("org.settings.general.dangerZone.deleteOrg.errors.nameRequired")),
   });
 };
 
