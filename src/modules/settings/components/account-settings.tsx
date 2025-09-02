@@ -3,8 +3,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,17 +14,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Mail, Phone, Key, AlertTriangle, Loader2 } from "lucide-react"
+import {  Key, AlertTriangle, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { PhoneInput } from "@/components/phone-input"
+import { UserPhone } from "@/components/user-phone"
+import { UserEmail } from "@/components/user-email"
 import { PasswordConfirmationDialog } from "./password-confirmation-dialog"
-import { updateUserEmail } from "@/lib/auth/actions"
 
 type PendingAction = "email" | "phone" | "password" | "delete" | null
 
 export function AccountSettings() {
-  const [email, setEmail] = useState("john.doe@example.com")
-  const [phone, setPhone] = useState<string>("")
+  
   const [pendingAction, setPendingAction] = useState<PendingAction>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -38,17 +35,9 @@ export function AccountSettings() {
     toast("Password reset email sent successfully!")
   }
 
-  const handleEmailUpdate = async () => {
-    updateUserEmail(email)
-  }
+  
 
-  const handlePhoneUpdate = async () => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    toast("Phone number updated successfully!")
-  }
+  // phone is handled in its own component
   const handleAccountDelete = async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -62,13 +51,13 @@ export function AccountSettings() {
         return {
           title: "Update Email Address",
           description: "Please enter your current password to update your email address.",
-          onConfirm: handleEmailUpdate,
+          onConfirm: () => {},
         }
       case "phone":
         return {
           title: "Update Phone Number",
           description: "Please enter your current password to update your phone number.",
-          onConfirm: handlePhoneUpdate,
+          onConfirm: () => {},
         }
       case "password":
         return {
@@ -99,14 +88,7 @@ export function AccountSettings() {
           <CardDescription>Update your email address for account notifications.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <Button onClick={handleEmailUpdate}>
-            <Mail className="mr-2 h-4 w-4" />
-            Update Email
-          </Button>
+          <UserEmail />
         </CardContent>
       </Card>
 
@@ -116,14 +98,7 @@ export function AccountSettings() {
           <CardDescription>Add or update your phone number for security purposes.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <PhoneInput value={phone} onChange={(newPhone) => setPhone(newPhone)} />
-          </div>
-          <Button onClick={() => setPendingAction("phone")}>
-            <Phone className="mr-2 h-4 w-4" />
-            Update Phone
-          </Button>
+          <UserPhone />
         </CardContent>
       </Card>
 
