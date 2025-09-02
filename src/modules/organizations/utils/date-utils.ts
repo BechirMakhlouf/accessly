@@ -3,15 +3,13 @@
  * @param dateString - ISO date string
  * @returns Formatted relative time string
  */
-export const formatRelativeDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+import { useFormatter } from 'next-intl';
+
+export const useFormatRelativeDate = () => {
+  const format = useFormatter();
   
-  if (diffDays === 1) return "1 day ago";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
-  if (diffDays < 365) return `${Math.ceil(diffDays / 30)} months ago`;
-  return `${Math.ceil(diffDays / 365)} years ago`;
+  return (dateString: string): string => {
+    const date = new Date(dateString);
+    return format.relativeTime(date);
+  };
 };

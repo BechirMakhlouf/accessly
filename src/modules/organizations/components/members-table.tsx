@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { OrgRole, OrgMember } from "@/modules/organizations";
-import { formatRelativeDate } from "../utils/date-utils";
+import { useFormatRelativeDate } from "../utils/date-utils";
 
 interface MembersTableProps {
   members: OrgMember[];
@@ -40,6 +40,7 @@ export const MembersTable = ({
   searchQuery,
 }: MembersTableProps) => {
   const t = useTranslations("org.members");
+  const formatRelativeDate = useFormatRelativeDate();
 
   if (isLoading) {
     return (
