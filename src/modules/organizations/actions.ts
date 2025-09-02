@@ -92,3 +92,8 @@ export async function inviteOrAddMember(
   
   return result.data!;
 }
+
+export async function deleteOrganization(orgId: string) {
+  const orgService = await createOrgService();
+  return await orgService.delete(orgId);
+}

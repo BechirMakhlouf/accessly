@@ -6,6 +6,7 @@ import {
   updateOrganizationMutationOptions,
   leaveOrganizationMutationOptions,
   checkSlugUniquenessMutationOptions,
+  deleteOrganizationMutationOptions,
 } from "../queries";
 import { OrgUpdate, OrgInsertWithOptionalSlug } from "../types";
 
@@ -24,6 +25,9 @@ export function useOrganizationMutations() {
   // Check slug uniqueness mutation
   const checkSlugMutation = useMutation(checkSlugUniquenessMutationOptions());
 
+  // Delete organization mutation
+  const deleteOrgMutation = useMutation(deleteOrganizationMutationOptions(queryClient));
+
   // Actions
   const createOrganization = async (data: OrgInsertWithOptionalSlug) => {
     return await createOrgMutation.mutateAsync(data);
@@ -41,23 +45,30 @@ export function useOrganizationMutations() {
     return await checkSlugMutation.mutateAsync(slug);
   };
 
+  const deleteOrganization = async (orgId: string) => {
+    return await deleteOrgMutation.mutateAsync(orgId);
+  };
+
   return {
     // Actions
     createOrganization,
     updateOrganization,
     leaveOrganization,
     checkSlugUniqueness,
+    deleteOrganization,
     
     // Mutation states
     isCreating: createOrgMutation.isPending,
     isUpdating: updateOrgMutation.isPending,
     isLeaving: leaveOrgMutation.isPending,
     isCheckingSlug: checkSlugMutation.isPending,
+    isDeleting: deleteOrgMutation.isPending,
     
     // Mutation errors
     createError: createOrgMutation.error,
     updateError: updateOrgMutation.error,
     leaveError: leaveOrgMutation.error,
     checkSlugError: checkSlugMutation.error,
+    deleteError: deleteOrgMutation.error,
   };
 }

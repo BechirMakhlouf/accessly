@@ -47,3 +47,12 @@ export const isAdminRole = (role: OrgRole): role is AdminRole => {
 export const canManageMembers = (role: OrgRole): boolean => {
   return isAdminRole(role);
 }
+
+// Normalize slug input for real-time validation
+export function normalizeSlug(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-|-$/g, '');
+}

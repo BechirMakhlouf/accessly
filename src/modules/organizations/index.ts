@@ -2,6 +2,9 @@
 export { OrganizationCard } from './components/org-card';
 export { OrgMembers } from './components/org-members';
 export { OrgSettings } from './components/org-settings';
+export { OrgNameSettings } from './components/org-name-settings';
+export { OrgSlugSettings } from './components/org-slug-settings';
+export { DeleteOrgDangerZone } from './components/delete-org-danger-zone';
 export { NewOrgForm } from './components/new-org-form';
 export { OrganizationsHeader } from './components/organizations-header';
 export { OrganizationsGrid } from './components/organizations-grid';
@@ -20,9 +23,6 @@ export { useOrganizationMutations } from './hooks/use-organization-mutations';
 export { useMembersPage } from './hooks/use-members-page';
 
 
-
-// Store - REMOVED: No longer using Zustand store
-
 // Types
 export type { 
   Organization,
@@ -33,6 +33,13 @@ export type {
   OrgMember,
   OrgRole
 } from './types';
+
+// Schemas
+export type {
+  OrgNameFormData,
+  OrgSlugFormData,
+  DeleteOrgConfirmationFormData
+} from './schemas';
 
 // Utility functions
 export { isAdminRole, canManageMembers } from './utils';
@@ -45,6 +52,7 @@ export {
   genUniqueOrgSlug,
   getUserOrgs,
   updateOrganization,
+  deleteOrganization,
   getOrganizationMembers,
   updateMemberRole,
   removeMember,

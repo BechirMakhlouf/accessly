@@ -256,27 +256,57 @@
         "title": "General",
         "orgName": {
           "title": "Organization Name",
-          "description": "This is the name of your organization visible to all members.",
-          "label": "Name",
-          "saveChanges": "Save changes"
+          "description": "Update your organization's display name.",
+          "label": "Organization Name",
+          "saveChanges": "Save Changes",
+          "errors": {
+            "required": "Organization name is required",
+            "minLength": "Organization name must be at least 2 characters long",
+            "maxLength": "Organization name must be less than 100 characters"
+          }
         },
         "orgSlug": {
           "title": "Organization Slug",
-          "description": "The unique identifier for your organization. This cannot be changed once set.",
-          "label": "Slug",
-          "saveChanges": "Save changes"
+          "description": "Your organization's unique URL identifier. Changing this will update your organization's URL.",
+          "label": "Organization Slug",
+          "saveChanges": "Save Changes",
+          "placeholder": "Enter custom slug",
+          "changeSlug": "Change Slug",
+          "cancel": "Cancel",
+          "saving": "Saving...",
+          "adminOnly": "Only organization admins can change the slug.",
+          "adminTooltip": "Only admins can change the organization slug",
+          "confirmDialog": {
+            "title": "Change Organization Slug",
+            "description": "Changing your organization slug will update the URL and may affect existing links. This action cannot be easily undone. Are you sure you want to proceed?",
+            "cancel": "Cancel",
+            "continue": "Continue"
+          },
+          "errors": {
+            "minLength": "Slug must be at least 2 characters long",
+            "maxLength": "Slug must be less than 50 characters",
+            "invalidFormat": "Slug can only contain lowercase letters, numbers, and hyphens",
+            "noHyphensAtEnds": "Slug cannot start or end with a hyphen",
+            "alreadyTaken": "This slug is already taken",
+            "checkFailed": "Failed to check slug availability"
+          },
+          "success": "Organization slug updated successfully",
+          "updateError": "Failed to update organization slug"
         },
         "dangerZone": {
           "title": "Danger Zone",
           "description": "Irreversible actions that will affect your organization.",
           "deleteOrg": {
             "title": "Delete Organization",
-            "description": "Permanently delete your organization and all its data. This action cannot be undone.",
+            "description": "Once you delete an organization, there is no going back. Please be certain.",
             "button": "Delete Organization",
             "confirmTitle": "Are you absolutely sure?",
-            "confirmDescription": "This action cannot be undone. This will permanently delete your organization and remove your data from our servers.",
+            "confirmDescription": "This action cannot be undone. This will permanently delete the organization and remove all data associated with it.",
             "cancel": "Cancel",
-            "confirm": "Delete"
+            "confirm": "Yes, delete organization",
+            "errors": {
+              "nameRequired": "Organization name is required for confirmation"
+            }
           }
         }
       },

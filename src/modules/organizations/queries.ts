@@ -11,7 +11,8 @@ import {
   leaveOrganization, 
   inviteMember,
   createOrgWithoutSlug,
-  isSlugUnique
+  isSlugUnique,
+  deleteOrganization
 } from "./actions";
 import { isNullOrUndefined } from "@/lib/utils";
 
@@ -116,10 +117,17 @@ export const createOrganizationMutationOptions = (queryClient: QueryClient) => (
 export const updateOrganizationMutationOptions = (queryClient: QueryClient) => ({
   mutationFn: async ({ orgId, updates }: { orgId: string; updates: OrgUpdate }) => 
     await updateOrganization(orgId, updates),
-  onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
-    if (!data?.error) {
+  onSuccess: (data: { data?: unknown; error?: string } | null, { orgId, updates }: { orgId: string; updates: OrgUpdate }) => {
+    if (!data?.error && data?.data) {
       queryClient.invalidateQueries({ queryKey: ORGANIZATION_KEY(orgId) });
       queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
+      
+      // If slug was updated, invalidate the old slug query
+      // TODO: the check doesn't look right
+      if (updates.slug && typeof data.data === 'object' && 'slug' in data.data) {
+        const oldSlug = (data.data as { slug: string }).slug;
+        queryClient.invalidateQueries({ queryKey: ORGANIZATION_BY_SLUG_KEY(oldSlug) });
+      }
     }
   },
 });
@@ -190,6 +198,14 @@ export const inviteMemberMutationOptions = (queryClient: QueryClient) => ({
 // Check slug uniqueness mutation
 export const checkSlugUniquenessMutationOptions = () => ({
   mutationFn: async (slug: string) => await isSlugUnique(slug),
+});
+
+// Delete organization mutation
+export const deleteOrganizationMutationOptions = (queryClient: QueryClient) => ({
+  mutationFn: async (orgId: string) => await deleteOrganization(orgId),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
+  },
 });
 
 // Utility function for getting organization by slug (for server-side use)

@@ -119,6 +119,14 @@ export class OrganizationService {
       return { error: "org.unauthorized" };
     }
 
+    // If updating slug, check if it's unique
+    if (updates.slug) {
+      const isUnique = await this.isSlugUnique(updates.slug);
+      if (!isUnique) {
+        return { error: "org.slugAlreadyExists" };
+      }
+    }
+
     const { data, error } = await this.supabase
       .from('organizations')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -153,6 +161,12 @@ export class OrganizationService {
 
     if (error) {
       console.error('Failed to delete organization:', error);
+      const rlsInfo = isRlsError(error);
+
+      if (rlsInfo.isRls) {
+        return { error: "org.unauthorized" };
+      }
+
       return { error: "org.failedToDelete" };
     }
 
