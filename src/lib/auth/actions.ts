@@ -40,3 +40,22 @@ export async function updateUserEmail(email: string) {
   const supabase = await createSSRClient();
   return await supabase.auth.updateUser({ email })
 }
+
+export async function updateUserPhone(phone: string) {
+  const supabase = await createSSRClient();
+  return await supabase.auth.updateUser({ phone })
+}
+
+export async function getUserPhone() {
+  const supabase = await createSSRClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error) return { data: null, error };
+  return { data: data?.user?.phone ?? null }
+}
+
+export async function getUserEmail() {
+  const supabase = await createSSRClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error) return { data: null, error };
+  return { data: data?.user?.email ?? null }
+}

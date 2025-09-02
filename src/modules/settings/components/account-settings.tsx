@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,7 @@ import { Mail, Phone, Key, AlertTriangle, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { PhoneInput } from "@/components/phone-input"
 import { PasswordConfirmationDialog } from "./password-confirmation-dialog"
-import { updateUserEmail } from "@/lib/auth/actions"
+import { updateUserEmail, updateUserPhone, getUserPhone, getUserEmail } from "@/lib/auth/actions"
 
 type PendingAction = "email" | "phone" | "password" | "delete" | null
 
@@ -43,12 +43,60 @@ export function AccountSettings() {
   }
 
   const handlePhoneUpdate = async () => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    toast("Phone number updated successfully!")
+    try {
+      setIsLoading(true)
+      type UpdateUserPhoneResult = Awaited<ReturnType<typeof updateUserPhone>>
+      const res: UpdateUserPhoneResult = await updateUserPhone(phone)
+      if (res?.error) {
+        const message = (res.error && typeof (res.error as any).message === 'string') ? (res.error as any).message : 'Failed to update phone number'
+        toast.error(message)
+      } else {
+        toast("Phone number updated successfully!")
+      }
+    } catch (err: any) {
+      const message = err instanceof Error ? err.message : String(err)
+      toast.error(message || "Failed to update phone number")
+    } finally {
+      setIsLoading(false)
+      setPendingAction(null)
+    }
   }
+  // load current phone on mount
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        type GetUserPhoneResult = Awaited<ReturnType<typeof getUserPhone>>
+        type GetUserEmailResult = Awaited<ReturnType<typeof getUserEmail>>
+
+        const res: GetUserPhoneResult = await getUserPhone()
+        if (!mounted) return
+        if (res?.error) return
+        const phoneVal = res?.data ?? null
+        if (phoneVal && typeof phoneVal === "string") {
+          // react-phone-number-input expects E.164 strings (starting with '+').
+          // If Supabase stored the phone without the leading '+', prepend it.
+          setPhone(phoneVal.startsWith("+") ? phoneVal : `+${phoneVal}`)
+        }
+
+        // load email as well
+        try {
+          const er: GetUserEmailResult = await getUserEmail()
+          if (!mounted) return
+          if (er?.error) return
+          const emailVal = er?.data ?? null
+          if (emailVal && typeof emailVal === "string") setEmail(emailVal)
+        } catch (e: unknown) {
+          // ignore
+        }
+      } catch (e: unknown) {
+        // ignore
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [])
   const handleAccountDelete = async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
