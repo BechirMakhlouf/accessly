@@ -1,0 +1,63 @@
+"use client";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  createOrganizationMutationOptions,
+  updateOrganizationMutationOptions,
+  leaveOrganizationMutationOptions,
+  checkSlugUniquenessMutationOptions,
+} from "../queries";
+import { OrgUpdate, OrgInsertWithOptionalSlug } from "../types";
+
+export function useOrganizationMutations() {
+  const queryClient = useQueryClient();
+
+  // Create organization mutation
+  const createOrgMutation = useMutation(createOrganizationMutationOptions(queryClient));
+
+  // Update organization mutation
+  const updateOrgMutation = useMutation(updateOrganizationMutationOptions(queryClient));
+
+  // Leave organization mutation
+  const leaveOrgMutation = useMutation(leaveOrganizationMutationOptions(queryClient));
+
+  // Check slug uniqueness mutation
+  const checkSlugMutation = useMutation(checkSlugUniquenessMutationOptions());
+
+  // Actions
+  const createOrganization = async (data: OrgInsertWithOptionalSlug) => {
+    return await createOrgMutation.mutateAsync(data);
+  };
+
+  const updateOrganization = async (orgId: string, updates: OrgUpdate) => {
+    return await updateOrgMutation.mutateAsync({ orgId, updates });
+  };
+
+  const leaveOrganization = async (orgId: string) => {
+    return await leaveOrgMutation.mutateAsync({ orgId });
+  };
+
+  const checkSlugUniqueness = async (slug: string) => {
+    return await checkSlugMutation.mutateAsync(slug);
+  };
+
+  return {
+    // Actions
+    createOrganization,
+    updateOrganization,
+    leaveOrganization,
+    checkSlugUniqueness,
+    
+    // Mutation states
+    isCreating: createOrgMutation.isPending,
+    isUpdating: updateOrgMutation.isPending,
+    isLeaving: leaveOrgMutation.isPending,
+    isCheckingSlug: checkSlugMutation.isPending,
+    
+    // Mutation errors
+    createError: createOrgMutation.error,
+    updateError: updateOrgMutation.error,
+    leaveError: leaveOrgMutation.error,
+    checkSlugError: checkSlugMutation.error,
+  };
+}

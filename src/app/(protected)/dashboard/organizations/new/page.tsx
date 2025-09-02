@@ -7,25 +7,24 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createOrgWithoutSlug } from "@/modules/organizations/actions"
+import { useUserOrganizations } from "@/modules/organizations"
 import { isNullOrUndefined } from "@/lib/utils"
 import { toast } from "sonner"
 import { routes } from "@/lib/routes"
 
 export default function NewOrganizationPage() {
   const router = useRouter()
+  const { createOrganization, isCreating } = useUserOrganizations()
   const [formData, setFormData] = useState({
     name: "",
     description: ""
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
 
     try {
-      const result = await createOrgWithoutSlug({
+      const result = await createOrganization({
         name: formData.name,
         description: formData.description || null,
       })
@@ -41,8 +40,6 @@ export default function NewOrganizationPage() {
     } catch (error) {
       console.error("Error creating organization:", error)
       toast.error("An unexpected error occurred. Please try again.")
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -81,7 +78,7 @@ export default function NewOrganizationPage() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="h-11"
                   required
-                  disabled={isSubmitting}
+                  disabled={isCreating}
                 />
                 <p className="text-sm text-muted-foreground">
                   What&apos;s the name of your company or team?
@@ -98,7 +95,7 @@ export default function NewOrganizationPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  disabled={isSubmitting}
+                  disabled={isCreating}
                 />
                 <p className="text-sm text-muted-foreground">
                   A brief description of what your organization does.
@@ -111,7 +108,7 @@ export default function NewOrganizationPage() {
                   variant="outline"
                   onClick={handleCancel}
                   className="px-6"
-                  disabled={isSubmitting}
+                  disabled={isCreating}
                 >
                   Cancel
                 </Button>
@@ -123,9 +120,9 @@ export default function NewOrganizationPage() {
                     variant="default"
                     type="submit"
                     className="px-6"
-                    disabled={isSubmitting || !formData.name.trim()}
+                    disabled={isCreating || !formData.name.trim()}
                   >
-                    {isSubmitting ? "Creating..." : "Create organization"}
+                    {isCreating ? "Creating..." : "Create organization"}
                   </Button>
                 </div>
               </div>

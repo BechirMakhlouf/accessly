@@ -1,39 +1,17 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { routes } from '@/lib/routes'
-import { getUserOrgs } from '../actions'
-import { useOrganizationsStore } from '../store'
-import { OrgWithMembers } from '../types'
+import { useUserOrganizations } from './use-user-organizations'
+
 
 export function useOrganizationsPage() {
   const router = useRouter()
-  const { setOrganizations, isLoading, setLoading, setError } = useOrganizationsStore()
-  const [organizations, setLocalOrganizations] = useState<OrgWithMembers[]>([])
+  const { organizations, isLoading, error, createOrganization } = useUserOrganizations()
   const [searchQuery, setSearchQuery] = useState("")
-
-  useEffect(() => {
-    const loadOrganizations = async () => {
-      try {
-        setLoading(true)
-        const data = await getUserOrgs()
-        if (data) {
-          setLocalOrganizations(data)
-          setOrganizations(data)
-        }
-      } catch (error) {
-        console.error('Failed to load organizations:', error)
-        setError('Failed to load organizations')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadOrganizations()
-  }, [setOrganizations, setLoading, setError])
 
   // Filter organizations based on search query
   const filteredOrganizations = useMemo(() => {
-    if (!searchQuery.trim()) return organizations
+    if (!organizations || !searchQuery.trim()) return organizations || []
     
     return organizations.filter(org => 
       org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -55,6 +33,8 @@ export function useOrganizationsPage() {
     searchQuery,
     setSearchQuery,
     isLoading,
+    error,
+    createOrganization,
     handleCreateOrganization,
     handleClearSearch,
   }

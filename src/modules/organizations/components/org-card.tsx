@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { OrgWithMembers } from '../types'
 import { routes } from '@/lib/routes'
-import { useLeaveOrganization } from '../hooks'
+import { useOrganizationMutations } from '../hooks/use-organization-mutations'
 import { toast } from 'sonner'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
@@ -36,7 +36,7 @@ interface OrganizationCardProps {
 
 export function OrganizationCard({ organization }: OrganizationCardProps) {
   const [showLeaveDialog, setShowLeaveDialog] = useState(false)
-  const leaveOrg = useLeaveOrganization()
+  const { leaveOrganization } = useOrganizationMutations()
   const t = useTranslations('organizations')
   const router = useRouter()
   const locale = useLocale()
@@ -57,7 +57,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
 
   const handleLeaveOrganization = async () => {
     try {
-      const result = await leaveOrg.mutateAsync({ orgId: organization.id })
+      const result = await leaveOrganization(organization.id)
       
       if (result?.error) {
         toast.error(result.error);
@@ -161,10 +161,10 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
             <AlertDialogCancel>{t('card.leaveDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleLeaveOrganization}
-              disabled={leaveOrg.isPending}
+              disabled={false}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {leaveOrg.isPending ? t('card.leaveDialog.leaving') : t('card.leaveDialog.leave')}
+              {t('card.leaveDialog.leave')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

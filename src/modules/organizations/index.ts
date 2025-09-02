@@ -3,7 +3,6 @@ export { OrganizationCard } from './components/org-card';
 export { OrgMembers } from './components/org-members';
 export { OrgSettings } from './components/org-settings';
 export { NewOrgForm } from './components/new-org-form';
-export { OrganizationsStoreInitializer } from './components/organizations-store-initializer';
 export { OrganizationsHeader } from './components/organizations-header';
 export { OrganizationsGrid } from './components/organizations-grid';
 export { OrganizationsEmptyState } from './components/organizations-empty-state';
@@ -14,22 +13,15 @@ export { MembersTable } from './components/members-table';
 export { InviteMemberModal } from './components/invite-member-modal';
 export { MembersPagination } from './components/members-pagination';
 
-// Hooks
-export { 
-  useOrganizationMembers,
-  useUpdateMemberRole,
-  useRemoveMember,
-  useLeaveOrganization,
-  useInviteMember,
-  useUpdateOrganization,
-  useActiveOrganization,
-  useCurrentUserRole
-} from './hooks';
-export { useOrganizationsPage } from './hooks/use-organizations-page';
+export { useActiveOrganization } from './hooks/use-active-organization';
+export { useUserOrganizations } from './hooks/use-user-organizations';
+export { useOrganizationMembers } from './hooks/use-organization-members';
+export { useOrganizationMutations } from './hooks/use-organization-mutations';
 export { useMembersPage } from './hooks/use-members-page';
 
-// Store
-export { useOrganizationsStore } from './store';
+
+
+// Store - REMOVED: No longer using Zustand store
 
 // Types
 export type { 

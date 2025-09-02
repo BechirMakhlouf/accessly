@@ -48,7 +48,7 @@ const invoices = [
 ]
 
 export default function BillingSettingsPage() {
-  const { activeOrganization: org } = useActiveOrganization();
+  const { organization: org } = useActiveOrganization();
   const t = useTranslations("org.settings.billing");
   const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false);
 

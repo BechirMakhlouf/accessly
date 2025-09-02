@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { createOrgWithoutSlug } from "../actions";
+import { useUserOrganizations } from "../hooks/use-user-organizations";
 import { toast } from "sonner";
 import { routes } from "@/lib/routes";
 
 export function NewOrgForm() {
   const router = useRouter();
   const t = useTranslations();
-  const [isLoading, setIsLoading] = useState(false);
+  const { createOrganization, isCreating } = useUserOrganizations();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -30,10 +30,8 @@ export function NewOrgForm() {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      const result = await createOrgWithoutSlug({
+      const result = await createOrganization({
         name: formData.name.trim(),
         description: formData.description.trim() || null,
         icon_url: formData.icon_url.trim() || null,
@@ -48,8 +46,6 @@ export function NewOrgForm() {
     } catch (error) {
       console.error("Error creating organization:", error);
       toast.error(t("organizations.form.errors.genericError"));
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -117,16 +113,16 @@ export function NewOrgForm() {
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
-                disabled={isLoading}
+                disabled={isCreating}
               >
                 {t("organizations.form.buttons.cancel")}
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading || !formData.name.trim()}
+                disabled={isCreating || !formData.name.trim()}
                 className="flex-1"
               >
-                {isLoading ? t("organizations.form.buttons.creating") : t("organizations.form.buttons.create")}
+                {isCreating ? t("organizations.form.buttons.creating") : t("organizations.form.buttons.create")}
               </Button>
             </div>
           </form>

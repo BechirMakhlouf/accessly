@@ -7,14 +7,12 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useUpdateOrganization } from "../hooks"
-import { useActiveOrganization } from "../hooks"
+import { useActiveOrganization } from "../hooks/use-active-organization"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 
 export function OrgSettings() {
-  const { activeOrganization: org } = useActiveOrganization();
-  const updateOrg = useUpdateOrganization();
+  const { organization: org, updateOrganization, isUpdating } = useActiveOrganization();
   const t = useTranslations('organizations');
   
   const [teamName, setTeamName] = useState("")
@@ -38,20 +36,13 @@ export function OrgSettings() {
     setIsLoading(true);
     
     try {
-      const result = await updateOrg.mutateAsync({
-        orgId: org.id,
-        updates: {
-          name: teamName,
-          icon_url: iconUrl,
-          description: description,
-        }
+      await updateOrganization({
+        name: teamName,
+        icon_url: iconUrl,
+        description: description,
       });
       
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success(t('actions.updated'));
-      }
+      toast.success(t('actions.updated'));
     } catch (error) {
       console.error("Failed to save changes:", error);
       toast.error(t('actions.updateError'));
@@ -128,9 +119,9 @@ export function OrgSettings() {
       <CardFooter className="border-t pt-6">
         <Button 
           onClick={handleSaveChanges} 
-          disabled={isLoading || updateOrg.isPending}
+          disabled={isLoading || isUpdating}
         >
-          {isLoading || updateOrg.isPending ? t('settings.buttons.saving') : t('settings.buttons.saveChanges')}
+          {isLoading || isUpdating ? t('settings.buttons.saving') : t('settings.buttons.saveChanges')}
         </Button>
       </CardFooter>
     </Card>

@@ -7,47 +7,18 @@ import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { routes } from "@/lib/routes"
-import { useActiveOrganization } from "@/modules/organizations"
-import { useOrganizationsStore } from "@/modules/organizations/store"
-import { getUserOrgs } from "@/modules/organizations/actions"
+import { useActiveOrganization, useUserOrganizations } from "@/modules/organizations"
 import { Organization } from "@/modules/organizations/types"
 import { useAuth } from "@/lib/auth/hooks/useAuth"
-import { toast } from "sonner"
 
 export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
   const router = useRouter()
   const { user } = useAuth()
-  const { activeOrganization: org, setActiveOrganization: setOrg } = useActiveOrganization()
-  const { organizations, setOrganizations, isLoading, setLoading } = useOrganizationsStore()
+  const { organization: org, setActiveOrganization: setOrg } = useActiveOrganization()
+  const { organizations, isLoading } = useUserOrganizations()
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const searchInputRef = useRef<HTMLInputElement>(null)
-
-  // Load organizations on component mount
-  useEffect(() => {
-    const loadOrganizations = async () => {
-      if (organizations.length === 0 && user) {
-        setLoading(true)
-        try {
-          const data = await getUserOrgs()
-          if (data) {
-            setOrganizations(data)
-            // Set the first organization as active if none is selected
-            if (!org && data.length > 0) {
-              setOrg(data[0])
-            }
-          }
-        } catch (error) {
-          console.error('Failed to load organizations:', error)
-          toast.error('Failed to load organizations')
-        } finally {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadOrganizations()
-  }, [organizations.length, setOrganizations, setLoading, org, setOrg, user])
 
   // Auto-focus search input when dropdown opens
   useEffect(() => {
@@ -60,12 +31,12 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
   }, [open])
 
   // Filter organizations based on search query
-  const filteredOrganizations = organizations.filter(
+  const filteredOrganizations = organizations?.filter(
     (org) =>
       org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       org.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       org.slug.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  ) || []
 
   const handleSelectOrganization = (selectedOrg: Organization) => {
     setOrg(selectedOrg)
@@ -109,7 +80,7 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
     return null // Don't show dropdown if user is not authenticated
   }
 
-  if (isLoading && organizations.length === 0) {
+  if (isLoading && (!organizations || organizations.length === 0)) {
     return (
       <div className="w-full max-w-sm">
         <Popover open={open} onOpenChange={setOpen}>
@@ -200,7 +171,7 @@ export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
               <span>Create organization</span>
             </div>
 
-            {organizations.length > 0 && (
+            {organizations && organizations.length > 0 && (
               <div
                 className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
                 onClick={handleViewAllOrganizations}

@@ -19,16 +19,16 @@ import {
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, AlertTriangle } from 'lucide-react'
-import { useActiveOrganization } from "../hooks"
-import { useOrganizationMembers, useUpdateMemberRole, useRemoveMember, useInviteMember } from "../hooks"
+import { useActiveOrganization } from "../hooks/use-active-organization"
+import { useOrganizationMembers } from "../hooks/use-organization-members"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/lib/auth/hooks"
 import { toast } from "sonner"
-import { OrgRole } from "../types"
+import { OrgRole, OrgMember } from "../types"
 
 export function OrgMembers() {
-  const { activeOrganization: org } = useActiveOrganization();
+  const { organization: org } = useActiveOrganization();
   const { user } = useAuth();
   const t = useTranslations('organizations');
   
@@ -38,29 +38,23 @@ export function OrgMembers() {
   const [newMemberRole, setNewMemberRole] = useState<OrgRole>("member")
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
 
-  const { data: membersData, isLoading, error } = useOrganizationMembers(org?.id || "");
-  const updateRole = useUpdateMemberRole();
-  const removeMember = useRemoveMember();
-  const inviteMember = useInviteMember();
+  const { 
+    members, 
+    isLoading, 
+    error, 
+    updateMemberRole, 
+    removeMember, 
+    inviteMember 
+  } = useOrganizationMembers(org?.id || "");
 
-  const members = membersData || [];
-  const currentUserRole = members.find(m => m.user_id === user?.id)?.role;
+  const currentUserRole = members?.find((m: OrgMember) => m.user_id === user?.id)?.role;
 
   const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
     if (!org) return;
     
     try {
-      const result = await updateRole.mutateAsync({
-        orgId: org.id,
-        memberId,
-        newRole
-      });
-      
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success(t('members.actions.roleUpdated'));
-      }
+      await updateMemberRole(memberId, newRole);
+      toast.success(t('members.actions.roleUpdated'));
     } catch (error) {
       console.error("Failed to update role:", error);
       toast.error(t('members.actions.roleUpdateError'));
@@ -71,16 +65,8 @@ export function OrgMembers() {
     if (!org) return;
     
     try {
-      const result = await removeMember.mutateAsync({
-        orgId: org.id,
-        memberId
-      });
-      
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success(t('members.actions.memberRemoved'));
-      }
+      await removeMember(memberId);
+      toast.success(t('members.actions.memberRemoved'));
     } catch (error) {
       console.error("Failed to remove member:", error);
       toast.error(t('members.actions.memberRemoveError'));
@@ -91,20 +77,11 @@ export function OrgMembers() {
     if (!org || !newMemberEmail || !newMemberRole) return;
     
     try {
-      const result = await inviteMember.mutateAsync({
-        orgId: org.id,
-        email: newMemberEmail,
-        role: newMemberRole
-      });
-      
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success(t('members.actions.invitationSent'));
-        setNewMemberEmail("");
-        setNewMemberRole("member");
-        setIsInviteDialogOpen(false);
-      }
+      await inviteMember(newMemberEmail, newMemberRole);
+      toast.success(t('members.actions.invitationSent'));
+      setNewMemberEmail("");
+      setNewMemberRole("member");
+      setIsInviteDialogOpen(false);
     } catch (error) {
       console.error("Failed to invite member:", error);
       toast.error(t('members.actions.invitationError'));
@@ -195,9 +172,9 @@ export function OrgMembers() {
                 <DialogFooter>
                   <Button 
                     onClick={handleInviteMember}
-                    disabled={inviteMember.isPending}
+                    disabled={false}
                   >
-                    {inviteMember.isPending ? t('members.inviteDialog.inviting') : t('members.inviteDialog.invite')}
+                    {t('members.inviteDialog.invite')}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -211,7 +188,7 @@ export function OrgMembers() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {members.map(member => (
+            {members?.map(member => (
               <div key={member.user_id} className="flex items-center justify-between gap-4 border-b pb-3 last:border-b-0 last:pb-0">
                 <div className="flex items-center gap-3">
                   <Avatar>
@@ -264,7 +241,7 @@ export function OrgMembers() {
               </div>
             ))}
             
-            {members.length === 0 && (
+            {members?.length === 0 && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">{t('members.noMembers')}</p>
               </div>

@@ -7,9 +7,7 @@ import { Users, Calendar, Activity, Settings, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { routes } from "@/lib/routes";
 import { useTranslations } from "next-intl";
-import { useOrganizationMembers } from "@/modules/organizations";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
 
 function OrganizationPageSkeleton() {
   return (
@@ -67,23 +65,12 @@ function OrganizationPageSkeleton() {
 }
 
 export default function OrgPage() {
-  const { activeOrganization } = useActiveOrganization();
+  const { activeOrganization, members, isLoading } = useActiveOrganization();
   const t = useTranslations("org.overview");
-  const [isLoading, setIsLoading] = useState(true);
   
-  const { data: membersData } = useOrganizationMembers(activeOrganization?.id || "");
-  const memberCount = membersData?.length || 0;
+  const memberCount = members?.length || 0;
 
-  // Add a small delay to allow the store to initialize
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Show skeleton while loading or if no active organization
+  // Show skeleton while loading or if no organization
   if (isLoading || !activeOrganization) {
     return <OrganizationPageSkeleton />;
   }

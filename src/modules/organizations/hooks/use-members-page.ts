@@ -3,18 +3,15 @@
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { useActiveOrganization } from "@/modules/organizations";
+import { useActiveOrganization } from "./use-active-organization";
 import {
   useOrganizationMembers,
-  useUpdateMemberRole,
-  useRemoveMember,
-  useInviteMember,
-  useCurrentUserRole,
   OrgRole,
   canManageMembers,
   Organization,
   OrgMember
 } from "@/modules/organizations";
+import { OrgMember as OrgMemberType } from "../types";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -58,13 +55,22 @@ export interface UseMembersPageReturn {
   handleBulkDelete: () => Promise<void>;
 
   // Mutations
-  updateRoleMutation: ReturnType<typeof useUpdateMemberRole>;
-  removeMemberMutation: ReturnType<typeof useRemoveMember>;
-  inviteMemberMutation: ReturnType<typeof useInviteMember>;
+  updateRoleMutation: {
+    isPending: boolean;
+    error: Error | null;
+  };
+  removeMemberMutation: {
+    isPending: boolean;
+    error: Error | null;
+  };
+  inviteMemberMutation: {
+    isPending: boolean;
+    error: Error | null;
+  };
 }
 
 export const useMembersPage = (): UseMembersPageReturn => {
-  const { activeOrganization: org } = useActiveOrganization();
+  const { organization: org } = useActiveOrganization();
   const t = useTranslations("org.members");
   
   // State
@@ -76,25 +82,29 @@ export const useMembersPage = (): UseMembersPageReturn => {
   const [inviteRole, setInviteRole] = useState<OrgRole>("member");
 
   // Data fetching
-  const { 
-    data: membersData, 
-    isLoading, 
-    error 
+  const {
+    members,
+    isLoading,
+    error,
+    updateMemberRole,
+    removeMember,
+    inviteMember,
+    isUpdatingRole,
+    isRemovingMember,
+    isInvitingMember,
   } = useOrganizationMembers(org?.id || "");
 
-  const members = useMemo(() => membersData || [], [membersData]);
-  const currentUserRole = useCurrentUserRole(org?.id || "");
-
-  // Mutations
-  const updateRoleMutation = useUpdateMemberRole();
-  const removeMemberMutation = useRemoveMember();
-  const inviteMemberMutation = useInviteMember();
+  const currentUserRole = useMemo(() => {
+    if (!members || !org) return null;
+    return members.find(m => m.user_id === org.id) || null;
+  }, [members, org]);
 
   // Computed values
   const canManageMembersRole = currentUserRole ? canManageMembers(currentUserRole.role) : false;
 
   const filteredMembers = useMemo(() => {
-    return members.filter((member) =>
+    if (!members) return [];
+    return members.filter((member: OrgMemberType) =>
       member.user_id.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [members, searchQuery]);
@@ -110,13 +120,8 @@ export const useMembersPage = (): UseMembersPageReturn => {
     if (!org) return;
     
     try {
-      const result = await updateRoleMutation.mutateAsync({ orgId: org.id, memberId, newRole });
-      
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success(t('actions.roleUpdated'));
-      }
+      await updateMemberRole(memberId, newRole);
+      toast.success(t('actions.roleUpdated'));
     } catch (error) {
       console.error("Failed to update role:", error);
       toast.error(t('actions.roleUpdateError'));
@@ -127,13 +132,8 @@ export const useMembersPage = (): UseMembersPageReturn => {
     if (!org) return;
     
     try {
-      const result = await removeMemberMutation.mutateAsync({ orgId: org.id, memberId });
-      
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success(t('actions.memberRemoved'));
-      }
+      await removeMember(memberId);
+      toast.success(t('actions.memberRemoved'));
     } catch (error) {
       console.error("Failed to remove member:", error);
       toast.error(t('actions.memberRemoveError'));
@@ -142,7 +142,7 @@ export const useMembersPage = (): UseMembersPageReturn => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedMembers(paginatedMembers.map((member) => member.user_id));
+      setSelectedMembers(paginatedMembers.map((member: OrgMemberType) => member.user_id));
     } else {
       setSelectedMembers([]);
     }
@@ -160,21 +160,12 @@ export const useMembersPage = (): UseMembersPageReturn => {
     if (!org || !inviteEmail.trim()) return;
     
     try {
-      const result = await inviteMemberMutation.mutateAsync({ 
-        orgId: org.id, 
-        email: inviteEmail.trim(), 
-        role: inviteRole 
-      });
-      
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success(t('actions.invitationSent'));
-        // Reset form
-        setIsInviteModalOpen(false);
-        setInviteEmail("");
-        setInviteRole("member");
-      }
+      await inviteMember(inviteEmail.trim(), inviteRole);
+      toast.success(t('actions.invitationSent'));
+      // Reset form
+      setIsInviteModalOpen(false);
+      setInviteEmail("");
+      setInviteRole("member");
     } catch (error) {
       console.error("Failed to invite member:", error);
       toast.error(t('actions.invitationError'));
@@ -187,10 +178,7 @@ export const useMembersPage = (): UseMembersPageReturn => {
     try {
       // Process all deletions sequentially
       for (const memberId of selectedMembers) {
-        const result = await removeMemberMutation.mutateAsync({ orgId: org.id, memberId });
-        if (result?.error) {
-          toast.error(`Failed to remove member ${memberId}: ${result.error}`);
-        }
+        await removeMember(memberId);
       }
       
       toast.success(t('actions.memberRemoved'));
@@ -217,8 +205,8 @@ export const useMembersPage = (): UseMembersPageReturn => {
     setInviteRole,
 
     // Data
-    org,
-    members,
+    org: org as Organization | null,
+    members: members || [],
     filteredMembers,
     paginatedMembers,
     currentUserRole,
@@ -241,8 +229,17 @@ export const useMembersPage = (): UseMembersPageReturn => {
     handleBulkDelete,
 
     // Mutations
-    updateRoleMutation,
-    removeMemberMutation,
-    inviteMemberMutation,
+    updateRoleMutation: {
+      isPending: isUpdatingRole,
+      error: null, // Error handling is done in the action functions
+    },
+    removeMemberMutation: {
+      isPending: isRemovingMember,
+      error: null, // Error handling is done in the action functions
+    },
+    inviteMemberMutation: {
+      isPending: isInvitingMember,
+      error: null, // Error handling is done in the action functions
+    },
   };
 };
