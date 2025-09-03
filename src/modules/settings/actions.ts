@@ -2,8 +2,7 @@
 
 import { createSSRClient } from "@/lib/supabase/server";
 import type { UpsertUserSettings } from "./types";
-import { getUserId } from "@/lib/auth/utils";
-import { assertSignedInAndGetUserId } from "@/lib/auth/server-utils";
+import { getUserId, assertSignedInAndGetUserId } from "@/lib/auth/server";
 
 export async function getUserSettings() {
   const supabase = await createSSRClient();

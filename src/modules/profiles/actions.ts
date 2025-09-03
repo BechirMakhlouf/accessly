@@ -1,10 +1,9 @@
 "use server";
 
 import { createSSRClient } from "@/lib/supabase/server";
-import { assertSignedInAndGetUserId } from "@/lib/auth/server-utils";
+import { assertSignedInAndGetUserId, getUserId } from "@/lib/auth/server";
 import { UpsertProfile } from "./types";
 import { createAvatarPath } from "./utils";
-import { getUserId } from "@/lib/auth/utils";
 
 export async function getProfile() {
   const supabase = await createSSRClient();

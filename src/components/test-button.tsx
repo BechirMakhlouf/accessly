@@ -2,7 +2,7 @@
 
 import { Button } from "./ui/button";
 // import { SupabaseCSRClient } from "@/lib/supabase/client";
-// import { getUserId } from "@/lib/auth/utils";
+// import { getUserId } from "@/lib/auth";
 
 
 export function TestButton() {

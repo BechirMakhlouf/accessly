@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/lib/auth/provider";
+import { AuthProvider } from "@/lib/auth";
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner"

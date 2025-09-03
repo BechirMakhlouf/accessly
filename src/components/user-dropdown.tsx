@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { routes } from "@/lib/routes"
 import { Skeleton } from "./ui/skeleton"
-import { useAuth } from "@/lib/auth/hooks/useAuth"
+import { useAuth } from "@/lib/auth"
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useUserProfile } from "@/modules/profiles/hooks/useUserProfile"

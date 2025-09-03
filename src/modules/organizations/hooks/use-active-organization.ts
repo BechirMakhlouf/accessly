@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useParams } from "next/navigation";
-import { useAuth } from "@/lib/auth/hooks/useAuth";
+import { useAuth } from "@/lib/auth";
 import {
   getOrganizationBySlugQueryOptions,
   getOrganizationMembersQueryOptions,

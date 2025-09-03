@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { PhoneInput } from "@/components/phone-input"
 import { toast } from "sonner"
-import { updateUserPhone, getUserPhone } from "@/lib/auth/actions"
+import { updateUserPhone, getUserPhone } from "@/lib/auth"
 import { Loader2, Phone } from "lucide-react"
 
 export function UserPhone() {

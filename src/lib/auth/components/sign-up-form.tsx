@@ -22,13 +22,10 @@ import { AppleIcon } from '@/components/icons/apple'
 import { GoogleIcon } from '@/components/icons/google'
 import { MicrosoftIcon } from '@/components/icons/microsoft'
 import { routes } from '@/lib/routes'
-import { useLocale, useTranslations } from 'next-intl'
-import { useMutation } from '@tanstack/react-query'
-import { signUpMutationOptions, signInWithOAuthMutationOptions } from '../queries'
-import { SupabaseCSRClient } from '@/lib/supabase/client'
-import { getQueryClient } from '@/lib/query-client'
+import { useTranslations } from 'next-intl'
 import { AuthError } from '@supabase/supabase-js'
 import { useState } from 'react'
+import { useAuth } from '../hooks'
 
 export const signUpSchema = z.object({
   email: z.string().email(),
@@ -40,18 +37,8 @@ export const signUpSchema = z.object({
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const router = useRouter()
-  const locale = useLocale()
   const t = useTranslations("auth");
-  const queryClient = getQueryClient();
-  const supabase = SupabaseCSRClient;
-
-  // --- Mutations
-  const signUpMutation = useMutation(
-    signUpMutationOptions(supabase, queryClient, locale)
-  );
-  const oauthMutation = useMutation(
-    signInWithOAuthMutationOptions(supabase, queryClient, locale)
-  );
+  const auth = useAuth();
 
   const {
     register,
@@ -66,7 +53,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     const { email, password } = data;
     try {
-      const user = await signUpMutation.mutateAsync({ email, password });
+      const user = await auth.signUp({ email, password });
       if (user) {
         router.push({ pathname: routes.auth.signUpSuccess, query: { email: user.email } });
       }
@@ -80,7 +67,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   // --- OAuth handler
   const handleOAuth = async (provider: "google" | "azure" | "apple") => {
     try {
-      await oauthMutation.mutateAsync(provider);
+      await auth.signInWithOAuth(provider);
       router.push(routes.auth.signUpSuccess);
       reset();
     } catch (err) {
@@ -90,10 +77,10 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   };
 
   const [showPassword, setShowPassword] = useState(false)
-  const loading = signUpMutation.isPending || oauthMutation.isPending;
+  const loading = auth.isSigningUp || auth.isSigningInWithOAuth;
   const errorMessage =
-    (signUpMutation.error as AuthError)?.message ??
-    (oauthMutation.error as AuthError)?.message;
+    (auth.error as AuthError)?.message ??
+    (auth.error as AuthError)?.message;
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>

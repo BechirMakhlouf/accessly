@@ -7,7 +7,6 @@ export async function getUserId(supabase: SupabaseClient) {
   try {
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
     if (!claimsError) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sub = claimsData?.claims?.sub;
       if (sub) return sub;
     }

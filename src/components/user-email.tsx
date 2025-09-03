@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import { updateUserEmail, getUserEmail } from "@/lib/auth/actions"
+import { updateUserEmail, getUserEmail } from "@/lib/auth"
 import { Loader2, Mail } from "lucide-react"
 
 export function UserEmail() {

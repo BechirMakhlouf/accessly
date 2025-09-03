@@ -1,4 +1,4 @@
-import { isAuthenticated } from "@/lib/auth/actions";
+import { isAuthenticated } from "@/lib/auth/server";
 import { redirect } from "@/lib/i18n/navigation";
 import { routes } from "@/lib/routes";
 import { getLocale } from "next-intl/server";

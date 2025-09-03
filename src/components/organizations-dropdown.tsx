@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { routes } from "@/lib/routes"
 import { useActiveOrganization, useUserOrganizations } from "@/modules/organizations"
 import { Organization } from "@/modules/organizations/types"
-import { useAuth } from "@/lib/auth/hooks/useAuth"
+import { useAuth } from "@/lib/auth"
 
 export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
   const router = useRouter()

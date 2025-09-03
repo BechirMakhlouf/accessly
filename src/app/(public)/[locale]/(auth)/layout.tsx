@@ -1,5 +1,5 @@
 import { routes } from "@/lib/routes";
-import { isAuthenticated } from "@/lib/auth/actions";
+import { isAuthenticated } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
 import { FloatingLogo } from "@/components/floating-logo";
 

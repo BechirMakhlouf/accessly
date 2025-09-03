@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/lib/env";
-import { getUserId } from "../auth/utils";
+import { getUserId } from "../auth/server";
 
 export async function supabaseMiddleware(request: NextRequest, response?: NextResponse) {
   let supabaseResponse = response ?? NextResponse.next({

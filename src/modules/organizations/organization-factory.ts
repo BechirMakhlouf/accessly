@@ -1,7 +1,7 @@
 import { createSSRClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/adminClient';
 import { OrganizationService } from './organization.service';
-import { assertSignedInAndGetUserId } from '@/lib/auth/server-utils';
+import { assertSignedInAndGetUserId } from '@/lib/auth/server';
 
 
 /**

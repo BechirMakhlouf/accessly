@@ -22,7 +22,7 @@ import { Separator } from '@/components/ui/separator'
 import { routes } from '@/lib/routes'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/lib/auth/hooks/useAuth' // <-- useAuth hook
+import { useAuth } from '../hooks/useAuth' // <-- useAuth hook
 import { useState } from 'react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 

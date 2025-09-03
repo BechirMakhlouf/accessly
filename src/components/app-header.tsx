@@ -17,7 +17,7 @@ import { AppSearchBar } from "./app-search-bar"
 import UserDropdown from "./user-dropdown"
 import { NotificationsPopover } from "./notification-popover"
 import { useActiveOrganization } from "@/modules/organizations"
-import { useAuth } from "@/lib/auth/hooks/useAuth"
+import { useAuth } from "@/lib/auth"
 
 export function AppHeader() {
   const { activeOrganization: org } = useActiveOrganization()

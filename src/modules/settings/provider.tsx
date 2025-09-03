@@ -7,7 +7,7 @@ import { setAppLocale } from "@/lib/i18n/actions";
 import { Locale } from "@/lib/i18n/config";
 import { USER_SETTINGS_KEY } from "./queries";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/lib/auth/hooks/useAuth";
+import { useAuth } from "@/lib/auth";
 
 export function SettingsProvider() {
   const { settings } = useUserSettings()

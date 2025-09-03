@@ -12,10 +12,10 @@ import {
 import { useLocale } from "next-intl";
 import { SupabaseCSRClient } from "../supabase/client";
 import { signOut } from "./actions";
+import { User } from "@supabase/supabase-js";
 
 // Shape returned by supabase.auth.getUser()
-type GetUserResult = Awaited<ReturnType<typeof import("./queries").getAuthUser>>;
-type SupabaseUser = NonNullable<GetUserResult["data"]["user"]>;
+type SupabaseUser = NonNullable<User>;
 
 export function useAuth() {
   const queryClient = useQueryClient();

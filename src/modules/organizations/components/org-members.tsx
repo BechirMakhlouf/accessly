@@ -13,7 +13,7 @@ import { useOrganizationMembers } from "../hooks/use-organization-members"
 import { InviteMemberModal } from "./invite-member-modal"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useAuth } from "@/lib/auth/hooks"
+import { useAuth } from "@/lib/auth"
 import { toast } from "sonner"
 import { OrgRole, OrgMember } from "../types"
 

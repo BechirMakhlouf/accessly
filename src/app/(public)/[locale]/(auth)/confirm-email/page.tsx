@@ -1,4 +1,4 @@
-import { ConfirmEmailCard } from '@/lib/auth/components/confirm-email-card';
+import { ConfirmEmailCard } from '@/lib/auth';
 
 export default async function Page() {
   return (
