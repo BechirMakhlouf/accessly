@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import {  Key, AlertTriangle, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { UserPhone } from "@/components/user-phone"
-import { UserEmail } from "@/components/user-email"
+import { UserPhone } from "@/modules/settings/components/user-phone"
+import { UserEmail } from "@/modules/settings/components/user-email"
 import { PasswordConfirmationDialog } from "./password-confirmation-dialog"
 
 type PendingAction = "email" | "phone" | "password" | "delete" | null
