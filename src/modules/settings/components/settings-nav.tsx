@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { routes } from "@/lib/routes";
-import { CreditCard, Palette, Settings, User } from "lucide-react";
+import {  Palette, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,7 +11,6 @@ const settingsPagesUrls = [
   { id: "general", url: routes.protected.dashboard.account.settings.general, name: "General", icon: User },
   { id: "preferences", url: routes.protected.dashboard.account.settings.preferences, name: "Preferences", icon: Palette },
   { id: "account", url: routes.protected.dashboard.account.settings.account, name: "Account", icon: Settings },
-  { id: "billing", url: routes.protected.dashboard.account.settings.billing, name: "Billing", icon: CreditCard },
 ] as const
 
 export function SettingsNav() {
