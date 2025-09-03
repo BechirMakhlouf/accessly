@@ -80,3 +80,23 @@ export function isRlsError(error: PostgrestError | null | undefined): RlsErrorIn
 		message: error.message ?? null,
 	};
 }
+
+/**
+ * Detect whether a Supabase/PostgREST error was caused by a duplicate key constraint violation.
+ * This is useful for handling unique constraint violations without pre-checking.
+ */
+export function isDuplicateKeyError(error: PostgrestError | null | undefined): boolean {
+	if (isNullOrUndefined(error)) {
+		return false;
+	}
+
+	const code = error.code;
+	const message = error.message?.toLowerCase() ?? "";
+
+	// PostgreSQL unique violation error code
+	return code === "23505" || 
+		message.includes("duplicate key") ||
+		message.includes("unique constraint") ||
+		message.includes("already exists");
+
+}

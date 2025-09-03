@@ -3,6 +3,7 @@ RETURNS boolean
 LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
+SET search_path = public, extensions      -- explicit, immutable search_path
 AS $$
 BEGIN
   -- Return true if no organization already uses the given slug
@@ -17,6 +18,7 @@ RETURNS text
 LANGUAGE plpgsql
 VOLATILE                -- because the result can change when rows are added/removed
 SECURITY DEFINER        -- runs with the function owner’s privileges (useful if RLS blocks anon reads)
+SET search_path = public, extensions      -- explicit, immutable search_path
 AS $$
 DECLARE
     base_slug text;
@@ -49,6 +51,7 @@ CREATE OR REPLACE FUNCTION public.add_creator_to_organization()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, extensions      -- explicit, immutable search_path
 AS $$
 BEGIN
     INSERT INTO public.organization_members (organization_id, user_id, role)

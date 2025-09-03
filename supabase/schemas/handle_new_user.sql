@@ -19,6 +19,13 @@ BEGIN
     NEW.id
   );
 
+  -- Insert user profile
+  INSERT INTO public.user_profiles (id, email)
+  VALUES (
+    NEW.id,
+    NEW.email
+  );
+
   -- -- Create personal organization
   -- INSERT INTO public.organizations (name, description, created_by, owned_by)
   -- VALUES (

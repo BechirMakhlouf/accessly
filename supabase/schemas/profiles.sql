@@ -2,6 +2,7 @@
 CREATE TABLE public.user_profiles (
     id uuid PRIMARY KEY DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name text,
+    email text NOT NULL UNIQUE DEFAULT auth.email(),
     avatar_url text,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now()

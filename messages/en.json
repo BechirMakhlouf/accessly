@@ -137,6 +137,7 @@
         "failedToUpdate": "Failed to update organization",
         "failedToCreate": "Failed to create organization",
         "failedToDelete": "Failed to delete organization",
+        "slugAlreadyExists": "This slug is already taken",
         "members": {
           "unauthorized": "You are not authorized to view members of this organization",
           "failedToLoad": "Failed to load organization members",
@@ -157,46 +158,28 @@
           "failedToCreate": "Failed to create invite",
           "failedToSend": "Failed to send invitation",
           "invalidEmail": "Invalid email address",
-          "alreadyMember": "User is already a member of this organization"
+          "alreadyMember": "User is already a member of this organization",
+          "failedToCheckUser": "Failed to check if user exists"
         }
       }
     }
   },
   "org": {
     "notFound": "Organization not found",
-    "overview": {
-      "title": "Organization Overview",
-      "description": "Manage your organization and its settings",
-      "membersCount": "{count} members",
-      "createdAt": "Created {date}",
-      "lastActive": "Last active {date}",
-      "quickActions": {
-        "title": "Quick Actions",
-        "description": "Common tasks for managing your organization",
-        "manageMembers": {
-          "title": "Manage Members",
-          "description": "Invite, remove, and manage team roles"
-        },
-        "orgSettings": {
-          "title": "Organization Settings",
-          "description": "Configure security, billing, and preferences"
-        }
-      },
-      "settings": "Settings",
-      "stats": {
-        "totalMembers": {
-          "title": "Total Members",
-          "description": "Active team members"
-        },
-        "created": {
-          "title": "Created"
-        },
-        "lastActive": {
-          "title": "Last Active"
-        }
-      }
-    },
+    "unauthorized": "You are not authorized to access this organization",
+    "failedToLoad": "Failed to load organization",
+    "failedToUpdate": "Failed to update organization",
+    "failedToCreate": "Failed to create organization",
+    "failedToDelete": "Failed to delete organization",
+    "slugAlreadyExists": "This slug is already taken",
     "members": {
+      "unauthorized": "You are not authorized to view members of this organization",
+      "failedToLoad": "Failed to load organization members",
+      "failedToUpdate": "Failed to update member role",
+      "failedToRemove": "Failed to remove member",
+      "failedToAdd": "Failed to add member",
+      "notMember": "You are not a member of this organization",
+      "insufficientPermissions": "Insufficient permissions to perform this action",
       "title": "Organization Members",
       "description": "Manage your organization members and their roles",
       "loading": "Loading members...",
@@ -234,7 +217,7 @@
         "invitationError": "Failed to send invitation"
       },
       "roles": {
-                "admin": "Admin",
+        "admin": "Admin",
         "member": "Member"
       },
       "errors": {
@@ -248,6 +231,58 @@
       "tableHeaders": {
         "joined": "Joined",
         "lastActive": "Last Active"
+      }
+    },
+    "leave": {
+      "unauthorized": "You are not authorized to leave this organization",
+      "failedToLeave": "Failed to leave organization",
+      "notMember": "You are not a member of this organization",
+      "failedToCheckMembership": "Failed to check membership status"
+    },
+    "invite": {
+      "unauthorized": "You are not authorized to create invites for this organization",
+      "failedToCreate": "Failed to create invite",
+      "failedToSend": "Failed to send invitation",
+      "invalidEmail": "Invalid email address",
+      "alreadyMember": "User is already a member of this organization",
+      "failedToCheckUser": "Failed to check if user exists"
+    },
+    "member": {
+      "unauthorized": "You are not authorized to perform this action",
+      "alreadyMember": "You are already a member of this organization",
+      "insufficientPermissions": "Insufficient permissions to join this organization",
+      "failedToAdd": "Failed to add member to organization"
+    },
+    "overview": {
+      "title": "Organization Overview",
+      "description": "Manage your organization and its settings",
+      "membersCount": "{count} members",
+      "createdAt": "Created {date}",
+      "lastActive": "Last active {date}",
+      "quickActions": {
+        "title": "Quick Actions",
+        "description": "Common tasks for managing your organization",
+        "manageMembers": {
+          "title": "Manage Members",
+          "description": "Invite, remove, and manage team roles"
+        },
+        "orgSettings": {
+          "title": "Organization Settings",
+          "description": "Configure security, billing, and preferences"
+        }
+      },
+      "settings": "Settings",
+      "stats": {
+        "totalMembers": {
+          "title": "Total Members",
+          "description": "Active team members"
+        },
+        "created": {
+          "title": "Created"
+        },
+        "lastActive": {
+          "title": "Last Active"
+        }
       }
     },
     "settings": {

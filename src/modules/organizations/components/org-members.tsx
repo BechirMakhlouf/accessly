@@ -6,21 +6,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useActiveOrganization } from "../hooks/use-active-organization"
 import { useOrganizationMembers } from "../hooks/use-organization-members"
+import { InviteMemberModal } from "./invite-member-modal"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/lib/auth/hooks"
@@ -44,7 +34,8 @@ export function OrgMembers() {
     error, 
     updateMemberRole, 
     removeMember, 
-    inviteMember 
+    inviteMember,
+    isInvitingMember
   } = useOrganizationMembers(org?.id || "");
 
   const currentUserRole = members?.find((m: OrgMember) => m.user_id === user?.id)?.role;
@@ -129,56 +120,9 @@ export function OrgMembers() {
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">{t('members.currentMembers')}</h3>
           {canManageMembers && (
-            <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>{t('members.inviteMember')}</Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>{t('members.inviteDialog.title')}</DialogTitle>
-                  <DialogDescription>
-                    {t('members.inviteDialog.description')}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="email" className="text-right">
-                      {t('members.inviteDialog.emailLabel')}
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={newMemberEmail}
-                      onChange={(e) => setNewMemberEmail(e.target.value)}
-                      placeholder={t('members.inviteDialog.emailPlaceholder')}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="role" className="text-right">
-                      {t('members.inviteDialog.roleLabel')}
-                    </Label>
-                    <Select value={newMemberRole} onValueChange={(value: OrgRole) => setNewMemberRole(value)}>
-                      <SelectTrigger id="role" className="col-span-3">
-                        <SelectValue placeholder={t('members.inviteDialog.selectRole')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">{t('members.roles.admin')}</SelectItem>
-                        <SelectItem value="member">{t('members.roles.member')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button 
-                    onClick={handleInviteMember}
-                    disabled={false}
-                  >
-                    {t('members.inviteDialog.invite')}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => setIsInviteDialogOpen(true)}>
+              {t('members.inviteMember')}
+            </Button>
           )}
         </div>
 
@@ -252,6 +196,17 @@ export function OrgMembers() {
       <CardFooter>
         {/* No specific save button for members as changes are applied directly via selects/buttons */}
       </CardFooter>
+      
+      <InviteMemberModal
+        isOpen={isInviteDialogOpen}
+        onOpenChange={setIsInviteDialogOpen}
+        email={newMemberEmail}
+        onEmailChange={setNewMemberEmail}
+        role={newMemberRole}
+        onRoleChange={setNewMemberRole}
+        isInviting={isInvitingMember}
+        onInvite={handleInviteMember}
+      />
     </Card>
   )
 }

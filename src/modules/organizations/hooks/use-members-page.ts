@@ -92,12 +92,12 @@ export const useMembersPage = (): UseMembersPageReturn => {
     isUpdatingRole,
     isRemovingMember,
     isInvitingMember,
+    currentUserRole: userRole,
   } = useOrganizationMembers(org?.id || "");
 
   const currentUserRole = useMemo(() => {
-    if (!members || !org) return null;
-    return members.find(m => m.user_id === org.id) || null;
-  }, [members, org]);
+    return userRole ? { role: userRole } : null;
+  }, [userRole]);
 
   // Computed values
   const canManageMembersRole = currentUserRole ? canManageMembers(currentUserRole.role) : false;

@@ -70,27 +70,7 @@ export async function leaveOrganization(orgId: string) {
 
 export async function inviteMember(orgId: string, email: string, role: OrgRole) {
   const orgService = await createOrgService();
-  return await orgService.inviteMember(orgId, email, role);
-}
-
-/**
- * Adds an existing user to an organization or creates an invitation.
- * This function requires admin privileges.
- */
-export async function inviteOrAddMember(
-  organizationId: string,
-  email: string,
-  invitedBy: string,
-  role: OrgRole = "member"
-): Promise<{ success: true; message: string } | { error: string }> {
-  const orgService = await createOrgService();
-  const result = await orgService.inviteOrAddMember(organizationId, email, invitedBy, role);
-  
-  if (result.error) {
-    return { error: result.error };
-  }
-  
-  return result.data!;
+  return await orgService.inviteMember(orgId, role, email);
 }
 
 export async function deleteOrganization(orgId: string) {
