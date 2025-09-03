@@ -5,6 +5,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n/config";
 import { getFullRoute, routes } from "../routes";
 import { signInWithOAuthAction } from "./actions";
+import { PROFILE_KEY } from "@/modules/profiles/queries";
 
 export const AUTH_USER_KEY = ["auth", "user"] as const;
 
@@ -57,6 +58,26 @@ export async function signInWithOAuth(
   const redirectTo = getFullRoute(routes.api.auth.callback)
   console.log("[auth] signing with oauth with redirectTo: ", redirectTo);
   // const { data, error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
+  const { data, error } = await signInWithOAuthAction(provider)
+
+  if (error) {
+    error.message = translateErrorCode(error.code, "auth", messageLocale);
+    throw error;
+  }
+  return data;
+}
+
+export async function signUpWithOAuth(
+  supabase: TypedSupabaseClient,
+  provider: Provider,
+  messageLocale: Locale
+) {
+  if (supabase === null) return null
+
+  const redirectTo = getFullRoute(routes.api.auth.callback)
+  console.info("[auth] signing up with oauth with redirectTo: ", redirectTo);
+  
+  // Use the same OAuth action for sign-up (Supabase handles this automatically)
   const { data, error } = await signInWithOAuthAction(provider)
 
   if (error) {
@@ -124,5 +145,18 @@ export const signInWithOAuthMutationOptions = (
     signInWithOAuth(supabase, provider, messageLocale),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY });
+  }
+});
+
+export const signUpWithOAuthMutationOptions = (
+  supabase: TypedSupabaseClient,
+  queryClient: QueryClient,
+  messageLocale: Locale
+) => ({
+  mutationFn: (provider: Provider) =>
+    signUpWithOAuth(supabase, provider, messageLocale),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY });
+    queryClient.invalidateQueries({ queryKey: PROFILE_KEY });
   }
 });

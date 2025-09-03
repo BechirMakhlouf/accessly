@@ -9,10 +9,10 @@ export async function authMiddleware(request: NextRequest, response: NextRespons
   const isAuthenticated: boolean = (await getUserId(supabase)) !== null;
 
   if (request.nextUrl.pathname.startsWith("/dashboard") && !isAuthenticated) {
-    console.debug("redirect")
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = routes.auth.signIn;
     redirectUrl.searchParams.set("redirectedFrom", request.nextUrl.pathname);
+
     return NextResponse.redirect(redirectUrl);
   }
 
