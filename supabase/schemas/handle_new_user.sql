@@ -1,29 +1,29 @@
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = ''
+SECURITY DEFINER                -- runs with the owner’s privileges
 AS $$
 DECLARE
   personal_organization_id UUID;
-  metadata jsonb;
-  full_name text;
-  avatar_url text;
-  first_name text;
-  last_name text;
-  candidate_url text;
+  metadata                  jsonb;
+  full_name                 text;
+  avatar_url                text;
+  first_name                text;
+  last_name                 text;
+  candidate_url             text;
 BEGIN
-  -- Insert user settings
+  ------------------------------------------------------------------
+  -- Insert a row into user_settings (id = user’s UUID)
+  ------------------------------------------------------------------
   INSERT INTO public.user_settings (id)
-  VALUES (
-    NEW.id
-  );
+  VALUES (NEW.id)
+  ON CONFLICT (id) DO NOTHING;   -- avoid duplicate‑key errors
 
-  -- Insert user profile
-  -- Extract metadata-based fields (name, avatar) from OAuth providers
+  ------------------------------------------------------------------
+  -- Build a profile record from the OAuth metadata
+  ------------------------------------------------------------------
   metadata := COALESCE(NEW.raw_user_meta_data::jsonb, '{}'::jsonb);
 
-  -- Try to resolve a full name from common OAuth metadata fields
   full_name := COALESCE(
     NULLIF(BTRIM(metadata->>'full_name'), ''),
     NULLIF(BTRIM(metadata->>'name'), ''),
@@ -33,20 +33,18 @@ BEGIN
     NULLIF(BTRIM(metadata->>'family_name'), '')
   );
 
-  -- If no full name, try to construct from first and last name
-  first_name := COALESCE(
-    NULLIF(BTRIM(metadata->>'given_name'), ''),
-    NULLIF(BTRIM(metadata->>'first_name'), ''),
-    NULLIF(BTRIM(metadata->>'firstname'), '')
-  );
-
-  last_name := COALESCE(
-    NULLIF(BTRIM(metadata->>'family_name'), ''),
-    NULLIF(BTRIM(metadata->>'last_name'), ''),
-    NULLIF(BTRIM(metadata->>'lastname'), '')
-  );
-
   IF full_name IS NULL THEN
+    first_name := COALESCE(
+      NULLIF(BTRIM(metadata->>'given_name'), ''),
+      NULLIF(BTRIM(metadata->>'first_name'), ''),
+      NULLIF(BTRIM(metadata->>'firstname'), '')
+    );
+    last_name  := COALESCE(
+      NULLIF(BTRIM(metadata->>'family_name'), ''),
+      NULLIF(BTRIM(metadata->>'last_name'), ''),
+      NULLIF(BTRIM(metadata->>'lastname'), '')
+    );
+
     IF first_name IS NOT NULL AND last_name IS NOT NULL THEN
       full_name := BTRIM(first_name || ' ' || last_name);
     ELSIF first_name IS NOT NULL THEN
@@ -56,12 +54,10 @@ BEGIN
     END IF;
   END IF;
 
-  -- If still no name, fallback to local-part of email
   IF full_name IS NULL AND NEW.email IS NOT NULL THEN
     full_name := NULLIF(BTRIM(SPLIT_PART(NEW.email, '@', 1)), '');
   END IF;
 
-  -- Try to resolve avatar URL from common OAuth metadata fields
   candidate_url := COALESCE(
     NULLIF(BTRIM(metadata->>'avatar_url'), ''),
     NULLIF(BTRIM(metadata->>'picture'), ''),
@@ -71,38 +67,43 @@ BEGIN
     NULLIF(BTRIM(metadata->>'profile_image'), '')
   );
 
-  IF candidate_url IS NOT NULL AND (candidate_url LIKE 'http://%' OR candidate_url LIKE 'https://%') THEN
+  IF candidate_url IS NOT NULL
+     AND (candidate_url LIKE 'http://%' OR candidate_url LIKE 'https://%') THEN
     avatar_url := candidate_url;
   ELSE
     avatar_url := NULL;
   END IF;
 
+  ------------------------------------------------------------------
+  -- Insert (or skip) the profile row
+  ------------------------------------------------------------------
   INSERT INTO public.user_profiles (id, email, full_name, avatar_url)
   VALUES (
     NEW.id,
-    auth.email(),
+    (SELECT auth.email()),   -- safe, works even when trigger runs as service_role
     full_name,
     avatar_url
-  );
+  )
+  ON CONFLICT (id) DO UPDATE
+    SET email      = EXCLUDED.email,
+        full_name  = COALESCE(EXCLUDED.full_name, user_profiles.full_name),
+        avatar_url = EXCLUDED.avatar_url;
 
-  -- -- Create personal organization
-  -- INSERT INTO public.organizations (name, description, created_by, owned_by)
-  -- VALUES (
-  --   'My organization',
-  --   '',
-  --   NEW.id,
-  --   NEW.id,
-  -- ) RETURNING id INTO personal_organization_id;
-  --
-  -- -- Add user as admin to their personal organization
-  -- INSERT INTO public.organization_members (user_id, team_id, role)
-  -- VALUES (
-  --   NEW.id,
-  --   personal_organization_id,
-  --   'admin'
-  -- );
+  ------------------------------------------------------------------
+  -- OPTIONAL: create a personal organization for the user
+  ------------------------------------------------------------------
+  /*
+  INSERT INTO public.organizations (name, description, created_by, owned_by)
+  VALUES ('My organization', '', NEW.id, NEW.id)
+  RETURNING id INTO personal_organization_id;
+
+  INSERT INTO public.organization_members (user_id, organization_id, role)
+  VALUES (NEW.id, personal_organization_id, 'admin')
+  ON CONFLICT DO NOTHING;
+  */
 
   RETURN NEW;
+
 EXCEPTION
   WHEN unique_violation THEN
     RAISE WARNING 'Duplicate record for user %', NEW.id;
