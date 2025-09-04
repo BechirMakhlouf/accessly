@@ -68,7 +68,7 @@ BEGIN
   );
 
   IF candidate_url IS NOT NULL
-     AND (candidate_url LIKE 'http://%' OR candidate_url LIKE 'https://%') THEN
+     AND (candidate_url LIKE 'https://%') THEN
     avatar_url := candidate_url;
   ELSE
     avatar_url := NULL;
@@ -84,11 +84,7 @@ BEGIN
     full_name,
     avatar_url
   )
-  ON CONFLICT (id) DO UPDATE
-    SET email      = EXCLUDED.email,
-        full_name  = COALESCE(EXCLUDED.full_name, user_profiles.full_name),
-        avatar_url = EXCLUDED.avatar_url;
-
+  ON CONFLICT (id) DO NOTHING;
   ------------------------------------------------------------------
   -- OPTIONAL: create a personal organization for the user
   ------------------------------------------------------------------
