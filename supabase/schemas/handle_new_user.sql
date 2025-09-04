@@ -80,7 +80,7 @@ BEGIN
   INSERT INTO public.user_profiles (id, email, full_name, avatar_url)
   VALUES (
     NEW.id,
-    NEW.email,
+    auth.email(),
     full_name,
     avatar_url
   );
