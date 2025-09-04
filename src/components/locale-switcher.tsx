@@ -14,8 +14,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Check, Globe } from "lucide-react"
-import { Locale, localesInfo } from "@/lib/i18n/config"
-import { usePathname, useRouter } from "@/lib/i18n/navigation"
+import { Locale, localesInfo, usePathname, useRouter } from "@/lib/i18n"
 
 
 export default function LocaleSwitcher() {

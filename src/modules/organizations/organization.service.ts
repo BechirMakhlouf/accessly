@@ -11,7 +11,7 @@ import {
 import { isNullOrUndefined, validateEmail } from "@/lib/utils";
 import { isDuplicateKeyError, isRlsError } from "@/lib/supabase/utils";
 
-import { I18nMessageKey } from "@/lib/i18n/types";
+import { I18nMessageKey } from "@/lib/i18n";
 
 export interface OrganizationServiceOptions {
   supabase: TypedSupabaseClient;

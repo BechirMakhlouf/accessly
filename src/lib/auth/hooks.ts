@@ -9,12 +9,13 @@ import {
   signUpMutationOptions,
   signInWithOAuthMutationOptions,
 } from "./queries";
+
+// Shape returned by supabase.auth.getUser()
 import { useLocale } from "next-intl";
 import { SupabaseCSRClient } from "../supabase/client";
 import { signOut } from "./actions";
 import { User } from "@supabase/supabase-js";
 
-// Shape returned by supabase.auth.getUser()
 type SupabaseUser = NonNullable<User>;
 
 export function useAuth() {

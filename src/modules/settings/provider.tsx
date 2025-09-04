@@ -3,8 +3,7 @@
 import { useTheme } from "next-themes";
 import { useUserSettings } from "./hooks";
 import { useEffect, useRef } from "react";
-import { setAppLocale } from "@/lib/i18n/actions";
-import { Locale } from "@/lib/i18n/config";
+import { setAppLocale, Locale } from "@/lib/i18n";
 import { USER_SETTINGS_KEY } from "./queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";

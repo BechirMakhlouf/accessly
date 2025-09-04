@@ -1,6 +1,6 @@
 import { supabaseMiddleware } from "@/lib/supabase/middleware";
 import { type NextRequest } from "next/server";
-import { i18nMiddleware } from "./lib/i18n/middleware";
+import { i18nMiddleware } from "./lib/i18n";
 import { authMiddleware } from "./lib/auth/middleware";
 
 export async function middleware(request: NextRequest) {

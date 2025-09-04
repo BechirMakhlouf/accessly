@@ -33,15 +33,9 @@ export {
   signUpWithOAuthMutationOptions,
 } from './queries';
 
-// Note: Server-only utilities (assertSignedInAndGetUserId, getUserId, server actions, middleware)
-// are available via '@/lib/auth/server' for server contexts
-
 // Components
 export { SignInForm, signInSchema } from './components/sign-in-form';
 export { SignUpForm, signUpSchema } from './components/sign-up-form';
 export { ForgotPasswordForm } from './components/forgot-password-form';
 export { ConfirmEmailCard } from './components/confirm-email-card';
 export { UpdatePasswordForm } from './components/update-password-form';
-
-// Additional hooks
-export { useAuth as useAuthFromHooks } from './hooks/useAuth';

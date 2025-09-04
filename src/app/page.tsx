@@ -1,5 +1,4 @@
-import { getLocale } from "@/lib/i18n/actions";
-import { redirect } from "@/lib/i18n/navigation";
+import { getLocale, redirect } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 
 export default async function Page(

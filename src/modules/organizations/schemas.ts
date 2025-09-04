@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { TranslationFunction } from "@/lib/i18n/types";
+import type { TranslationFunction } from "@/lib/i18n";
 
 // Function to create localized organization name schema
 export const createOrgNameSchema = (t: TranslationFunction) => {

@@ -2,7 +2,7 @@ import type { Provider } from "@supabase/supabase-js";
 import { TypedSupabaseClient } from "@/lib/supabase/type";
 import { translateErrorCode } from 'supabase-error-translator-js';
 import { QueryClient } from "@tanstack/react-query";
-import { Locale } from "../i18n/config";
+import { Locale } from "../i18n";
 import { getFullRoute, routes } from "../routes";
 import { signInWithOAuthAction } from "./actions";
 import { PROFILE_KEY } from "@/modules/profiles/queries";
