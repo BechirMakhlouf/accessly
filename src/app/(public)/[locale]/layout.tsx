@@ -21,7 +21,6 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  console.log("locale from m[locale]", locale);
   // Enable static rendering with i18n
   setRequestLocale(locale);
 

@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { routes } from "@/lib/routes";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth"; 
+import { useAuth } from "@/lib/auth"; // <-- useAuth hook
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
@@ -57,20 +57,26 @@ export function SignInForm(
     clearErrors("root");
     setIsSubmitting(true);
     try {
-      // useAuth.signIn returns User directly, errors are handled by the hook
+      // useAuth.signInWithPassword returns Supabase response { data, error }.
       await auth.signIn({
         email: data.email,
         password: data.password,
       });
+      // handle Supabase error shape
+      const error = auth.error;
+      if (error) {
+        setError("root", {
+          type: "server",
+          message: error.message ?? String(error),
+        });
+        return;
+      }
       // success -> navigate to protected dashboard
       reset();
       router.push(routes.protected.dashboard.root);
     } catch (err: unknown) {
-      console.error("error while signing in", err);
-      setError("root", { 
-        type: "server", 
-        message: err instanceof Error ? err.message : "error while signing in." 
-      });
+      console.error("error while signing in with oauth", err);
+      setError("root", { type: "server", message: "error while singing in." });
     } finally {
       setIsSubmitting(false);
     }
@@ -80,16 +86,21 @@ export function SignInForm(
     clearErrors("root");
     setIsOauthLoading(true);
     try {
-      await auth.signInWithOAuth(provider);
+       await auth.signInWithOAuth(provider);
+      const error = auth.error;
+      if (error) {
+        setError("root", {
+          type: "server",
+          message: error.message ?? String(error),
+        });
+        return;
+      }
       // With OAuth, Supabase usually redirects you to the provider.
       // In case your flow returns immediately and you want to navigate:
       router.push(routes.protected.dashboard.root);
     } catch (err: unknown) {
       console.error("error while signing in with oauth", err);
-      setError("root", { 
-        type: "server", 
-        message: err instanceof Error ? err.message : "error while signing in." 
-      });
+      setError("root", { type: "server", message: "error while signing in." });
     } finally {
       setIsOauthLoading(false);
     }

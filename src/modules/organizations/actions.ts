@@ -1,17 +1,18 @@
 "use server";
 
 import { createOrgService } from './organization-factory';
-import { OrgUpdate, OrgRole, OrgInsertWithOptionalSlug } from './types';
+import { OrgUpdate, OrgRole, OrgInput } from './types';
 
 export async function getOrgBySlug(slug: string) {
   const orgService = await createOrgService();
   return await orgService.getBySlug(slug);
 }
 
-export async function createOrgWithoutSlug(newOrg: OrgInsertWithOptionalSlug) {
+export async function createOrg(newOrg: OrgInput) {
   const orgService = await createOrgService();
   const result = await orgService.create(newOrg);
   
+  console.debug("result: ", result);
   if (result.error || !result.data) {
     return result;
   }

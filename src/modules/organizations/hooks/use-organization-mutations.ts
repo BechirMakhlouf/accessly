@@ -8,7 +8,7 @@ import {
   checkSlugUniquenessMutationOptions,
   deleteOrganizationMutationOptions,
 } from "../queries";
-import { OrgUpdate, OrgInsertWithOptionalSlug } from "../types";
+import { OrgUpdate, OrgInput } from "../types";
 
 export function useOrganizationMutations() {
   const queryClient = useQueryClient();
@@ -29,7 +29,7 @@ export function useOrganizationMutations() {
   const deleteOrgMutation = useMutation(deleteOrganizationMutationOptions(queryClient));
 
   // Actions
-  const createOrganization = async (data: OrgInsertWithOptionalSlug) => {
+  const createOrganization = async (data: OrgInput) => {
     return await createOrgMutation.mutateAsync(data);
   };
 

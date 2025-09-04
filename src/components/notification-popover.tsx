@@ -1,23 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Bell, Settings, Archive, User, Heart, MessageCircle, UserPlus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import {
+  Archive,
+  Bell,
+  Heart,
+  MessageCircle,
+  Settings,
+  User,
+  UserPlus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface Notification {
-  id: string
-  type: "like" | "comment" | "follow" | "mention"
-  title: string
+  id: string;
+  type: "like" | "comment" | "follow" | "mention";
+  title: string;
   user?: {
-    name: string
-    avatar?: string
-  }
-  timestamp: string
-  isRead: boolean
+    name: string;
+    avatar?: string;
+  };
+  timestamp: string;
+  isRead: boolean;
 }
 
 const sampleNotifications: Notification[] = [
@@ -25,7 +37,10 @@ const sampleNotifications: Notification[] = [
     id: "1",
     type: "like",
     title: "Sarah liked your post about React components",
-    user: { name: "Sarah Johnson", avatar: "/placeholder.svg?height=32&width=32" },
+    user: {
+      name: "Sarah Johnson",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
     timestamp: "2 minutes ago",
     isRead: false,
   },
@@ -45,7 +60,7 @@ const sampleNotifications: Notification[] = [
     timestamp: "3 hours ago",
     isRead: false,
   },
-]
+];
 
 const archivedNotifications: Notification[] = [
   {
@@ -64,66 +79,73 @@ const archivedNotifications: Notification[] = [
     timestamp: "2 days ago",
     isRead: true,
   },
-]
+];
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
     case "like":
-      return <Heart className="h-4 w-4 text-red-500" />
+      return <Heart className="h-4 w-4 text-red-500" />;
     case "comment":
-      return <MessageCircle className="h-4 w-4 text-blue-500" />
+      return <MessageCircle className="h-4 w-4 text-blue-500" />;
     case "follow":
-      return <UserPlus className="h-4 w-4 text-green-500" />
+      return <UserPlus className="h-4 w-4 text-green-500" />;
     case "mention":
-      return <User className="h-4 w-4 text-purple-500" />
+      return <User className="h-4 w-4 text-purple-500" />;
     default:
-      return <Bell className="h-4 w-4 text-gray-500" />
+      return <Bell className="h-4 w-4 text-gray-500" />;
   }
-}
+};
 
 export function NotificationsPopover() {
-  const [notifications, setNotifications] = useState(sampleNotifications)
-  const [archived, setArchived] = useState(archivedNotifications)
-  const [isOpen, setIsOpen] = useState(false)
+  const [notifications, setNotifications] = useState(sampleNotifications);
+  const [archived, setArchived] = useState(archivedNotifications);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const archiveNotification = (notificationId: string) => {
-    const notification = notifications.find((n) => n.id === notificationId)
+    const notification = notifications.find((n) => n.id === notificationId);
     if (notification) {
-      setNotifications((prev) => prev.filter((n) => n.id !== notificationId))
-      setArchived((prev) => [...prev, { ...notification, isRead: true }])
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      setArchived((prev) => [...prev, { ...notification, isRead: true }]);
     }
-  }
+  };
 
   const NotificationItem = ({
     notification,
     showArchive = false,
   }: {
-    notification: Notification
-    showArchive?: boolean
+    notification: Notification;
+    showArchive?: boolean;
   }) => (
     <div className="flex items-start gap-3 p-3 rounded-lg group">
       <div className="flex-shrink-0">
-        {notification.user?.avatar ? (
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={notification.user.avatar || "/placeholder.svg"} alt={notification.user.name} />
-            <AvatarFallback>
-              {notification.user.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-        ) : (
-          <div className="h-8 w-8 rounded-full bg-foreground flex items-center justify-center">
-            {getNotificationIcon(notification.type)}
-          </div>
-        )}
+        {notification.user?.avatar
+          ? (
+            <Avatar className="h-8 w-8">
+              <AvatarImage
+                src={notification.user.avatar || "/placeholder.svg"}
+                alt={notification.user.name}
+              />
+              <AvatarFallback>
+                {notification.user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+          )
+          : (
+            <div className="h-8 w-8 rounded-full bg-foreground flex items-center justify-center">
+              {getNotificationIcon(notification.type)}
+            </div>
+          )}
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-foreground leading-5">{notification.title}</p>
+        <p className="text-sm text-foreground leading-5">
+          {notification.title}
+        </p>
         <p className="text-xs text-foreground mt-1">{notification.timestamp}</p>
       </div>
 
@@ -144,7 +166,7 @@ export function NotificationsPopover() {
         </div>
       )}
     </div>
-  )
+  );
 
   const EmptyState = ({ message }: { message: string }) => (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
@@ -153,7 +175,7 @@ export function NotificationsPopover() {
       </div>
       <p className="text-sm text-gray-500">{message}</p>
     </div>
-  )
+  );
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -178,7 +200,10 @@ export function NotificationsPopover() {
               <TabsTrigger value="inbox" className="text-sm">
                 Inbox
                 {unreadCount > 0 && (
-                  <Badge variant="secondary" className="ml-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="ml-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                  >
                     {unreadCount}
                   </Badge>
                 )}
@@ -194,33 +219,43 @@ export function NotificationsPopover() {
 
           <TabsContent value="inbox" className="mt-0">
             <div className="max-h-96 overflow-y-auto">
-              {notifications.length > 0 ? (
-                <div className="divide-y">
-                  {notifications.map((notification) => (
-                    <NotificationItem key={notification.id} notification={notification} showArchive={true} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState message="You're all caught up! No new notifications." />
-              )}
+              {notifications.length > 0
+                ? (
+                  <div className="divide-y">
+                    {notifications.map((notification) => (
+                      <NotificationItem
+                        key={notification.id}
+                        notification={notification}
+                        showArchive={true}
+                      />
+                    ))}
+                  </div>
+                )
+                : (
+                  <EmptyState message="You're all caught up! No new notifications." />
+                )}
             </div>
           </TabsContent>
 
           <TabsContent value="archive" className="mt-0">
             <div className="max-h-96 overflow-y-auto">
-              {archived.length > 0 ? (
-                <div className="divide-y">
-                  {archived.map((notification) => (
-                    <NotificationItem key={notification.id} notification={notification} showArchive={false} />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState message="No archived notifications yet." />
-              )}
+              {archived.length > 0
+                ? (
+                  <div className="divide-y">
+                    {archived.map((notification) => (
+                      <NotificationItem
+                        key={notification.id}
+                        notification={notification}
+                        showArchive={false}
+                      />
+                    ))}
+                  </div>
+                )
+                : <EmptyState message="No archived notifications yet." />}
             </div>
           </TabsContent>
         </Tabs>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

@@ -4,7 +4,7 @@ export type Organization = Database["public"]["Tables"]["organizations"]["Row"];
 export type OrgInsert = Database["public"]["Tables"]["organizations"]["Insert"];
 export type OrgUpdate = Database["public"]["Tables"]["organizations"]["Update"];
 export type OrgMember = Database["public"]["Tables"]["organization_members"]["Row"];
-export type OrgInsertWithOptionalSlug = Omit<OrgInsert, "slug"> & {
+export type OrgInput = Omit<OrgInsert, "slug"> & {
   slug?: string;
 };
 export type Invite = Database["public"]["Tables"]["invites"]["Row"];

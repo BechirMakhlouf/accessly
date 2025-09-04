@@ -2,7 +2,7 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import { getFullRoute, routes } from "@/lib/routes";
 import {
   Organization,
-  OrgInsertWithOptionalSlug,
+  OrgInput,
   OrgMember,
   OrgRole,
   OrgUpdate,
@@ -97,7 +97,7 @@ export class OrganizationService {
    * Create organization with auto-generated slug
    */
   async create(
-    newOrg: OrgInsertWithOptionalSlug,
+    newOrg: OrgInput,
   ): Promise<ServiceResult<Organization>> {
     let slug = newOrg.slug ?? await this.generateUniqueSlug(newOrg.name);
 

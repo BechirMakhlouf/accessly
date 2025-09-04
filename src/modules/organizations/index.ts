@@ -26,10 +26,10 @@ export { useMembersPage } from './hooks/use-members-page';
 // Types
 export type { 
   Organization,
-  OrgInsert as OrganizationInsert,
+  OrgInput as OrganizationInsert,
   OrgUpdate as OrganizationUpdate,
   OrgMember as OrganizationMembership,
-  OrgInsertWithOptionalSlug as OrganizationInsertWithOptionalSlug,
+  OrgInput as OrganizationInsertWithOptionalSlug,
   OrgMember,
   OrgRole
 } from './types';
@@ -47,7 +47,7 @@ export { isAdminRole, canManageMembers } from './utils';
 // Actions
 export {
   getOrgBySlug,
-  createOrgWithoutSlug,
+  createOrg as createOrgWithoutSlug,
   isSlugUnique,
   genUniqueOrgSlug,
   getUserOrgs,

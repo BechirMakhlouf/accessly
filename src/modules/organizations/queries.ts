@@ -10,7 +10,7 @@ import {
   removeMember, 
   leaveOrganization, 
   inviteMember,
-  createOrgWithoutSlug,
+  createOrg,
   isSlugUnique,
   deleteOrganization
 } from "./actions";
@@ -106,8 +106,8 @@ export const getOrganizationMembersQueryOptions = (orgId: string): UndefinedInit
 
 // Create organization mutation
 export const createOrganizationMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async (newOrg: Parameters<typeof createOrgWithoutSlug>[0]) => 
-    await createOrgWithoutSlug(newOrg),
+  mutationFn: async (newOrg: Parameters<typeof createOrg>[0]) => 
+    await createOrg(newOrg),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
   },

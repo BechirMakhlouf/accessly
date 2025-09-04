@@ -8,7 +8,7 @@ import {
   updateOrganizationMutationOptions,
   leaveOrganizationMutationOptions,
 } from "../queries";
-import { OrgUpdate, OrgInsertWithOptionalSlug } from "../types";
+import { OrgUpdate, OrgInput } from "../types";
 
 export function useUserOrganizations() {
   const { user } = useAuth();
@@ -50,7 +50,7 @@ export function useUserOrganizations() {
   });
 
   // Actions
-  const createOrganization = async (data: OrgInsertWithOptionalSlug) => {
+  const createOrganization = async (data: OrgInput) => {
     const result = await createOrgMutation.mutateAsync(data);
     return result;
   };
