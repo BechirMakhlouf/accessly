@@ -25,6 +25,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth/hooks/useAuth' // <-- useAuth hook
 import { useState } from 'react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { emitEvent } from '@/event-bus'
 
 export const signInSchema = z.object({
   email: z.string().email(),
@@ -63,9 +64,10 @@ export function SignInForm({ className, ...props }: React.ComponentPropsWithoutR
         setError('root', { type: 'server', message: error.message ?? String(error) })
         return
       }
-      // success -> navigate to protected dashboard
-      reset()
-      router.push(routes.protected.dashboard.root)
+      // success -> emit event and navigate to protected dashboard
+  reset()
+  emitEvent('user-logged-in', { userId: res.data?.user?.email ?? 'unknown' });
+  router.push(routes.protected.dashboard.root)
     } catch (err: unknown) {
       console.error("error while signing in with oauth", err);
       setError('root', { type: 'server', message: "error while singing in." })
