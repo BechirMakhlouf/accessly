@@ -1,4 +1,4 @@
-import type { EventBusEvents } from './events';
+import type { EventBusEvents } from './types';
 
 export type EventHandler<T> = (payload: T) => void;
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { eventBus, type EventBusEvents } from '@/lib/event-bus';
+import { eventBus, type EventBusEvents } from '@/event-bus';
 
 
 export function useEventBus<K extends keyof EventBusEvents>(
