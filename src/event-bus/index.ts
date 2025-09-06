@@ -1,7 +1,7 @@
 
 import { getGlobalEventBus } from './core';
-import type { EventBusEvents } from './types';
-export type { EventBusEvents } from './types';
+import type { EventBusEvents, EventPayload } from './types';
+export type { EventBusEvents, EventPayload } from './types';
 
 export const eventBus = getGlobalEventBus();
 

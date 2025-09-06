@@ -1,6 +1,5 @@
 import type { EventBusEvents } from './types';
 
-// Generic handler type
 export type EventHandler<T> = (payload: T) => void;
 
 
