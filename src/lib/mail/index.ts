@@ -1,0 +1,1 @@
+export { mailClient } from "./client";

@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/schemas/**'
+      - 'supabase/tests/**'
   workflow_dispatch:
 
 jobs:
