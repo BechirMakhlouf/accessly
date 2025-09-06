@@ -9,7 +9,8 @@ export const eventBus = getGlobalEventBus();
 export function emitEvent<K extends keyof EventBusEvents>(event: K, payload: EventBusEvents[K]) {
    if (process.env.NODE_ENV === 'development') {
       console.log("Emitting event:", event, payload);
-    }  eventBus.emit(event, payload);
+      eventBus.emit(event, payload);
+    }  
 }
 
 export function subscribeEvent<K extends keyof EventBusEvents>(
