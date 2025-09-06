@@ -14,14 +14,14 @@ export function UserPhone() {
   const [phone, setPhone] = useState<string>(user?.phone ?? "")
   const [isLoading, setIsLoading] = useState(false)
 
-  // Keep local phone in sync with auth user when available.
   useEffect(() => {
-    const phoneVal = user?.phone ?? ""
-    if (phoneVal && phoneVal !== phone) {
-      setPhone(phoneVal.startsWith("+") ? phoneVal : `+${phoneVal}`)
+    const raw = user?.phone ?? ""
+    if (!raw) return
+    const normalized = raw.startsWith("+") ? raw : `+${raw}`
+    if (normalized !== phone) {
+      setPhone(normalized)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.phone])
+  }, [user?.phone, phone])
 
   const handleUpdate = async () => {
     setIsLoading(true)
