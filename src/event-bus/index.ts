@@ -1,14 +1,15 @@
 
 import { getGlobalEventBus } from './core';
-import type { EventBusEvents, EventPayload } from './types';
+import type { EventBusEvents } from './types';
 export type { EventBusEvents, EventPayload } from './types';
 
 export const eventBus = getGlobalEventBus();
 
 // Server-safe helpers (no React dependency)
 export function emitEvent<K extends keyof EventBusEvents>(event: K, payload: EventBusEvents[K]) {
-    console.log("Emitting event:", event, payload);
-  eventBus.emit(event, payload);
+   if (process.env.NODE_ENV === 'development') {
+      console.log("Emitting event:", event, payload);
+    }  eventBus.emit(event, payload);
 }
 
 export function subscribeEvent<K extends keyof EventBusEvents>(
