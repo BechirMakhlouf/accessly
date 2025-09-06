@@ -10,4 +10,3 @@ $$;
 -- revoke access to non service role
 REVOKE EXECUTE ON FUNCTION public.get_user_by_email(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_user_by_email(text) TO service_role;
-
