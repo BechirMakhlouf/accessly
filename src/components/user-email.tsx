@@ -4,51 +4,42 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import { updateUserEmail, getUserEmail } from "@/lib/auth/actions"
-import { Loader2, Mail } from "lucide-react"
+import { updateUserEmail } from "@/lib/auth/actions"
+import { Loader2, Mail } from "lucide-react";
+import { useAuth } from "@/lib/auth/hooks/useAuth";
+import { eventBus } from "@/event-bus";
 
 export function UserEmail() {
-  const [email, setEmail] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(false)
+  const { user, refetchUser } = useAuth();
+  const [email, setEmail] = useState<string>(user?.email ?? "");
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Sync when user.email changes
   useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        type GetUserEmailResult = Awaited<ReturnType<typeof getUserEmail>>
-        const res: GetUserEmailResult = await getUserEmail()
-        if (!mounted) return
-        if (res?.error) return
-        const emailVal = res?.data ?? null
-        if (emailVal && typeof emailVal === "string") setEmail(emailVal)
-      } catch (e) {
-    console.error(e)
-        // ignore
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [])
+    if (user?.email && user.email !== email) setEmail(user.email);
+  }, [user?.email]);
 
   const handleUpdate = async () => {
-    setIsLoading(true)
+    if (!email) return toast.error("Email is empty");
+    setIsLoading(true);
     try {
-      type UpdateUserEmailResult = Awaited<ReturnType<typeof updateUserEmail>>
-      const res: UpdateUserEmailResult = await updateUserEmail(email)
+      type UpdateUserEmailResult = Awaited<ReturnType<typeof updateUserEmail>>;
+      const res: UpdateUserEmailResult = await updateUserEmail(email);
       if (res?.error) {
-        const message = res.error && typeof (res.error as { message: string }).message === 'string' ? (res.error as { message: string }).message : 'Failed to update email'
-        toast.error(message)
+        const message = res.error && typeof (res.error as { message: string }).message === 'string' ? (res.error as { message: string }).message : 'Failed to update email';
+        toast.error(message);
       } else {
-        toast("Email updated successfully!")
+        toast.success("Email updated successfully!");
+        eventBus.emit('data-updated', { dataId: 'user-email', newData: email });
+        await refetchUser();
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err)
-      toast.error(message || "Failed to update email")
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message || "Failed to update email");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -61,7 +52,7 @@ export function UserEmail() {
         {isLoading ? "Updating..." : "Update Email"}
       </Button>
     </div>
-  )
+  );
 }
 
-export default UserEmail
+export default UserEmail;

@@ -4,35 +4,27 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { PhoneInput } from "@/components/phone-input"
 import { toast } from "sonner"
-import { updateUserPhone, getUserPhone } from "@/lib/auth/actions"
+import { updateUserPhone } from "@/lib/auth/actions"
 import { Loader2, Phone } from "lucide-react"
+import { useAuth } from "@/lib/auth/hooks/useAuth"
+import { eventBus } from "@/event-bus"
 
 export function UserPhone() {
-  const [phone, setPhone] = useState<string>("")
+  const { user, refetchUser } = useAuth()
+  const [phone, setPhone] = useState<string>(user?.phone ?? "")
   const [isLoading, setIsLoading] = useState(false)
 
+  // Sync local state when user.phone changes
   useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        type GetUserPhoneResult = Awaited<ReturnType<typeof getUserPhone>>
-        const res: GetUserPhoneResult = await getUserPhone()
-        if (!mounted) return
-        if (res?.error) return
-        const phoneVal = res?.data ?? null
-        if (phoneVal && typeof phoneVal === "string") {
-          setPhone(phoneVal.startsWith("+") ? phoneVal : `+${phoneVal}`)
-        }
-      } catch (e) {
-        console.error(e)
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [])
+    if (!user?.phone) return
+    setPhone(prev => {
+      const formatted = user.phone!.startsWith('+') ? user.phone! : `+${user.phone}`
+      return prev === formatted ? prev : formatted
+    })
+  }, [user?.phone])
 
   const handleUpdate = async () => {
+    if (!phone) return toast.error("Phone is empty")
     setIsLoading(true)
     try {
       type UpdateUserPhoneResult = Awaited<ReturnType<typeof updateUserPhone>>
@@ -41,7 +33,11 @@ export function UserPhone() {
         const message = res.error && typeof (res.error as { message: string }).message === 'string' ? (res.error as { message: string }).message : 'Failed to update phone number'
         toast.error(message)
       } else {
-        toast("Phone number updated successfully!")
+        toast.success("Phone number updated successfully!")
+        // Emit a generic data-updated event (could be used by other parts of the app)
+  eventBus.emit('data-updated', { dataId: 'user-phone', newData: phone })
+  // Refetch auth user to update context
+  refetchUser()
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)
