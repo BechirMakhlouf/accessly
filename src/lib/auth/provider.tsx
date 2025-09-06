@@ -1,9 +1,27 @@
 "use client";
 
 import { SupabaseCSRClient } from "@/lib/supabase/client";
-import type { AuthError, AuthOtpResponse, AuthResponse, AuthTokenResponsePassword, OAuthResponse, Provider, Session, SignInWithPasswordlessCredentials, SignUpWithPasswordCredentials, User } from "@supabase/supabase-js";
+import type {
+  AuthError,
+  AuthOtpResponse,
+  AuthResponse,
+  AuthTokenResponsePassword,
+  OAuthResponse,
+  Provider,
+  Session,
+  SignInWithPasswordlessCredentials,
+  SignUpWithPasswordCredentials,
+  User,
+} from "@supabase/supabase-js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { signOut as signOutAction } from "./actions";
 import { getFullRoute, routes } from "../routes";
 
@@ -11,18 +29,27 @@ type AuthContextValue = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  signInWithPassword: (creds: { email: string; password: string }) => Promise<AuthTokenResponsePassword>;
+  signInWithPassword: (
+    creds: { email: string; password: string },
+  ) => Promise<AuthTokenResponsePassword>;
   signUp: (creds: SignUpWithPasswordCredentials) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
-  signInWithOAuth: (provider: Provider, options?: { redirectTo?: string; scopes?: string }) => Promise<OAuthResponse>;
-  signInWithOtp: (creds: SignInWithPasswordlessCredentials) => Promise<AuthOtpResponse>;
-  resetPasswordForEmail: (email: string, redirectTo?: string) => Promise<{
-    data: object;
-    error: null;
-  } | {
-    data: null;
-    error: AuthError;
-  }>;
+  signInWithOAuth: (
+    provider: Provider,
+    options?: { redirectTo?: string; scopes?: string },
+  ) => Promise<OAuthResponse>;
+  signInWithOtp: (
+    creds: SignInWithPasswordlessCredentials,
+  ) => Promise<AuthOtpResponse>;
+  resetPasswordForEmail: (email: string, redirectTo?: string) => Promise<
+    {
+      data: object;
+      error: null;
+    } | {
+      data: null;
+      error: AuthError;
+    }
+  >;
   refetchUser: () => Promise<void>;
 };
 
@@ -50,26 +77,27 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
   });
 
   useEffect(() => {
-    const { data: subscription } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      setSession(newSession ?? null);
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        setSession(newSession ?? null);
 
-      try {
-        if (event === "SIGNED_OUT") {
+        try {
+          if (event === "SIGNED_OUT") {
+            queryClient.setQueryData<User | null>(AUTH_USER_QUERY_KEY, null);
+          } else {
+            // const { data } = await supabase.auth.getUser();
+            // queryClient.setQueryData<User | null>(AUTH_USER_QUERY_KEY, data?.user ?? null);
+          }
+        } catch {
           queryClient.setQueryData<User | null>(AUTH_USER_QUERY_KEY, null);
-        } else {
-          // const { data } = await supabase.auth.getUser();
-          // queryClient.setQueryData<User | null>(AUTH_USER_QUERY_KEY, data?.user ?? null);
         }
-      } catch {
-        queryClient.setQueryData<User | null>(AUTH_USER_QUERY_KEY, null);
-      }
-    });
+      },
+    );
 
     return () => {
       subscription?.subscription.unsubscribe();
     };
-
-  }, [queryClient, supabase,]);
+  }, [queryClient, supabase]);
 
   const signInWithPassword = useCallback(
     async (creds: { email: string; password: string }) => {
@@ -79,7 +107,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
       setSession(s.data?.session ?? null);
       return res;
     },
-    [supabase.auth, queryClient]
+    [supabase.auth, queryClient],
   );
 
   const signUp = useCallback(
@@ -88,7 +116,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
       queryClient.invalidateQueries({ queryKey: AUTH_USER_QUERY_KEY });
       return res;
     },
-    [queryClient, supabase.auth]
+    [queryClient, supabase.auth],
   );
 
   const signOut = useCallback(async () => {
@@ -96,31 +124,37 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
   }, []);
 
   const signInWithOAuth = useCallback(
-    async (provider: Provider, options?: { redirectTo?: string; scopes?: string }) => {
-      console.info("oauth redirecting to: ", getFullRoute(routes.api.auth.callback));
+    async (
+      provider: Provider,
+      options?: { redirectTo?: string; scopes?: string },
+    ) => {
+      console.info(
+        "oauth redirecting to: ",
+        getFullRoute(routes.api.auth.callback),
+      );
       return await supabase.auth.signInWithOAuth({
         provider,
         options: {
           ...options,
-          redirectTo: getFullRoute(routes.api.auth.callback)
+          redirectTo: getFullRoute(routes.api.auth.callback),
         },
       });
     },
-    [supabase.auth]
+    [supabase.auth],
   );
 
   const signInWithOtp = useCallback(
     async (creds: SignInWithPasswordlessCredentials) => {
       return await supabase.auth.signInWithOtp(creds);
     },
-    [supabase.auth]
+    [supabase.auth],
   );
 
   const resetPasswordForEmail = useCallback(
     async (email: string, redirectTo?: string) => {
       return await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     },
-    [supabase.auth]
+    [supabase.auth],
   );
 
   const refetchUser = useCallback(async () => {
@@ -140,7 +174,18 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
       resetPasswordForEmail,
       refetchUser,
     }),
-    [user, session, isLoading, signInWithPassword, signUp, signOut, signInWithOAuth, signInWithOtp, resetPasswordForEmail, refetchUser,],
+    [
+      user,
+      session,
+      isLoading,
+      signInWithPassword,
+      signUp,
+      signOut,
+      signInWithOAuth,
+      signInWithOtp,
+      resetPasswordForEmail,
+      refetchUser,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -148,6 +193,8 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
 
 export function useAuthContextValue() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuthContextValue must be used within AuthProvider");
+  if (!ctx) {
+    throw new Error("useAuthContextValue must be used within AuthProvider");
+  }
   return ctx;
 }

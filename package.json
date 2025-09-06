@@ -20,6 +20,10 @@
     "supabase:db:reset": "supabase db reset",
     "supabase:db:diff": "supabase db diff",
     "supabase:schema:safe-migration": "run-s supabase:db:reset supabase:db:diff",
+    "-- SCRIPTS --": "",
+    "create-test-users": "tsx scripts/create-test-users.ts",
+    "-- TESTS --": "",
+    "test:db": "supabase test db",
     "-- HUSKY --": "",
     "prepare": "husky"
   },
@@ -53,6 +57,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.2",
     "jiti": "^2.4.2",
     "lucide-react": "^0.522.0",
     "motion": "^12.23.12",
@@ -85,6 +90,7 @@
     "shx": "^0.4.0",
     "supabase": "^2.39.2",
     "tailwindcss": "^4.1.10",
+    "tsx": "^4.20.5",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5.8.3",
     "vercel": "^46.0.2"
