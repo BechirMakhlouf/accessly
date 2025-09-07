@@ -1,6 +1,6 @@
 import type { Provider } from "@supabase/supabase-js";
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { translateErrorCode } from 'supabase-error-translator-js';
+import { translateErrorCode } from "supabase-error-translator-js";
 import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n";
 import { getFullRoute, routes } from "../routes";
@@ -12,9 +12,12 @@ export const AUTH_USER_KEY = ["auth", "user"] as const;
 export async function signInWithPassword(
   supabase: TypedSupabaseClient,
   { email, password }: { email: string; password: string },
-  messageLocale: Locale
+  messageLocale: Locale,
 ) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
   if (error) {
     error.message = translateErrorCode(error.code, "auth", messageLocale);
     throw error;
@@ -25,7 +28,7 @@ export async function signInWithPassword(
 export async function signUp(
   supabase: TypedSupabaseClient,
   { email, password }: { email: string; password: string },
-  messageLocale: Locale
+  messageLocale: Locale,
 ) {
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) {
@@ -37,7 +40,7 @@ export async function signUp(
 
 export async function signOut(
   supabase: TypedSupabaseClient,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) {
   const { error } = await supabase.auth.signOut();
   if (error) {
@@ -50,35 +53,35 @@ export async function signOut(
 export async function signInWithOAuth(
   supabase: TypedSupabaseClient,
   provider: Provider,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) {
+  if (supabase === null) return null;
 
-  if (supabase === null) return null
+  const result = await signInWithOAuthAction(provider);
 
-  const redirectTo = getFullRoute(routes.api.auth.callback)
-  console.log("[auth] signing with oauth with redirectTo: ", redirectTo);
-  // const { data, error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
-  const { data, error } = await signInWithOAuthAction(provider)
-
-  if (error) {
-    error.message = translateErrorCode(error.code, "auth", messageLocale);
-    throw error;
+  if (result?.error) {
+    result.error.message = translateErrorCode(
+      result.error.code,
+      "auth",
+      messageLocale,
+    );
+    throw result.error;
   }
-  return data;
+  return result?.data;
 }
 
 export async function signUpWithOAuth(
   supabase: TypedSupabaseClient,
   provider: Provider,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) {
-  if (supabase === null) return null
+  if (supabase === null) return null;
 
-  const redirectTo = getFullRoute(routes.api.auth.callback)
+  const redirectTo = getFullRoute(routes.api.auth.callback);
   console.info("[auth] signing up with oauth with redirectTo: ", redirectTo);
-  
+
   // Use the same OAuth action for sign-up (Supabase handles this automatically)
-  const { data, error } = await signInWithOAuthAction(provider)
+  const { data, error } = await signInWithOAuthAction(provider);
 
   if (error) {
     error.message = translateErrorCode(error.code, "auth", messageLocale);
@@ -92,7 +95,6 @@ export async function getAuthUser(supabase: TypedSupabaseClient) {
   return await supabase.auth.getUser(); // Your CSR/SSR get user function
 }
 
-
 // ---- React Query options "builders" ----
 
 export const getAuthUserQueryOptions = (supabase: TypedSupabaseClient) => ({
@@ -100,63 +102,62 @@ export const getAuthUserQueryOptions = (supabase: TypedSupabaseClient) => ({
   queryFn: () => getAuthUser(supabase),
 });
 
-
 export const signInMutationOptions = (
   supabase: TypedSupabaseClient,
   queryClient: QueryClient,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) => ({
   mutationFn: (vars: { email: string; password: string }) =>
     signInWithPassword(supabase, vars, messageLocale),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY });
-  }
+  },
 });
 
 export const signOutMutationOptions = (
   supabase: TypedSupabaseClient,
   queryClient: QueryClient,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) => ({
   mutationFn: () => signOut(supabase, messageLocale),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY });
-  }
+  },
 });
 
 export const signUpMutationOptions = (
   supabase: TypedSupabaseClient,
   queryClient: QueryClient,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) => ({
   mutationFn: (vars: { email: string; password: string }) =>
     signUp(supabase, vars, messageLocale),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY });
-  }
+  },
 });
 
 export const signInWithOAuthMutationOptions = (
   supabase: TypedSupabaseClient,
   queryClient: QueryClient,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) => ({
   mutationFn: (provider: Provider) =>
     signInWithOAuth(supabase, provider, messageLocale),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY });
-  }
+  },
 });
 
 export const signUpWithOAuthMutationOptions = (
   supabase: TypedSupabaseClient,
   queryClient: QueryClient,
-  messageLocale: Locale
+  messageLocale: Locale,
 ) => ({
   mutationFn: (provider: Provider) =>
     signUpWithOAuth(supabase, provider, messageLocale),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY });
     queryClient.invalidateQueries({ queryKey: PROFILE_KEY });
-  }
+  },
 });

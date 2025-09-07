@@ -6,7 +6,6 @@ import type {
   AuthOtpResponse,
   AuthResponse,
   AuthTokenResponsePassword,
-  OAuthResponse,
   Provider,
   Session,
   SignInWithPasswordlessCredentials,
@@ -23,7 +22,8 @@ import React, {
   useState,
 } from "react";
 import { signOut as signOutAction } from "./actions";
-import { getFullRoute, routes } from "../routes";
+import { signInWithOauth } from "./queries/signInWithOauth";
+import { useLocale } from "next-intl";
 
 type AuthContextValue = {
   user: User | null;
@@ -36,8 +36,7 @@ type AuthContextValue = {
   signOut: () => Promise<void>;
   signInWithOAuth: (
     provider: Provider,
-    options?: { redirectTo?: string; scopes?: string },
-  ) => Promise<OAuthResponse>;
+  ) => Promise<{ data: { provider: Provider; url: string | null }; error: AuthError | null }>;
   signInWithOtp: (
     creds: SignInWithPasswordlessCredentials,
   ) => Promise<AuthOtpResponse>;
@@ -60,6 +59,7 @@ const AUTH_USER_QUERY_KEY = ["auth", "user"] as const;
 export function AuthProvider({ children }: React.PropsWithChildren) {
   const supabase = SupabaseCSRClient;
   const queryClient = useQueryClient();
+  const locale = useLocale();
 
   const [session, setSession] = useState<Session | null>(null);
 
@@ -126,21 +126,10 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
   const signInWithOAuth = useCallback(
     async (
       provider: Provider,
-      options?: { redirectTo?: string; scopes?: string },
     ) => {
-      console.info(
-        "oauth redirecting to: ",
-        getFullRoute(routes.api.auth.callback),
-      );
-      return await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          ...options,
-          redirectTo: getFullRoute(routes.api.auth.callback),
-        },
-      });
+      return await signInWithOauth(supabase, locale, provider)
     },
-    [supabase.auth],
+    [supabase, locale],
   );
 
   const signInWithOtp = useCallback(

@@ -15,10 +15,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { GoogleIcon } from "@/components/icons/google";
-import { MicrosoftIcon } from "@/components/icons/microsoft";
-import { AppleIcon } from "@/components/icons/apple";
-import { Separator } from "@/components/ui/separator";
+import { OAuthButtons } from "./oauth-buttons";
 import { routes } from "@/lib/routes";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -50,7 +47,6 @@ export function SignInForm(
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isOauthLoading, setIsOauthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
@@ -82,31 +78,7 @@ export function SignInForm(
     }
   };
 
-  const handleOAuth = async (provider: "google" | "azure" | "apple") => {
-    clearErrors("root");
-    setIsOauthLoading(true);
-    try {
-       await auth.signInWithOAuth(provider);
-      const error = auth.error;
-      if (error) {
-        setError("root", {
-          type: "server",
-          message: error.message ?? String(error),
-        });
-        return;
-      }
-      // With OAuth, Supabase usually redirects you to the provider.
-      // In case your flow returns immediately and you want to navigate:
-      router.push(routes.protected.dashboard.root);
-    } catch (err: unknown) {
-      console.error("error while signing in with oauth", err);
-      setError("root", { type: "server", message: "error while signing in." });
-    } finally {
-      setIsOauthLoading(false);
-    }
-  };
-
-  const loading = isSubmitting || isOauthLoading;
+  const loading = isSubmitting;
   const errorMessage = errors.root?.message as string;
 
   return (
@@ -119,49 +91,7 @@ export function SignInForm(
           <CardDescription>{t("signInForm.loginDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-3">
-            <Button
-              variant="outline"
-              className="h-11"
-              onClick={() => handleOAuth("google")}
-              disabled={loading}
-              type="button"
-            >
-              <span className="sr-only">{t("oauth.google")}</span>
-              <GoogleIcon />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-11"
-              onClick={() => handleOAuth("azure")}
-              disabled={loading}
-              type="button"
-            >
-              <MicrosoftIcon />
-              <span className="sr-only">{t("oauth.microsoft")}</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-11"
-              onClick={() => handleOAuth("apple")}
-              disabled={loading}
-              type="button"
-            >
-              <AppleIcon />
-              <span className="sr-only">{t("oauth.apple")}</span>
-            </Button>
-          </div>
-
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                {t("orContinueWith")}
-              </span>
-            </div>
-          </div>
+          <OAuthButtons loading={loading} />
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">

@@ -16,11 +16,8 @@ import { useRouter } from '@/lib/i18n'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Separator } from '@/components/ui/separator'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
-import { AppleIcon } from '@/components/icons/apple'
-import { GoogleIcon } from '@/components/icons/google'
-import { MicrosoftIcon } from '@/components/icons/microsoft'
+import { OAuthButtons } from './oauth-buttons'
 import { routes } from '@/lib/routes'
 import { useTranslations } from 'next-intl'
 import { AuthError } from '@supabase/supabase-js'
@@ -64,19 +61,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     }
   };
 
-  // --- OAuth handler
-  const handleOAuth = async (provider: "google" | "azure" | "apple") => {
-    try {
-      await auth.signInWithOAuth(provider);
-      reset();
-    } catch (err) {
-      // error shown below
-      console.error(err);
-    }
-  };
 
   const [showPassword, setShowPassword] = useState(false)
-  const loading = auth.isSigningUp || auth.isSigningInWithOAuth;
+  const loading = auth.isSigningUp;
   const errorMessage =
     (auth.error as AuthError)?.message ??
     (auth.error as AuthError)?.message;
@@ -91,49 +78,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
           <CardDescription>{t("signUpForm.signUpDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-3">
-            <Button
-              variant="outline"
-              className="h-11"
-              onClick={() => handleOAuth("google")}
-              type="button"
-              disabled={loading}
-            >
-              <GoogleIcon />
-              <span className="sr-only">{t("oauth.google")}</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-11"
-              onClick={() => handleOAuth("azure")}
-              type="button"
-              disabled={loading}
-            >
-              <MicrosoftIcon />
-              <span className="sr-only">{t("oauth.microsoft")}</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-11"
-              onClick={() => handleOAuth("apple")}
-              type="button"
-              disabled={loading}
-            >
-              <AppleIcon />
-              <span className="sr-only">{t("oauth.apple")}</span>
-            </Button>
-          </div>
-
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                {t("orContinueWith")}
-              </span>
-            </div>
-          </div>
+          <OAuthButtons loading={loading} />
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-6">
