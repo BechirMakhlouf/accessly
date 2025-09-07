@@ -39,3 +39,4 @@ export { SignUpForm, signUpSchema } from './components/sign-up-form';
 export { ForgotPasswordForm } from './components/forgot-password-form';
 export { ConfirmEmailCard } from './components/confirm-email-card';
 export { UpdatePasswordForm } from './components/update-password-form';
+export { OtpVerificationForm } from './components/otp-verification-form';
