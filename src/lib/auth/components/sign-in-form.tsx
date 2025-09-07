@@ -238,7 +238,7 @@ export function SignInForm(
                   )}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-6 text-center text-sm">
               {t("signInForm.signupPrompt")}{" "}
               <Link
                 href={routes.auth.signUp}

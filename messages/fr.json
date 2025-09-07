@@ -432,5 +432,26 @@
     "alreadyHaveAccount": "Vous avez déjà un compte ?",
     "login": "Se connecter",
     "genericError": "Une erreur s'est produite"
+  },
+  "updatePasswordForm": {
+    "resetYourPassword": "Réinitialiser votre mot de passe",
+    "enterNewPassword": "Veuillez saisir votre nouveau mot de passe ci-dessous.",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Saisir le nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Confirmer le nouveau mot de passe",
+    "saving": "Sauvegarde...",
+    "saveNewPassword": "Sauvegarder le nouveau mot de passe",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+    "genericError": "Une erreur s'est produite"
+  },
+  "otpVerificationForm": {
+    "verificationCode": "Code de vérification",
+    "enterCode": "Saisir le code à 6 chiffres",
+    "verifying": "Vérification...",
+    "invalidCode": "Code de vérification invalide. Veuillez réessayer.",
+    "verificationSuccess": "E-mail vérifié avec succès !",
+    "verificationError": "Impossible de vérifier le code. Veuillez réessayer."
   }
 }

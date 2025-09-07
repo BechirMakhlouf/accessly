@@ -59,3 +59,63 @@ export async function getUserEmail() {
   if (error) return { data: null, error };
   return { data: data?.user?.email ?? null }
 }
+
+export async function signUpWithEmail(email: string, password: string) {
+  const supabase = await createSSRClient();
+  
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: getFullRoute(routes.api.auth.confirmEmail, { next: routes.protected.dashboard.root }),
+    },
+  });
+
+  return { data, error };
+}
+
+export async function signInWithEmail(email: string, password: string) {
+  const supabase = await createSSRClient();
+  
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  return { data, error };
+}
+
+export async function signInWithMagicLink(email: string) {
+  const supabase = await createSSRClient();
+  
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: getFullRoute(routes.api.auth.confirmEmail, { next: routes.protected.dashboard.root }),
+    },
+  });
+
+  return { data, error };
+}
+
+export async function resetPassword(email: string) {
+  const supabase = await createSSRClient();
+  
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: getFullRoute(routes.api.auth.resetPassword),
+  });
+
+  return { data, error };
+}
+
+export async function verifyOtp(email: string, token: string, type: 'email' | 'recovery' | 'magiclink' | 'email_change') {
+  const supabase = await createSSRClient();
+  
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type,
+  });
+
+  return { data, error };
+}

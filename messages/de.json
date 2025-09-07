@@ -433,5 +433,26 @@
     "alreadyHaveAccount": "Sie haben bereits ein Konto?",
     "login": "Anmelden",
     "genericError": "Ein Fehler ist aufgetreten"
+  },
+  "updatePasswordForm": {
+    "resetYourPassword": "Ihr Passwort zurücksetzen",
+    "enterNewPassword": "Bitte geben Sie Ihr neues Passwort unten ein.",
+    "newPassword": "Neues Passwort",
+    "newPasswordPlaceholder": "Neues Passwort eingeben",
+    "confirmPassword": "Passwort bestätigen",
+    "confirmPasswordPlaceholder": "Neues Passwort bestätigen",
+    "saving": "Speichern...",
+    "saveNewPassword": "Neues Passwort speichern",
+    "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+    "genericError": "Ein Fehler ist aufgetreten"
+  },
+  "otpVerificationForm": {
+    "verificationCode": "Bestätigungscode",
+    "enterCode": "6-stelligen Code eingeben",
+    "verifying": "Wird überprüft...",
+    "invalidCode": "Ungültiger Bestätigungscode. Bitte versuchen Sie es erneut.",
+    "verificationSuccess": "E-Mail erfolgreich bestätigt!",
+    "verificationError": "Code konnte nicht überprüft werden. Bitte versuchen Sie es erneut."
   }
 }

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Email Change - Accessly</title>
+    <style>
+        body { 
+            font-family: 'Geist', Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #000000; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: #fcfcfc;
+        }
+        .header { 
+            background: #fcfcfc; 
+            padding: 20px; 
+            text-align: center; 
+            border-radius: 8px 8px 0 0; 
+            border: 1px solid #ebebeb;
+        }
+        .content { 
+            background: #ffffff; 
+            padding: 30px; 
+            border: 1px solid #ebebeb; 
+            border-top: none;
+        }
+        .footer { 
+            background: #fcfcfc; 
+            padding: 20px; 
+            text-align: center; 
+            border-radius: 0 0 8px 8px; 
+            font-size: 14px; 
+            color: #707070; 
+            border: 1px solid #ebebeb;
+            border-top: none;
+        }
+        .button { 
+            display: inline-block; 
+            background: #000000; 
+            color: #ffffff; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            margin: 20px 0; 
+            font-weight: 500;
+        }
+        .button:hover { 
+            background: #333333; 
+        }
+        .logo { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #000000; 
+        }
+        .email-highlight { 
+            background: #f7f7f7; 
+            padding: 10px; 
+            border-radius: 4px; 
+            border-left: 4px solid #000000; 
+            margin: 10px 0; 
+            border: 1px solid #ebebeb;
+        }
+        .code-block {
+            word-break: break-all; 
+            background: #f7f7f7; 
+            padding: 10px; 
+            border-radius: 4px; 
+            font-family: 'Geist Mono', monospace; 
+            font-size: 12px;
+            border: 1px solid #ebebeb;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Accessly</div>
+    </div>
+    
+    <div class="content">
+        <h2>Confirm Your Email Change</h2>
+        <p>Hi there,</p>
+        <p>You requested to change your email address for your Accessly account.</p>
+        
+        <div class="email-highlight">
+            <strong>New email address:</strong> {{ .NewEmail }}
+        </div>
+        
+        <p>To confirm this change, click the button below:</p>
+        
+        <div style="text-align: center;">
+            <a href="{{ .SiteURL }}/api/auth/confirm-email?token_hash={{ .TokenHash }}&type=email_change&next=/dashboard" class="button">Confirm Email Change</a>
+        </div>
+        
+        <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
+        <p style="word-break: break-all; background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+            {{ .SiteURL }}/api/auth/confirm-email?token_hash={{ .TokenHash }}&type=email_change&next=/dashboard
+        </p>
+        
+        <p><strong>Important:</strong></p>
+        <ul>
+            <li>This confirmation link will expire in 24 hours</li>
+            <li>Your email won't be changed until you confirm it</li>
+            <li>If you didn't request this change, please ignore this email and contact support</li>
+        </ul>
+        
+        <p>Best regards,<br>The Accessly Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>This email was sent to {{ .Email }}</p>
+        <p>© 2024 Accessly. All rights reserved.</p>
+    </div>
+</body>
+</html>

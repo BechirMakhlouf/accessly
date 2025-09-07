@@ -3,23 +3,28 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, CheckCircle, Clock } from "lucide-react"
+import { Mail, CheckCircle, Clock, Key } from "lucide-react"
 import { SupabaseCSRClient } from "@/lib/supabase/client"
+import { routes } from "@/lib/routes"
+import { OtpVerificationForm } from "./otp-verification-form"
 
 interface ConfirmEmailCardProps {
   email: string
   onChangeEmail?: () => void
   isConfirmed?: boolean // parent controls this via polling the user/email status
+  type?: 'email' | 'recovery' | 'magiclink' | 'email_change' // OTP type for verification
 }
 
 export function ConfirmEmailCard({
   email,
   isConfirmed = false,
+  type = 'email',
 }: ConfirmEmailCardProps) {
   const [isResending, setIsResending] = useState(false)
   const [cooldownTime, setCooldownTime] = useState(0)
   const [feedback, setFeedback] = useState<string | null>(null)
   const [feedbackType, setFeedbackType] = useState<"success" | "error" | null>(null)
+  const [showOtpInput, setShowOtpInput] = useState(false)
 
   // Timer effect
   useEffect(() => {
@@ -68,6 +73,13 @@ export function ConfirmEmailCard({
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
+  const getSuccessRedirectUrl = () => {
+    if (type === 'recovery') {
+      return routes.auth.updatePassword
+    }
+    return routes.protected.dashboard.root
+  }
+
   // Render confirmed state
   if (isConfirmed) {
     return (
@@ -103,8 +115,38 @@ export function ConfirmEmailCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground text-center">
-          Click the link in the email to verify your account. If you don&apos;t see it, check your spam folder.
+          Click the link in the email to verify your account, or enter the verification code below.
         </p>
+
+        {!showOtpInput ? (
+          <Button
+            onClick={() => setShowOtpInput(true)}
+            variant="outline"
+            className="w-full"
+          >
+            <Key className="w-4 h-4 mr-2" />
+            Enter verification code instead
+          </Button>
+        ) : (
+          <div className="space-y-4">
+            <OtpVerificationForm
+              email={email}
+              type={type}
+              successRedirectUrl={getSuccessRedirectUrl()}
+              title="Verify Your Email"
+              description="Enter the verification code from your email to complete the process."
+              buttonText="Verify Code"
+            />
+            <Button
+              type="button"
+              onClick={() => setShowOtpInput(false)}
+              variant="ghost"
+              className="w-full"
+            >
+              Use email link instead
+            </Button>
+          </div>
+        )}
 
         {feedback && (
           <div
