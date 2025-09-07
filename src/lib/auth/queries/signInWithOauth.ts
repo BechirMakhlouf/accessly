@@ -6,6 +6,7 @@ import { Locale } from "@/lib/i18n";
 
 
 export const signInWithOauth = async (supabase: TypedSupabaseClient, messageLocale: Locale, provider: Provider) => {
+    console.error("[auth][oauth] signing with oauth with redirectTo: ", getFullRoute(routes.api.auth.callback));
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
