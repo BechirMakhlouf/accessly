@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS organizations (
 
 -- 3. Create organization_members table with more comprehensive tracking
 CREATE TABLE IF NOT EXISTS organization_members (
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.user_profiles(user_id) ON DELETE CASCADE,
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     role organization_role NOT NULL DEFAULT 'member',
     joined_at TIMESTAMPTZ NOT NULL DEFAULT now(),

@@ -3,14 +3,14 @@
 import { useTheme } from "next-themes";
 import { useUserSettings } from "./hooks";
 import { useEffect, useRef } from "react";
-import { setAppLocale, Locale } from "@/lib/i18n";
+import { Locale, setAppLocale } from "@/lib/i18n";
 import { USER_SETTINGS_KEY } from "./queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 
 export function SettingsProvider() {
-  const { settings } = useUserSettings()
-  const { setTheme } = useTheme()
+  const { settings } = useUserSettings();
+  const { setTheme } = useTheme();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const hasInitialized = useRef(false);
@@ -40,6 +40,6 @@ export function SettingsProvider() {
       setAppLocale(settings.data?.language as Locale);
     }
   }, [settings.data?.language]);
-  
+
   return null;
 }

@@ -6,7 +6,7 @@ import {
   getUserSettingsMutationOptions,
   getUserSettingsQueryOptions,
   updateUserLocaleMutationOptions,
-  updateUserThemeMutationOptions
+  updateUserThemeMutationOptions,
 } from "./queries";
 
 export const useUserSettings = () => {
@@ -17,33 +17,33 @@ export const useUserSettings = () => {
     setSettings: useMutation(getUserSettingsMutationOptions(queryClient)),
     setUserTheme: useMutation(updateUserThemeMutationOptions(queryClient)),
     setUserLocale: useMutation(updateUserLocaleMutationOptions(queryClient)),
-  }
-}
+  };
+};
 
 // Custom hook for immediate theme switching with debounced database sync
 export const useThemeManager = () => {
   const { setTheme, theme } = useTheme();
   const { setUserTheme } = useUserSettings();
-  
+
   const switchTheme = (newTheme: string) => {
     // Immediately apply theme change
     setTheme(newTheme);
-    
+
     // Debounced database sync
     const timeoutId = setTimeout(async () => {
       try {
         await setUserTheme.mutateAsync(newTheme);
       } catch (error) {
-        console.error('Failed to sync theme to database:', error);
+        console.error("Failed to sync theme to database:", error);
       }
     }, 300);
-    
+
     return () => clearTimeout(timeoutId);
   };
-  
+
   return {
     currentTheme: theme,
     switchTheme,
-    isUpdating: setUserTheme.isPending
+    isUpdating: setUserTheme.isPending,
   };
 };

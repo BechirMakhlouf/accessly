@@ -221,7 +221,7 @@ async function main() {
   await listExistingUsers();
   console.log('');
 
-  const results = [];
+  const results: Array<{ userData: CreateUserInput; result: { success: boolean; error?: any; user?: any; profile?: any; settings?: any } }> = [];
 
   // Create each test user
   for (const userData of testUsers) {

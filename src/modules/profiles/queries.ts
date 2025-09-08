@@ -1,27 +1,33 @@
 import { Profile, UpsertProfile } from "./types";
 import { QueryClient } from "@tanstack/react-query";
-import { deleteUserAvatar, getProfile, uploadUserAvatar, upsertProfile } from "./actions";
+import {
+  deleteUserAvatar,
+  getProfile,
+  uploadUserAvatar,
+  upsertProfile,
+} from "./actions";
 import { isNullOrUndefined } from "@/lib/utils";
 
 export const PROFILE_KEY = ["profile"] as const;
 
-export const getProfileQueryOptions =
-  () => ({
-    queryKey: PROFILE_KEY,
-    queryFn: async () => {
-      const result = await getProfile()
+export const getProfileQueryOptions = () => ({
+  queryKey: PROFILE_KEY,
+  queryFn: async () => {
+    const result = await getProfile();
 
-      if (result?.error)
-        throw result.error
-      else if (isNullOrUndefined(result?.data) || isNullOrUndefined(result))
-        return null;
-      else
-        return result.data;
+    if (result?.error) {
+      throw result.error;
+    } else if (isNullOrUndefined(result?.data) || isNullOrUndefined(result)) {
+      return null;
+    } else {
+      return result.data;
     }
-  });
+  },
+});
 
 export const getProfileMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async (profile: Partial<UpsertProfile>) => await upsertProfile(profile),
+  mutationFn: async (profile: Partial<UpsertProfile>) =>
+    await upsertProfile(profile),
   onSuccess: () => queryClient.invalidateQueries({ queryKey: PROFILE_KEY }),
 });
 

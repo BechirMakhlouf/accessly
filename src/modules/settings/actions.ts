@@ -2,26 +2,31 @@
 
 import { createSSRClient } from "@/lib/supabase/server";
 import type { UpsertUserSettings } from "./types";
-import { getUserId, assertSignedInAndGetUserId } from "@/lib/auth/server";
+import { assertSignedInAndGetUserId, getUserId } from "@/lib/auth/server";
 
 export async function getUserSettings() {
   const supabase = await createSSRClient();
-  const userId = await getUserId(supabase)
+  const userId = await getUserId(supabase);
 
   if (!userId) return null;
 
   return await supabase
     .from("user_settings")
     .select("*")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .limit(1)
     .maybeSingle();
 }
 
-export async function upsertUserSettings(settings: Partial<UpsertUserSettings>) {
+export async function upsertUserSettings(
+  settings: Partial<UpsertUserSettings>,
+) {
   const supabase = await createSSRClient();
 
-  const userId = await assertSignedInAndGetUserId()
+  const userId = await assertSignedInAndGetUserId();
 
-  return await supabase.from("user_settings").upsert({ ...settings, id: userId })
+  return await supabase.from("user_settings").upsert({
+    ...settings,
+    user_id: userId,
+  });
 }

@@ -8,10 +8,10 @@ DECLARE
   full_name text;
   new_email text;
 BEGIN
-  -- 1️⃣ Insert a row into user_settings (id = user's UUID)
-  INSERT INTO public.user_settings (id)
+  -- 1️⃣ Insert a row into user_settings (user_id = user's UUID)
+  INSERT INTO public.user_settings (user_id)
   VALUES (NEW.id)
-  ON CONFLICT (id) DO NOTHING;   -- avoid duplicate‑key errors
+  ON CONFLICT (user_id) DO NOTHING;   -- avoid duplicate‑key errors
 
   -- Use the email from the newly inserted auth.users row
   new_email := NEW.email;
@@ -24,9 +24,9 @@ BEGIN
   END IF;
 
   -- 3️⃣ Insert a row into user_profiles
-  INSERT INTO public.user_profiles (id, email, full_name)
+  INSERT INTO public.user_profiles (user_id, email, full_name)
   VALUES (NEW.id, new_email, full_name)
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (user_id) DO NOTHING;
 
   RETURN NEW;
 EXCEPTION

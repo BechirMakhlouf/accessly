@@ -19,7 +19,7 @@
     "supabase:restart": "run-s supabase:stop supabase:start",
     "supabase:db:reset": "supabase db reset",
     "supabase:db:diff": "supabase db diff",
-    "supabase:schema:safe-migration": "run-s supabase:db:reset supabase:db:diff",
+    "supabase:db:gen-migration": "tsx scripts/migration-workflow.ts",
     "-- SCRIPTS --": "",
     "create-test-users": "tsx scripts/create-test-users.ts",
     "-- TESTS --": "",
