@@ -210,6 +210,7 @@
         "deleteMember": "Delete Member",
         "roleUpdated": "Member role updated successfully",
         "roleUpdateError": "Failed to update member role",
+  "cannotDemoteLastAdmin": "You cannot demote the last remaining admin",
         "memberRemoved": "Member removed successfully",
         "memberRemoveError": "Failed to remove member",
         "leftOrganization": "Left organization successfully",
