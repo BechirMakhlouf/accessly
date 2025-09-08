@@ -116,18 +116,29 @@ export const useMembersPage = (): UseMembersPageReturn => {
   const totalFilteredMembers = filteredMembers.length;
 
   // Actions
-  const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
-    if (!org) return;
-    
-    try {
-      await updateMemberRole(memberId, newRole);
-      toast.success(t('actions.roleUpdated'));
-    } catch (error) {
-      console.error("Failed to update role:", error);
-      toast.error(t('actions.roleUpdateError'));
-    }
-  };
+ const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
+  if (!org) return;
+  const memberList = members || [];
 
+  if (newRole === 'member') {
+    const target = memberList.find(m => m.user_id === memberId);
+    if (target?.role === 'admin') {
+      const otherAdmins = memberList.filter(m => m.role === 'admin' && m.user_id !== memberId);
+      if (otherAdmins.length === 0) {
+        toast.error(t('actions.cannotDemoteLastAdmin'));
+        return;
+      }
+    }
+  }
+
+  try {
+    await updateMemberRole(memberId, newRole);
+    toast.success(t('actions.roleUpdated'));
+  } catch (error) {
+    console.error('Failed to update role:', error);
+    toast.error(t('actions.roleUpdateError'));
+  }
+};
   const handleDeleteMember = async (memberId: string) => {
     if (!org) return;
     

@@ -91,8 +91,9 @@ export const routes = {
   api: {
     auth: {
       callback: "/api/auth/callback",
+      confirmEmail: "/api/auth/confirm-email",
+      resetPassword: "/api/auth/reset-password",
       inviteEmail: "/api/auth/invite-email",
     },
   },
 } as const;
-

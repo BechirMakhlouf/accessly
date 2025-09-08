@@ -12,6 +12,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  console.debug("");
   let next = url.searchParams.get("next") ?? routes.auth.signInRedirect;
 
   // ✅ prevent open redirects
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.redirect(
-      getFullRoute("/auth-code-error", { error: error.code })
+      getFullRoute("/auth-code-error", { error: error.code }),
     );
   }
 

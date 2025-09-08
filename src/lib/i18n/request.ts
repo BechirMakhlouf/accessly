@@ -11,7 +11,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : await getAppLocale() || routing.defaultLocale;
 
-  console.log("from request config: ", locale);
   return {
     locale,
     formats: INTL_FORMATS,

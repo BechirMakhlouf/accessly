@@ -10,7 +10,6 @@ import {
   signInWithOAuthMutationOptions,
 } from "./queries";
 
-// Shape returned by supabase.auth.getUser()
 import { useLocale } from "next-intl";
 import { SupabaseCSRClient } from "../supabase/client";
 import { signOut } from "./actions";

@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server';
 // Match all pathnames except for
 // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
 // - … the ones containing a dot (e.g. `favicon.ico`)
-const matcher = /^\/((?!api|trpc|dashboard|_next|_vercel|.*\..*).*)$/;
+const matcher = /^\/((?!api|trpc|dashboard|_next|_vercel|update-password|.*\..*).*)$/;
 
 export const i18nMiddleware = (req: NextRequest) => {
   const pathName = new URL(req.url).pathname;

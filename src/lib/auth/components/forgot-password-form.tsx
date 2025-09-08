@@ -13,9 +13,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useState } from 'react'
-import { SupabaseCSRClient } from '@/lib/supabase/client'
 import { routes } from '@/lib/routes'
 import { useTranslations } from 'next-intl'
+import { resetPassword } from '../actions'
+import { OtpVerificationForm } from './otp-verification-form'
 
 export function ForgotPasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const t = useTranslations('forgotPasswordForm')
@@ -23,18 +24,15 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showOtpForm, setShowOtpForm] = useState(false)
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = SupabaseCSRClient;
     setIsLoading(true)
     setError(null)
 
     try {
-      // The URL included in password reset email must be configured in Supabase dashboard
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
-      })
+      const { error } = await resetPassword(email)
       if (error) throw error
       setSuccess(true)
     } catch (error: unknown) {
@@ -52,10 +50,29 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
             <CardTitle className="text-2xl">{t('checkYourEmail')}</CardTitle>
             <CardDescription>{t('passwordResetInstructionsSent')}</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
               {t('ifRegisteredUsingEmail')}
             </p>
+            
+            {!showOtpForm ? (
+              <Button
+                onClick={() => setShowOtpForm(true)}
+                variant="outline"
+                className="w-full"
+              >
+                {t('enterVerificationCodeInstead')}
+              </Button>
+            ) : (
+              <OtpVerificationForm
+                email={email}
+                type="recovery"
+                successRedirectUrl={routes.auth.updatePassword}
+                title="Reset Your Password"
+                description="Enter the verification code from your email to reset your password."
+                buttonText="Verify and Reset Password"
+              />
+            )}
           </CardContent>
         </Card>
       ) : (

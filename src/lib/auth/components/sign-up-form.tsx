@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,11 +16,8 @@ import { useRouter } from '@/lib/i18n'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Separator } from '@/components/ui/separator'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
-import { AppleIcon } from '@/components/icons/apple'
-import { GoogleIcon } from '@/components/icons/google'
-import { MicrosoftIcon } from '@/components/icons/microsoft'
+import { OAuthButtons } from './oauth-buttons'
 import { routes } from '@/lib/routes'
 import { useTranslations } from 'next-intl'
 import { AuthError } from '@supabase/supabase-js'
@@ -32,7 +29,7 @@ export const signUpSchema = z.object({
   password: z.string().min(6),
   repeatPassword: z.string(),
 }).refine((data) => data.password === data.repeatPassword, {
-  path: ["repeatPassword"]
+  path: ["repeatPassword"],
 });
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
@@ -44,7 +41,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
   });
@@ -55,7 +52,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     try {
       const user = await auth.signUp({ email, password });
       if (user) {
-        router.push({ pathname: routes.auth.signUpSuccess, query: { email: user.email } });
+        router.push({ pathname: routes.auth.confirmEmail, query: { email: user.email } });
       }
       reset();
     } catch (err) {
@@ -64,121 +61,121 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     }
   };
 
-  // --- OAuth handler
-  const handleOAuth = async (provider: "google" | "azure" | "apple") => {
-    try {
-      await auth.signInWithOAuth(provider);
-      router.push(routes.auth.signUpSuccess);
-      reset();
-    } catch (err) {
-      // error shown below
-      console.error(err)
-    }
-  };
 
   const [showPassword, setShowPassword] = useState(false)
-  const loading = auth.isSigningUp || auth.isSigningInWithOAuth;
+  const loading = auth.isSigningUp;
   const errorMessage =
     (auth.error as AuthError)?.message ??
     (auth.error as AuthError)?.message;
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader className='text-center'>
-          <CardTitle className="text-3xl">{t('signUpForm.signUpTitle')}</CardTitle>
-          <CardDescription>{t('signUpForm.signUpDescription')}</CardDescription>
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl">
+            {t("signUpForm.signUpTitle")}
+          </CardTitle>
+          <CardDescription>{t("signUpForm.signUpDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-3">
-            <Button variant="outline" className="h-11" onClick={() => handleOAuth("google")} type="button" disabled={loading}>
-              <GoogleIcon />
-              <span className="sr-only">{t('oauth.google')}</span>
-            </Button>
-            <Button variant="outline" className="h-11" onClick={() => handleOAuth("azure")} type="button" disabled={loading}>
-              <MicrosoftIcon />
-              <span className="sr-only">{t('oauth.microsoft')}</span>
-            </Button>
-            <Button variant="outline" className="h-11" onClick={() => handleOAuth("apple")} type="button" disabled={loading}>
-              <AppleIcon />
-              <span className="sr-only">{t('oauth.apple')}</span>
-            </Button>
-          </div>
-
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
-            </div>
-          </div>
+          <OAuthButtons loading={loading} />
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">{t('emailLabel')}</Label>
+                <Label htmlFor="email">{t("emailLabel")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder={t('emailPlaceholder')}
-                  {...register('email')}
+                  placeholder={t("emailPlaceholder")}
+                  {...register("email")}
                   autoComplete="email"
                 />
-                {errors.email && <p className="text-sm text-destructive">{t("errors.invalidEmail")}</p>}
+                {errors.email && (
+                  <p className="text-sm text-destructive">
+                    {t("errors.invalidEmail")}
+                  </p>
+                )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">{t('passwordLabel')}</Label>
+                <Label htmlFor="password">{t("passwordLabel")}</Label>
                 <div className="relative">
                   <Input
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    {...register('password')}
+                    type={showPassword ? "text" : "password"}
+                    {...register("password")}
                     autoComplete="new-password"
                     className="pr-10"
                   />
                   <button
                     type="button"
-                    aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                    aria-label={showPassword
+                      ? t("hidePassword")
+                      : t("showPassword")}
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-muted-foreground"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword
+                      ? <EyeOff className="h-4 w-4" />
+                      : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.password && <p className="text-sm text-destructive">{t("errors.pwShort")}</p>}
+                {errors.password && (
+                  <p className="text-sm text-destructive">
+                    {t("errors.pwShort")}
+                  </p>
+                )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="repeat-password">{t('signUpForm.repeatPasswordLabel')}</Label>
+                <Label htmlFor="repeat-password">
+                  {t("signUpForm.repeatPasswordLabel")}
+                </Label>
                 <Input
                   id="repeat-password"
-                  type={showPassword ? 'text' : 'password'}
-                  {...register('repeatPassword')}
+                  type={showPassword ? "text" : "password"}
+                  {...register("repeatPassword")}
                   autoComplete="new-password"
                 />
-                {errors.repeatPassword && <p className="text-sm text-destructive">{t("signUpForm.errors.passwordsMismatch")}</p>}
-              </div>
-              {errorMessage && <p className="text-sm text-destructive" role="alert" aria-live="assertive">{errorMessage}</p>}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('signUpForm.creatingAccount')}
-                  </>
-                ) : (
-                  t('signUpForm.signUp')
+                {errors.repeatPassword && (
+                  <p className="text-sm text-destructive">
+                    {t("signUpForm.errors.passwordsMismatch")}
+                  </p>
                 )}
+              </div>
+              {errorMessage && (
+                <p
+                  className="text-sm text-destructive"
+                  role="alert"
+                  aria-live="assertive"
+                >
+                  {errorMessage}
+                </p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading
+                  ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("signUpForm.creatingAccount")}
+                    </>
+                  )
+                  : (
+                    t("signUpForm.signUp")
+                  )}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              {t('signUpForm.alreadyHaveAccount')} {' '}
-              <Link href={routes.auth.signIn} className="underline underline-offset-4">
-                {t('signUpForm.signIn')}
+              {t("signUpForm.alreadyHaveAccount")}{"  "}
+              <Link
+                href={routes.auth.signIn}
+                className="underline underline-offset-4"
+              >
+                {t("signUpForm.signIn")}
               </Link>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
