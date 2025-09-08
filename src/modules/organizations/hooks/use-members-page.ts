@@ -122,6 +122,7 @@ export const useMembersPage = (): UseMembersPageReturn => {
     try {
       await updateMemberRole(memberId, newRole);
       toast.success(t('actions.roleUpdated'));
+      
     } catch (error) {
       console.error("Failed to update role:", error);
       toast.error(t('actions.roleUpdateError'));

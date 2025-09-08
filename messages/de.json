@@ -84,6 +84,7 @@
         "deleteMember": "Mitglied löschen",
         "roleUpdated": "Rolle des Mitglieds erfolgreich aktualisiert",
         "roleUpdateError": "Fehler beim Aktualisieren der Rolle des Mitglieds",
+        "cannotDemoteLastAdmin": "Sie können den letzten verbleibenden Admin nicht herabstufen",
         "memberRemoved": "Mitglied erfolgreich entfernt",
         "memberRemoveError": "Fehler beim Entfernen des Mitglieds",
         "leftOrganization": "Organisation erfolgreich verlassen",
