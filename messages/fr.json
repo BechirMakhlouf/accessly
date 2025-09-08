@@ -84,6 +84,7 @@
         "deleteMember": "Supprimer le membre",
         "roleUpdated": "Rôle du membre mis à jour avec succès",
         "roleUpdateError": "Échec de la mise à jour du rôle du membre",
+        "cannotDemoteLastAdmin": "Vous ne pouvez pas rétrograder le dernier administrateur restant",
         "memberRemoved": "Membre supprimé avec succès",
         "memberRemoveError": "Échec de la suppression du membre",
         "leftOrganization": "Organisation quittée avec succès",
