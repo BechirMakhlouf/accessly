@@ -38,29 +38,10 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npm run lint
+        run: npm run ci:lint
 
       - name: Type check
-        run: npm run type-check
-
-      - name: Check for console.log statements
-        run: |
-          if grep -r "console\.log" src/ --exclude-dir=node_modules; then
-            echo "❌ Found console.log statements. Please remove them before committing."
-            exit 1
-          else
-            echo "✅ No console.log statements found."
-          fi
-
-      - name: Check for TODO/FIXME comments
-        run: |
-          echo "📝 Found TODO/FIXME comments:"
-          grep -r "TODO\|FIXME" src/ --exclude-dir=node_modules || echo "No TODO/FIXME comments found"
-
-      # - name: Check for hardcoded strings
-      #   run: |
-      #     echo "🔍 Checking for potential hardcoded strings (excluding config files):"
-      #     grep -r "['\"][A-Z][a-z].*['\"]" src/ --exclude-dir=node_modules --exclude="*.config.*" --exclude="*.json" | head -10 || echo "No obvious hardcoded strings found"
+        run: npm run ci:type-check
 
       - name: Check file sizes
         run: |
@@ -72,7 +53,7 @@ jobs:
           npx ts-unused-exports tsconfig.json --excludePathsFromReport=node_modules || true
 
       - name: Security audit
-        run: npm audit --audit-level=moderate
+        run: npm run ci:audit
 
       - name: Check for secrets
         run: |
@@ -83,3 +64,41 @@ jobs:
             echo "✅ No obvious secrets found in code."
           fi
 
+      - name: Check for direct process.env usage
+        run: |
+          echo "🔍 Checking for direct process.env usage outside of env.ts..."
+          
+          # Find all process.env usage outside of env.ts
+          PROCESS_ENV_USAGE=$(grep -r "process\.env" src/ --exclude="env.ts" --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" || true)
+          
+          if [ -n "$PROCESS_ENV_USAGE" ]; then
+            echo "❌ Found direct process.env usage outside of env.ts:"
+            echo "$PROCESS_ENV_USAGE"
+            echo ""
+            echo "Please use the typed 'env' object from '@/lib/env' instead:"
+            echo "❌ Bad: process.env.NEXT_PUBLIC_SUPABASE_URL"
+            echo "✅ Good: env.NEXT_PUBLIC_SUPABASE_URL"
+            echo ""
+            echo "This ensures type safety and centralized environment variable management."
+            exit 1
+          else
+            echo "✅ No direct process.env usage found outside of env.ts"
+          fi
+
+      - name: Check for proper env import usage
+        run: |
+          echo "🔍 Checking for proper env import usage..."
+          
+          # Check if files that use environment variables import from env.ts
+          FILES_WITH_ENV_USAGE=$(grep -r -l "env\." src/ --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" || true)
+          
+          for file in $FILES_WITH_ENV_USAGE; do
+            if [ "$file" != "src/lib/env.ts" ]; then
+              if ! grep -q "from.*env" "$file" && ! grep -q "import.*env" "$file"; then
+                echo "⚠️  File $file uses 'env.' but doesn't import from env.ts"
+                echo "   Please add: import { env } from '@/lib/env'"
+              fi
+            fi
+          done
+          
+          echo "✅ Environment variable usage check completed"

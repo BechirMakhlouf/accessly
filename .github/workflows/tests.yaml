@@ -38,10 +38,10 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npm run lint
+        run: npm run ci:lint
 
       - name: Type check
-        run: npx tsc --noEmit
+        run: npm run ci:type-check
 
   # Build verification
   build:
@@ -64,7 +64,7 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npm run build
+        run: npm run ci:build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
