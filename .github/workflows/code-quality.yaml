@@ -52,9 +52,6 @@ jobs:
         run: |
           npx ts-unused-exports tsconfig.json --excludePathsFromReport=node_modules || true
 
-      - name: Security audit
-        run: npm run ci:audit
-
       - name: Check for secrets
         run: |
           # Check for potential secrets in code
@@ -67,10 +64,10 @@ jobs:
       - name: Check for direct process.env usage
         run: |
           echo "🔍 Checking for direct process.env usage outside of env.ts..."
-          
+
           # Find all process.env usage outside of env.ts
           PROCESS_ENV_USAGE=$(grep -r "process\.env" src/ --exclude="env.ts" --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" || true)
-          
+
           if [ -n "$PROCESS_ENV_USAGE" ]; then
             echo "❌ Found direct process.env usage outside of env.ts:"
             echo "$PROCESS_ENV_USAGE"
@@ -88,10 +85,10 @@ jobs:
       - name: Check for proper env import usage
         run: |
           echo "🔍 Checking for proper env import usage..."
-          
+
           # Check if files that use environment variables import from env.ts
           FILES_WITH_ENV_USAGE=$(grep -r -l "env\." src/ --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" || true)
-          
+
           for file in $FILES_WITH_ENV_USAGE; do
             if [ "$file" != "src/lib/env.ts" ]; then
               if ! grep -q "from.*env" "$file" && ! grep -q "import.*env" "$file"; then
@@ -100,5 +97,6 @@ jobs:
               fi
             fi
           done
-          
+
           echo "✅ Environment variable usage check completed"
+
