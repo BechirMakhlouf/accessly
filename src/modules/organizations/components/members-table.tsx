@@ -7,11 +7,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
-import { OrgRole, OrgMember } from "@/modules/organizations";
+import { OrgRole } from "@/modules/organizations";
 import { useFormatRelativeDate } from "@/lib/utils/date-utils";
+import { OrgMemberWithProfile } from "../types";
 
 interface MembersTableProps {
-  members: OrgMember[];
+  members: OrgMemberWithProfile[];
   isLoading: boolean;
   canManageMembers: boolean;
   selectedMembers: string[];

@@ -1,8 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,79 +19,84 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import {  Key, AlertTriangle, Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import { UserPhone } from "@/components/user-phone"
-import { UserEmail } from "@/components/user-email"
-import { PasswordConfirmationDialog } from "./password-confirmation-dialog"
+} from "@/components/ui/alert-dialog";
+import { AlertTriangle, Key, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { UserEmail } from "@/components/user-email";
+import { PasswordConfirmationDialog } from "./password-confirmation-dialog";
 
-type PendingAction = "email" | "phone" | "password" | "delete" | null
+type PendingAction = "email" | "phone" | "password" | "delete" | null;
 
 export function AccountSettings() {
-  
-  const [pendingAction, setPendingAction] = useState<PendingAction>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePasswordReset = async () => {
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    toast("Password reset email sent successfully!")
-  }
-
-  
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsLoading(false);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    toast("Password reset email sent successfully!");
+  };
 
   // phone is handled in its own component
   const handleAccountDelete = async () => {
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    toast("Account deletion initiated. Please check your email for confirmation.")
-  }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsLoading(false);
+    toast(
+      "Account deletion initiated. Please check your email for confirmation.",
+    );
+  };
 
   const getDialogProps = (action: PendingAction) => {
     switch (action) {
       case "email":
         return {
           title: "Update Email Address",
-          description: "Please enter your current password to update your email address.",
+          description:
+            "Please enter your current password to update your email address.",
           onConfirm: () => {},
-        }
+        };
       case "phone":
         return {
           title: "Update Phone Number",
-          description: "Please enter your current password to update your phone number.",
+          description:
+            "Please enter your current password to update your phone number.",
           onConfirm: () => {},
-        }
+        };
       case "password":
         return {
           title: "Reset Password",
-          description: "Please enter your current password to send a password reset email.",
+          description:
+            "Please enter your current password to send a password reset email.",
           onConfirm: handlePasswordReset,
-        }
+        };
       case "delete":
         return {
           title: "Delete Account",
-          description: "Please enter your current password to confirm account deletion. This action cannot be undone.",
+          description:
+            "Please enter your current password to confirm account deletion. This action cannot be undone.",
           onConfirm: handleAccountDelete,
-        }
+        };
       default:
         return {
           title: "Confirm Operation",
-          description: "Please enter your current password to confirm your operation.",
-          onConfirm: () => { },
-        }
+          description:
+            "Please enter your current password to confirm your operation.",
+          onConfirm: () => {},
+        };
     }
-  }
-  const dialogProps = getDialogProps(pendingAction)
+  };
+  const dialogProps = getDialogProps(pendingAction);
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Email Address</CardTitle>
-          <CardDescription>Update your email address for account notifications.</CardDescription>
+          <CardDescription>
+            Update your email address for account notifications.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <UserEmail />
@@ -94,22 +105,19 @@ export function AccountSettings() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Phone Number</CardTitle>
-          <CardDescription>Add or update your phone number for security purposes.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <UserPhone />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
           <CardTitle>Password</CardTitle>
-          <CardDescription>Reset your password by sending a reset link to your email.</CardDescription>
+          <CardDescription>
+            Reset your password by sending a reset link to your email.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={() => setPendingAction("password")} disabled={isLoading}>
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Key className="mr-2 h-4 w-4" />}
+          <Button
+            onClick={() => setPendingAction("password")}
+            disabled={isLoading}
+          >
+            {isLoading
+              ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              : <Key className="mr-2 h-4 w-4" />}
             {isLoading ? "Sending..." : "Send Reset Email"}
           </Button>
         </CardContent>
@@ -118,7 +126,9 @@ export function AccountSettings() {
       <Card className="border-destructive">
         <CardHeader>
           <CardTitle className="text-destructive">Danger Zone</CardTitle>
-          <CardDescription>Permanently delete your account and all associated data.</CardDescription>
+          <CardDescription>
+            Permanently delete your account and all associated data.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <AlertDialog>
@@ -132,8 +142,8 @@ export function AccountSettings() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete your account and remove your data from our
-                  servers.
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -158,5 +168,5 @@ export function AccountSettings() {
         isLoading={isLoading}
       />
     </div>
-  )
+  );
 }

@@ -4,6 +4,7 @@ import {
   Organization,
   OrgInput,
   OrgMember,
+  OrgMemberWithProfile,
   OrgRole,
   OrgUpdate,
   OrgWithMembers,
@@ -253,14 +254,21 @@ export class OrganizationService {
   /**
    * Get organization members
    */
-  async getMembers(orgId: string): Promise<ServiceResult<OrgMember[]>> {
+  async getMembers(orgId: string): Promise<ServiceResult<OrgMemberWithProfile[]>> {
     if (!this.userId) {
       return { error: "org.members.unauthorized" };
     }
 
     const { data, error } = await this.supabase
       .from("organization_members")
-      .select("*")
+      .select(
+        `
+        *,
+        user_profiles (
+          *
+        )
+      `,
+      )
       .eq("organization_id", orgId);
 
     if (error) {
@@ -398,20 +406,24 @@ export class OrganizationService {
     }
 
     // check if there is an existing user with this email
-    const { error: userError } = await this.supabaseAdmin.rpc("get_user_by_email", { p_email: email });
+    const { error: userError } = await this.supabaseAdmin.rpc(
+      "get_user_by_email",
+      { p_email: email },
+    );
 
     if (userError) {
       console.error("Failed to check user:", userError);
       return { error: "org.invite.failedToCheckUser" };
     }
 
-    const { error: inviteError } = await this.supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: getFullRoute(routes.api.auth.inviteEmail),
-      data: {
-        organization_id: orgId,
-        role: role,
-      },
-    });
+    const { error: inviteError } = await this.supabaseAdmin.auth.admin
+      .inviteUserByEmail(email, {
+        redirectTo: getFullRoute(routes.api.auth.inviteEmail),
+        data: {
+          organization_id: orgId,
+          role: role,
+        },
+      });
 
     if (inviteError) {
       console.error("Failed to send invite:", inviteError);
@@ -474,7 +486,12 @@ export class OrganizationService {
 
     // TODO: Implement remove invitation logic
     // Parameters are prefixed with _ to indicate they are intentionally unused
-    console.log("Remove invitation for org:", _orgId, "invitation:", _invitationId);
+    console.log(
+      "Remove invitation for org:",
+      _orgId,
+      "invitation:",
+      _invitationId,
+    );
     return { data: { success: true } };
   }
 }

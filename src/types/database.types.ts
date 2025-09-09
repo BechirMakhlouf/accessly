@@ -796,6 +796,13 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "organization_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       organizations: {
@@ -837,51 +844,51 @@ export type Database = {
           created_at: string
           email: string
           full_name: string | null
-          id: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           email?: string
           full_name?: string | null
-          id?: string
           updated_at?: string
+          user_id?: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           email?: string
           full_name?: string | null
-          id?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
       user_settings: {
         Row: {
           created_at: string
-          id: string
           language: string
           notifications_enabled: boolean
           theme: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
-          id?: string
           language?: string
           notifications_enabled?: boolean
           theme?: string
           updated_at?: string
+          user_id?: string
         }
         Update: {
           created_at?: string
-          id?: string
           language?: string
           notifications_enabled?: boolean
           theme?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

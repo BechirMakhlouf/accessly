@@ -10,12 +10,11 @@ BEGIN
   SET 
     email = NEW.email,
     updated_at = now()
-  WHERE id = NEW.id;
-
+  WHERE user_id = NEW.id;
   -- Update user settings updated_at timestamp
   UPDATE public.user_settings 
   SET updated_at = now()
-  WHERE id = NEW.id;
+  WHERE user_id = NEW.id;
 
   RETURN NEW;
 EXCEPTION
