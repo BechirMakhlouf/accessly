@@ -1,0 +1,182 @@
+name: Database Tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/schemas/**'
+      - 'supabase/tests/**'
+  workflow_dispatch:
+
+jobs:
+  # Database tests
+  database-tests:
+    name: Database Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show changed files
+        run: |
+          echo "🔍 Database test triggered by changes in:"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "📋 Changed files in this PR:"
+            git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -E "^supabase/(migrations|schemas|tests)/" || echo "No database-related files changed"
+          else
+            echo "📋 Changed files in this push:"
+            git diff --name-only HEAD~1 HEAD | grep -E "^supabase/(migrations|schemas|tests)/" || echo "No database-related files changed"
+          fi
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Cache Supabase
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.supabase
+            ~/.local/share/supabase
+          key: supabase-${{ hashFiles('supabase/config.toml', 'supabase/migrations/*.sql', 'supabase/schemas/*.sql', 'supabase/tests/**/*.sql') }}
+          restore-keys: |
+            supabase-
+
+      - name: Start Supabase
+        run: supabase start
+        env:
+          SUPABASE_DEBUG: 1
+
+      - name: Wait for Supabase to be ready
+        run: |
+          timeout 60 bash -c 'until supabase status | grep -q "API URL"; do sleep 2; done'
+          echo "✅ Supabase is ready"
+
+      - name: Show Supabase status
+        run: supabase status
+
+      - name: Run database tests
+        run: supabase test db
+        env:
+          SUPABASE_DEBUG: 1
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-test-results-${{ github.run_number }}
+          path: |
+            supabase/test-results/
+            supabase/logs/
+          retention-days: 7
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop
+
+  # Migration validation
+  migration-validation:
+    name: Migration Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: database-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Validate migration files
+        run: |
+          echo "🔍 Validating migration files..."
+          
+          # Check for SQL syntax errors in migration files
+          for file in supabase/migrations/*.sql; do
+            if [ -f "$file" ]; then
+              echo "Checking $file..."
+              # Basic SQL syntax check (PostgreSQL)
+              if ! psql --version > /dev/null 2>&1; then
+                echo "⚠️ PostgreSQL client not available, skipping syntax check"
+              else
+                # Try to parse the SQL file
+                if ! psql --dry-run -f "$file" > /dev/null 2>&1; then
+                  echo "❌ Potential syntax error in $file"
+                  exit 1
+                else
+                  echo "✅ $file syntax looks good"
+                fi
+              fi
+            fi
+          done
+
+      - name: Check migration naming convention
+        run: |
+          echo "🔍 Checking migration naming convention..."
+          
+          for file in supabase/migrations/*.sql; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              # Check if filename matches pattern: YYYYMMDDHHMMSS_description.sql
+              if [[ ! $filename =~ ^[0-9]{14}_.+\.sql$ ]]; then
+                echo "❌ Migration file '$filename' doesn't follow naming convention: YYYYMMDDHHMMSS_description.sql"
+                exit 1
+              else
+                echo "✅ $filename follows naming convention"
+              fi
+            fi
+          done
+
+      - name: Validate schema files
+        run: |
+          echo "🔍 Validating schema files..."
+          
+          for file in supabase/schemas/*.sql; do
+            if [ -f "$file" ]; then
+              echo "Checking $file..."
+              if ! psql --version > /dev/null 2>&1; then
+                echo "⚠️ PostgreSQL client not available, skipping syntax check"
+              else
+                if ! psql --dry-run -f "$file" > /dev/null 2>&1; then
+                  echo "❌ Potential syntax error in $file"
+                  exit 1
+                else
+                  echo "✅ $file syntax looks good"
+                fi
+              fi
+            fi
+          done
+
+  # Test summary
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [database-tests, migration-validation]
+    if: always()
+
+    steps:
+      - name: Test Results Summary
+        run: |
+          echo "## Database Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Database Tests | ${{ needs.database-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Migration Validation | ${{ needs.migration-validation.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Triggered by changes in:" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -E "^supabase/(migrations|schemas|tests)/" >> $GITHUB_STEP_SUMMARY || echo "No database-related files changed" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            git diff --name-only HEAD~1 HEAD | grep -E "^supabase/(migrations|schemas|tests)/" >> $GITHUB_STEP_SUMMARY || echo "No database-related files changed" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
