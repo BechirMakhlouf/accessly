@@ -24,6 +24,7 @@
     "create-test-users": "tsx scripts/create-test-users.ts",
     "-- TESTS --": "",
     "test:db": "supabase test db",
+    "test:validate": "node scripts/validate-test-sql.js",
     "-- CI --": "",
     "ci:lint": "npm run lint",
     "ci:type-check": "npx tsc --noEmit",
