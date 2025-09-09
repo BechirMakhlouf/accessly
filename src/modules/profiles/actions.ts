@@ -29,7 +29,6 @@ export async function upsertProfile(profile: UpsertProfile) {
     user_id: userId,
   });
 
-  console.log("result: ", result);
   return result;
 }
 

@@ -24,6 +24,10 @@
     "create-test-users": "tsx scripts/create-test-users.ts",
     "-- TESTS --": "",
     "test:db": "supabase test db",
+    "test:ci": "npm run lint && npx tsc --noEmit && npm run build && npm run test:db",
+    "test:watch": "npm run test:db -- --watch",
+    "type-check": "npx tsc --noEmit",
+    "audit": "npm audit --audit-level=moderate",
     "-- HUSKY --": "",
     "prepare": "husky"
   },

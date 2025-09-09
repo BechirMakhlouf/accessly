@@ -28,8 +28,7 @@ ON user_settings
 FOR INSERT 
 TO authenticated 
 WITH CHECK (
-  (SELECT auth.uid()) = user_id AND 
-  user_id IS NOT NULL
+  (SELECT auth.uid()) = user_id
 );
 
 -- UPDATE Policy
@@ -39,9 +38,7 @@ FOR UPDATE
 TO authenticated 
 USING ((SELECT auth.uid()) = user_id)
 WITH CHECK (
-  (SELECT auth.uid()) = user_id AND 
-  user_id IS NULL AND  -- Prevent changing id
-  created_at IS NULL  -- Prevent changing created_at
+  (SELECT auth.uid()) = user_id
 );
 
 -- DELETE Policy

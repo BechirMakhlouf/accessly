@@ -168,7 +168,7 @@ on "public"."user_settings"
 as permissive
 for insert
 to authenticated
-with check (((( SELECT auth.uid() AS uid) = user_id) AND (user_id IS NOT NULL)));
+with check ((( SELECT auth.uid() AS uid) = user_id));
 
 
 create policy "Users can delete their own settings"
@@ -185,7 +185,7 @@ as permissive
 for update
 to authenticated
 using ((( SELECT auth.uid() AS uid) = user_id))
-with check (((( SELECT auth.uid() AS uid) = user_id) AND (user_id IS NULL) AND (created_at IS NULL)));
+with check ((( SELECT auth.uid() AS uid) = user_id));
 
 
 create policy "Users can view their own settings"
