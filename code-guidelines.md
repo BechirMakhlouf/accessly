@@ -14,8 +14,8 @@ This document outlines the coding standards and best practices for the Accessly 
 - Each feature has its own folder under `src/modules/[feature-name]`
 - The module folder contains:
   - UI components unique to this feature
-  - Hooks (`useX`) specific to the feature
-  - State management: implemented in a `store.ts` file using Zustand, scoped to the feature
+  - Hooks (`useX`) specific to the feature that encapsulate TanStack Query logic
+  - State management: TanStack Query for server state, Zustand store (`store.ts`) for complex client state when needed
   - Actions, async logic, API calls, Supabase queries, and helpers
   - Types used exclusively or primarily by this feature
 
@@ -113,6 +113,8 @@ When specifying colors:
 
 ### Client-side data fetching
 - Leverage TanStack Query for API calls, caching, and mutations
+- Encapsulate TanStack Query logic in feature-specific hooks (e.g., `useUserProfile`, `useOrganizations`)
+- Use TanStack Query as the primary state management solution for server state
 
 ---
 
@@ -173,8 +175,8 @@ When specifying colors:
 - **@t3-oss/env-nextjs** - Environment variable validation
 
 ### State Management & Data Fetching
-- **Zustand** - State management
-- **@tanstack/react-query (& devtools)** - Server state management
+- **@tanstack/react-query (& devtools)** - Primary state management for server state
+- **Zustand** - Complex client-side state management (when needed)
 - **react-hook-form & @hookform/resolvers** - Form handling
 
 ### Internationalization & Theming
@@ -184,7 +186,6 @@ When specifying colors:
 ### Validation & Utilities
 - **Zod** - Schema validation
 - **botid** - Bot detection
-- **shx & jiti** - Cross-platform utilities
 
 ---
 
@@ -218,8 +219,8 @@ accessly/
 │   ├── modules/                 # Feature modules (encapsulated)
 │   │   └── [feature-name]/
 │   │       ├── components/      # Feature-specific UI
-│   │       ├── hooks/           # Feature-specific hooks
-│   │       ├── store.ts         # Zustand store
+│   │       ├── hooks/           # TanStack Query hooks (primary state)
+│   │       ├── store.ts         # Zustand store (complex client state only)
 │   │       ├── actions/         # API calls & logic
 │   │       └── types.ts         # Feature-specific types
 │   ├── providers/               # React context providers
@@ -241,7 +242,8 @@ accessly/
 
 ### Architecture Preferences
 - **Prefer Server Actions** over API routes for data fetching and mutations. Use routes only when necessary (where server actions aren't suitable)
-- **Prefer Zustand** for state management over React Context. Use Zustand stores scoped to each feature module
+- **Prefer TanStack Query** for state management, encapsulated in feature-specific hooks
+- **Use Zustand** only for complex client-side state management when TanStack Query is insufficient
 - **Prefer SupabaseSSR** over accessing Supabase directly in client components
 
 ### Type Safety
