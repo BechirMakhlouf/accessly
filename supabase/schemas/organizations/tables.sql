@@ -33,8 +33,7 @@ CREATE TABLE IF NOT EXISTS invites (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     invited_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE SET NULL,
-    invite_token TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'),
+    email TEXT NOT NULL,
     role organization_role NOT NULL DEFAULT 'member',
     status TEXT NOT NULL DEFAULT 'pending' 
         CHECK (status IN ('pending', 'accepted', 'rejected', 'expired')),

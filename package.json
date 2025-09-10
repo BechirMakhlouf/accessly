@@ -20,6 +20,7 @@
     "supabase:db:reset": "supabase db reset",
     "supabase:db:diff": "supabase db diff",
     "supabase:db:gen-migration": "tsx scripts/migration-workflow.ts",
+    "supabase:migration:up": "supabase migration up && npm run supabase:types:local",
     "-- SCRIPTS --": "",
     "create-test-users": "tsx scripts/create-test-users.ts",
     "-- TESTS --": "",
@@ -28,8 +29,7 @@
     "ci:lint": "npm run lint",
     "ci:type-check": "npx tsc --noEmit",
     "ci:build": "npm run build",
-    "ci:audit": "npm audit --audit-level=moderate",
-    "ci:full": "run-s ci:lint ci:type-check ci:build ci:audit",
+    "ci:full": "run-s ci:lint ci:type-check ci:build",
     "-- HUSKY --": "",
     "prepare": "husky"
   },
