@@ -7,11 +7,14 @@ import {
   getOrganizationBySlugQueryOptions,
   getOrganizationMembersQueryOptions,
   updateOrganizationMutationOptions,
+  updateMemberRoleMutationOptions,
+  removeMemberMutationOptions,
+  inviteMemberMutationOptions,
 } from "../queries";
 import { Organization, OrgMember, OrgRole, OrgUpdate } from "../types";
 import { routes } from "@/lib/routes";
 
-export function useActiveOrganization() {
+export function useActiveOrg() {
   const { user } = useAuth();
   const router = useRouter();
   const params = useParams();
@@ -46,8 +49,31 @@ export function useActiveOrganization() {
   const updateOrgMutation = useMutation({
     ...updateOrganizationMutationOptions(queryClient),
     onSuccess: () => {
-      // Refetch both organization and members data
       refetchOrg();
+      refetchMembers();
+    },
+  });
+
+  // Update member role mutation
+  const updateRoleMutation = useMutation({
+    ...updateMemberRoleMutationOptions(queryClient),
+    onSuccess: () => {
+      refetchMembers();
+    },
+  });
+
+  // Remove member mutation
+  const removeMemberMutation = useMutation({
+    ...removeMemberMutationOptions(queryClient),
+    onSuccess: () => {
+      refetchMembers();
+    },
+  });
+
+  // Invite member mutation
+  const inviteMemberMutation = useMutation({
+    ...inviteMemberMutationOptions(queryClient),
+    onSuccess: () => {
       refetchMembers();
     },
   });
@@ -66,15 +92,13 @@ export function useActiveOrganization() {
     ? members.find(m => m.user_id === user.id) || null
     : null;
 
-  // Set active organization (navigate to it)
+  // Actions
   const setActiveOrganization = (org: Organization) => {
-    // Navigate to the organization's dashboard
     if (org.slug) {
       router.push(routes.protected.dashboard.org.slug.root(org.slug));
     }
   };
 
-  // Update organization
   const updateOrganization = async (updates: OrgUpdate) => {
     if (!organization?.id) throw new Error("No active organization");
     
@@ -84,7 +108,36 @@ export function useActiveOrganization() {
     });
   };
 
-  // Refetch all data
+  const updateMemberRole = async (memberId: string, newRole: "admin" | "member") => {
+    if (!organization?.id) throw new Error("No active organization");
+    
+    await updateRoleMutation.mutateAsync({ 
+      orgId: organization.id, 
+      memberId, 
+      newRole 
+    });
+  };
+
+  const removeMember = async (memberId: string) => {
+    if (!organization?.id) throw new Error("No active organization");
+    
+    await removeMemberMutation.mutateAsync({ 
+      orgId: organization.id, 
+      memberId 
+    });
+  };
+
+  const inviteMember = async (email: string, role: OrgRole, orgName: string) => {
+    if (!organization?.id) throw new Error("No active organization");
+    
+    await inviteMemberMutation.mutateAsync({ 
+      orgId: organization.id, 
+      email, 
+      role, 
+      orgName 
+    });
+  };
+
   const refetch = () => {
     refetchOrg();
     refetchMembers();
@@ -105,10 +158,21 @@ export function useActiveOrganization() {
     // Actions
     setActiveOrganization,
     updateOrganization,
+    updateMemberRole,
+    removeMember,
+    inviteMember,
     refetch,
     
-    // Mutation state
+    // Mutation states
     isUpdating: updateOrgMutation.isPending,
+    isUpdatingRole: updateRoleMutation.isPending,
+    isRemovingMember: removeMemberMutation.isPending,
+    isInvitingMember: inviteMemberMutation.isPending,
+    
+    // Mutation errors
     updateError: updateOrgMutation.error,
+    updateRoleError: updateRoleMutation.error,
+    removeMemberError: removeMemberMutation.error,
+    inviteMemberError: inviteMemberMutation.error,
   };
 }

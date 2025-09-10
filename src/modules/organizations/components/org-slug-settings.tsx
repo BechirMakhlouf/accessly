@@ -8,8 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useActiveOrganization } from "../hooks/use-active-organization"
-import { useOrganizationMutations } from "../hooks/use-organization-mutations"
+import { useActiveOrg, useUserOrgs } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -18,8 +17,8 @@ import { createOrgSlugSchema, type OrgSlugFormData } from "../schemas"
 import { isAdminRole } from "../utils"
 
 export function OrgSlugSettings() {
-  const { activeOrganization: org, updateOrganization, isUpdating, currentUserRole } = useActiveOrganization();
-  const { checkSlugUniqueness, isCheckingSlug } = useOrganizationMutations();
+  const { activeOrganization: org, updateOrganization, isUpdating, currentUserRole } = useActiveOrg();
+  const { checkSlugUniqueness, isCheckingSlug } = useUserOrgs();
   const t = useTranslations("org.settings.general");
   const tSchema = useTranslations();
   const router = useRouter();

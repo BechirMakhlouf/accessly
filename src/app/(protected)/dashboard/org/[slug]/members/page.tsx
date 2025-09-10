@@ -11,8 +11,6 @@ import {
   InviteMemberModal,
   MembersPagination
 } from "@/modules/organizations"
-import { redirect } from "next/navigation"
-import { routes } from "@/lib/routes"
 
 export default function MembersPage() {
   const t = useTranslations("org.members");
@@ -32,7 +30,6 @@ export default function MembersPage() {
     setInviteRole,
     
     // Data
-    org,
     paginatedMembers,
     canManageMembersRole,
     isLoading,
@@ -57,10 +54,6 @@ export default function MembersPage() {
     removeMemberMutation,
     inviteMemberMutation,
   } = useMembersPage();
-
-  if (!org && !isLoading) {
-    redirect(routes.protected.dashboard.organizations.root);
-  }
 
   if (error) {
     return (

@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { OrgWithMembers } from '../types'
 import { routes } from '@/lib/routes'
-import { useOrganizationMutations } from '../hooks/use-organization-mutations'
+import { useUserOrgs } from '@/modules/organizations'
 import { toast } from 'sonner'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
@@ -36,7 +36,7 @@ interface OrganizationCardProps {
 
 export function OrganizationCard({ organization }: OrganizationCardProps) {
   const [showLeaveDialog, setShowLeaveDialog] = useState(false)
-  const { leaveOrganization } = useOrganizationMutations()
+  const { leaveOrganization } = useUserOrgs()
   const t = useTranslations('organizations')
   const router = useRouter()
   const locale = useLocale()

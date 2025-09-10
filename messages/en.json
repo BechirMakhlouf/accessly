@@ -247,7 +247,8 @@
       "failedToSend": "Failed to send invitation",
       "invalidEmail": "Invalid email address",
       "alreadyMember": "User is already a member of this organization",
-      "failedToCheckUser": "Failed to check if user exists"
+      "failedToCheckUser": "Failed to check if user exists",
+      "failedToInsert": "Failed to insert invitation"
     },
     "member": {
       "unauthorized": "You are not authorized to perform this action",

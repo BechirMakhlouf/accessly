@@ -7,10 +7,12 @@ import {
   createOrganizationMutationOptions,
   updateOrganizationMutationOptions,
   leaveOrganizationMutationOptions,
+  checkSlugUniquenessMutationOptions,
+  deleteOrganizationMutationOptions,
 } from "../queries";
 import { OrgUpdate, OrgInput } from "../types";
 
-export function useUserOrganizations() {
+export function useUserOrgs() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -49,6 +51,17 @@ export function useUserOrganizations() {
     },
   });
 
+  // Check slug uniqueness mutation
+  const checkSlugMutation = useMutation(checkSlugUniquenessMutationOptions());
+
+  // Delete organization mutation
+  const deleteOrgMutation = useMutation({
+    ...deleteOrganizationMutationOptions(queryClient),
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
   // Actions
   const createOrganization = async (data: OrgInput) => {
     const result = await createOrgMutation.mutateAsync(data);
@@ -63,6 +76,14 @@ export function useUserOrganizations() {
     await leaveOrgMutation.mutateAsync({ orgId });
   };
 
+  const checkSlugUniqueness = async (slug: string) => {
+    return await checkSlugMutation.mutateAsync(slug);
+  };
+
+  const deleteOrganization = async (orgId: string) => {
+    await deleteOrgMutation.mutateAsync(orgId);
+  };
+
   return {
     // Data
     organizations,
@@ -75,16 +96,22 @@ export function useUserOrganizations() {
     createOrganization,
     updateOrganization,
     leaveOrganization,
+    checkSlugUniqueness,
+    deleteOrganization,
     refetch,
     
     // Mutation states
     isCreating: createOrgMutation.isPending,
     isUpdating: updateOrgMutation.isPending,
     isLeaving: leaveOrgMutation.isPending,
+    isCheckingSlug: checkSlugMutation.isPending,
+    isDeleting: deleteOrgMutation.isPending,
     
     // Mutation errors
     createError: createOrgMutation.error,
     updateError: updateOrgMutation.error,
     leaveError: leaveOrgMutation.error,
+    checkSlugError: checkSlugMutation.error,
+    deleteError: deleteOrgMutation.error,
   };
 }

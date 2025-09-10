@@ -12,15 +12,15 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { routes } from "@/lib/routes"
-import { OrganizationsDropdown } from "./organizations-dropdown"
+import { OrganizationsDropdown } from "@/modules/organizations"
 import { AppSearchBar } from "./app-search-bar"
 import UserDropdown from "./user-dropdown"
 import { NotificationsPopover } from "./notification-popover"
-import { useActiveOrganization } from "@/modules/organizations"
+import { useActiveOrg } from "@/modules/organizations"
 import { useAuth } from "@/lib/auth"
 
 export function AppHeader() {
-  const { activeOrganization: org } = useActiveOrganization()
+  const { activeOrganization: org } = useActiveOrg()
   const { user } = useAuth()
 
   return (

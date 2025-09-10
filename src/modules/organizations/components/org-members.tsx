@@ -8,37 +8,30 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, AlertTriangle } from 'lucide-react'
-import { useActiveOrganization } from "../hooks/use-active-organization"
-import { useOrganizationMembers } from "../hooks/use-organization-members"
+import { useActiveOrg } from "@/modules/organizations"
 import { InviteMemberModal } from "./invite-member-modal"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useAuth } from "@/lib/auth"
 import { toast } from "sonner"
-import { OrgRole, OrgMember } from "../types"
+import { OrgRole } from "../types"
 
 export function OrgMembers() {
-  const { organization: org } = useActiveOrganization();
-  const { user } = useAuth();
-  const t = useTranslations('organizations');
-  
-
-  
-  const [newMemberEmail, setNewMemberEmail] = useState("")
-  const [newMemberRole, setNewMemberRole] = useState<OrgRole>("member")
-  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
-
   const { 
+    organization: org, 
     members, 
     isLoading, 
     error, 
     updateMemberRole, 
     removeMember, 
     inviteMember,
-    isInvitingMember
-  } = useOrganizationMembers(org?.id || "");
-
-  const currentUserRole = members?.find((m: OrgMember) => m.user_id === user?.id)?.role;
+    isInvitingMember,
+    currentUserRole
+  } = useActiveOrg();
+  const t = useTranslations('organizations');
+  
+  const [newMemberEmail, setNewMemberEmail] = useState("")
+  const [newMemberRole, setNewMemberRole] = useState<OrgRole>("member")
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
 
   const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
     if (!org) return;
@@ -68,7 +61,7 @@ export function OrgMembers() {
     if (!org || !newMemberEmail || !newMemberRole) return;
     
     try {
-      await inviteMember(newMemberEmail, newMemberRole);
+      await inviteMember(newMemberEmail, newMemberRole, org.name);
       toast.success(t('members.actions.invitationSent'));
       setNewMemberEmail("");
       setNewMemberRole("member");

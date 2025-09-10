@@ -1,6 +1,6 @@
 "use client";
 
-import { useActiveOrganization } from "@/modules/organizations";
+import { useActiveOrg } from "@/modules/organizations";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Calendar, Activity, Settings, UserPlus } from "lucide-react";
@@ -65,7 +65,7 @@ function OrganizationPageSkeleton() {
 }
 
 export default function OrgPage() {
-  const { activeOrganization, members, isLoading } = useActiveOrganization();
+  const { activeOrganization, members, isLoading } = useActiveOrg();
   const t = useTranslations("org.overview");
   
   const memberCount = members?.length || 0;

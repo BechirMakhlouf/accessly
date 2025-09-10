@@ -1,12 +1,11 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { routes } from '@/lib/routes'
-import { useUserOrganizations } from './use-user-organizations'
-
+import { useUserOrgs } from './use-user-orgs'
 
 export function useOrganizationsPage() {
   const router = useRouter()
-  const { organizations, isLoading, error, createOrganization } = useUserOrganizations()
+  const { organizations, isLoading, error, createOrganization } = useUserOrgs()
   const [searchQuery, setSearchQuery] = useState("")
 
   // Filter organizations based on search query

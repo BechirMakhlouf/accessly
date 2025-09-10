@@ -69,9 +69,9 @@ export async function leaveOrganization(orgId: string) {
   return await orgService.leaveOrganization(orgId);
 }
 
-export async function inviteMember(orgId: string, email: string, role: OrgRole) {
+export async function inviteMember(orgId: string, orgName: string, email: string, role: OrgRole,) {
   const orgService = await createOrgService();
-  return await orgService.inviteMember(orgId, role, email);
+  return await orgService.inviteMember(orgId, orgName, role, email);
 }
 
 export async function deleteOrganization(orgId: string) {

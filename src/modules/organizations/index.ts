@@ -15,12 +15,12 @@ export { MembersSearchBar } from './components/members-search-bar';
 export { MembersTable } from './components/members-table';
 export { InviteMemberModal } from './components/invite-member-modal';
 export { MembersPagination } from './components/members-pagination';
+export { OrganizationsDropdown } from './components/organizations-dropdown';
 
-export { useActiveOrganization } from './hooks/use-active-organization';
-export { useUserOrganizations } from './hooks/use-user-organizations';
-export { useOrganizationMembers } from './hooks/use-organization-members';
-export { useOrganizationMutations } from './hooks/use-organization-mutations';
+export { useActiveOrg } from './hooks/use-active-org';
+export { useUserOrgs } from './hooks/use-user-orgs';
 export { useMembersPage } from './hooks/use-members-page';
+export { useOrganizationsPage } from './hooks/use-organizations-page';
 
 
 // Types

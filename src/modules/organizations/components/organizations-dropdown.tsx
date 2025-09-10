@@ -7,15 +7,14 @@ import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { routes } from "@/lib/routes"
-import { useActiveOrganization, useUserOrganizations } from "@/modules/organizations"
-import { Organization } from "@/modules/organizations/types"
+import { useActiveOrg, useUserOrgs, Organization } from "@/modules/organizations"
 import { useAuth } from "@/lib/auth"
 
 export function OrganizationsDropdown({ trigger }: { trigger?: ReactNode }) {
   const router = useRouter()
   const { user } = useAuth()
-  const { organization: org, setActiveOrganization: setOrg } = useActiveOrganization()
-  const { organizations, isLoading } = useUserOrganizations()
+  const { organization: org, setActiveOrganization: setOrg } = useActiveOrg()
+  const { organizations, isLoading } = useUserOrgs()
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const searchInputRef = useRef<HTMLInputElement>(null)

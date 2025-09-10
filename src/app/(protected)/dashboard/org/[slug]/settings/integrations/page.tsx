@@ -1,11 +1,11 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useActiveOrganization } from "@/modules/organizations"
+import { useActiveOrg } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 
 export default function IntegrationsSettingsPage() {
-  const { activeOrganization: org } = useActiveOrganization();
+  const { activeOrganization: org } = useActiveOrg();
   const t = useTranslations("org.settings.integrations");
 
   if (!org) {

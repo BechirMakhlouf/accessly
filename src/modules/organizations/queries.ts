@@ -182,12 +182,14 @@ export const inviteMemberMutationOptions = (queryClient: QueryClient) => ({
   mutationFn: async ({ 
     orgId, 
     email, 
-    role 
+    role,
+    orgName
   }: { 
     orgId: string; 
     email: string; 
-    role: OrgRole 
-  }) => await inviteMember(orgId, email, role),
+    role: OrgRole;
+    orgName: string;
+  }) => await inviteMember(orgId, orgName, email, role),
   onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
     if (!data?.error) {
       queryClient.invalidateQueries({ queryKey: ORGANIZATION_MEMBERS_KEY(orgId) });

@@ -254,7 +254,9 @@ export class OrganizationService {
   /**
    * Get organization members
    */
-  async getMembers(orgId: string): Promise<ServiceResult<OrgMemberWithProfile[]>> {
+  async getMembers(
+    orgId: string,
+  ): Promise<ServiceResult<OrgMemberWithProfile[]>> {
     if (!this.userId) {
       return { error: "org.members.unauthorized" };
     }
@@ -264,13 +266,14 @@ export class OrganizationService {
       .select(
         `
         *,
-        user_profiles (
+        profile:user_profiles (
           *
         )
       `,
       )
       .eq("organization_id", orgId);
 
+    console.debug("MEMBERS: ", data);
     if (error) {
       console.error("Failed to load organization members:", error);
       const rlsInfo = isRlsError(error);
@@ -394,6 +397,7 @@ export class OrganizationService {
 
   async inviteMember(
     orgId: string,
+    orgName: string,
     role: OrgRole,
     email: string,
   ): Promise<ServiceResult<{ success: true }>> {
@@ -416,12 +420,31 @@ export class OrganizationService {
       return { error: "org.invite.failedToCheckUser" };
     }
 
+    const { data: inviteData, error: inviteInsertError } = await this.supabase
+      .from("invites").insert({
+        email: email,
+        organization_id: orgId,
+        role: role,
+        invited_by: this.userId,
+      }).select().single();
+
+    if (inviteInsertError || isNullOrUndefined(inviteData)) {
+      console.error("Failed to insert invite:", inviteInsertError);
+      return { error: "org.invite.failedToInsert" };
+    }
+
+    console.log("invite data: ", {
+      invite_id: inviteData.id,
+      organization_name: orgName,
+      org_role: inviteData.role,
+    });
     const { error: inviteError } = await this.supabaseAdmin.auth.admin
       .inviteUserByEmail(email, {
         redirectTo: getFullRoute(routes.api.auth.inviteEmail),
         data: {
-          organization_id: orgId,
-          role: role,
+          invite_id: inviteData.id,
+          organization_name: orgName,
+          org_role: inviteData.role,
         },
       });
 

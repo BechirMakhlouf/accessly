@@ -1,12 +1,35 @@
 "use client"
 
-import { useActiveOrganization } from "../hooks/use-active-organization"
+import { useActiveOrg } from "@/modules/organizations"
 import { OrgNameSettings } from "./org-name-settings"
 import { OrgSlugSettings } from "./org-slug-settings"
 import { DeleteOrgDangerZone } from "./delete-org-danger-zone"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function OrgSettings() {
-  const { activeOrganization: org } = useActiveOrganization();
+  const { activeOrganization: org, isLoading } = useActiveOrg();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   if (!org) {
     return null;

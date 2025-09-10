@@ -1,17 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { useActiveOrganization } from "./use-active-organization";
-import {
-  useOrganizationMembers,
-  OrgRole,
-  canManageMembers,
-  Organization,
-  OrgMember
-} from "@/modules/organizations";
-import { OrgMember as OrgMemberType } from "../types";
+import { useRouter } from "next/navigation";
+import { useActiveOrg, OrgRole, canManageMembers, Organization, OrgMember } from "@/modules/organizations";
+import { routes } from "@/lib/routes";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -70,8 +64,22 @@ export interface UseMembersPageReturn {
 }
 
 export const useMembersPage = (): UseMembersPageReturn => {
-  const { organization: org } = useActiveOrganization();
+  const { 
+    organization: org, 
+    members, 
+    isLoading, 
+    error, 
+    updateMemberRole, 
+    removeMember, 
+    inviteMember, 
+    isUpdatingRole, 
+    isRemovingMember, 
+    isInvitingMember, 
+    currentUserRole: userRole 
+  } = useActiveOrg();
+  
   const t = useTranslations("org.members");
+  const router = useRouter();
   
   // State
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,30 +89,23 @@ export const useMembersPage = (): UseMembersPageReturn => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<OrgRole>("member");
 
-  // Data fetching
-  const {
-    members,
-    isLoading,
-    error,
-    updateMemberRole,
-    removeMember,
-    inviteMember,
-    isUpdatingRole,
-    isRemovingMember,
-    isInvitingMember,
-    currentUserRole: userRole,
-  } = useOrganizationMembers(org?.id || "");
-
   const currentUserRole = useMemo(() => {
     return userRole ? { role: userRole } : null;
   }, [userRole]);
+
+  // Handle redirect if no organization and not loading
+  useEffect(() => {
+    if (!org && !isLoading) {
+      router.push(routes.protected.dashboard.organizations.root);
+    }
+  }, [org, isLoading, router]);
 
   // Computed values
   const canManageMembersRole = currentUserRole ? canManageMembers(currentUserRole.role) : false;
 
   const filteredMembers = useMemo(() => {
     if (!members) return [];
-    return members.filter((member: OrgMemberType) =>
+    return members.filter((member: OrgMember) =>
       member.user_id.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [members, searchQuery]);
@@ -116,31 +117,32 @@ export const useMembersPage = (): UseMembersPageReturn => {
   const totalFilteredMembers = filteredMembers.length;
 
   // Actions
- const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
-  if (!org) return;
-  const memberList = members || [];
+  const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
+    if (!org?.id) return;
+    const memberList = members || [];
 
-  if (newRole === 'member') {
-    const target = memberList.find(m => m.user_id === memberId);
-    if (target?.role === 'admin') {
-      const otherAdmins = memberList.filter(m => m.role === 'admin' && m.user_id !== memberId);
-      if (otherAdmins.length === 0) {
-        toast.error(t('actions.cannotDemoteLastAdmin'));
-        return;
+    if (newRole === 'member') {
+      const target = memberList.find(m => m.user_id === memberId);
+      if (target?.role === 'admin') {
+        const otherAdmins = memberList.filter(m => m.role === 'admin' && m.user_id !== memberId);
+        if (otherAdmins.length === 0) {
+          toast.error(t('actions.cannotDemoteLastAdmin'));
+          return;
+        }
       }
     }
-  }
 
-  try {
-    await updateMemberRole(memberId, newRole);
-    toast.success(t('actions.roleUpdated'));
-  } catch (error) {
-    console.error('Failed to update role:', error);
-    toast.error(t('actions.roleUpdateError'));
-  }
-};
+    try {
+      await updateMemberRole(memberId, newRole);
+      toast.success(t('actions.roleUpdated'));
+    } catch (error) {
+      console.error('Failed to update role:', error);
+      toast.error(t('actions.roleUpdateError'));
+    }
+  };
+
   const handleDeleteMember = async (memberId: string) => {
-    if (!org) return;
+    if (!org?.id) return;
     
     try {
       await removeMember(memberId);
@@ -153,7 +155,7 @@ export const useMembersPage = (): UseMembersPageReturn => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedMembers(paginatedMembers.map((member: OrgMemberType) => member.user_id));
+      setSelectedMembers(paginatedMembers.map((member: OrgMember) => member.user_id));
     } else {
       setSelectedMembers([]);
     }
@@ -168,10 +170,10 @@ export const useMembersPage = (): UseMembersPageReturn => {
   };
 
   const handleInviteMember = async () => {
-    if (!org || !inviteEmail.trim()) return;
+    if (!org?.id || !org || !inviteEmail.trim()) return;
     
     try {
-      await inviteMember(inviteEmail.trim(), inviteRole);
+      await inviteMember(inviteEmail.trim(), inviteRole, org.name);
       toast.success(t('actions.invitationSent'));
       // Reset form
       setIsInviteModalOpen(false);
@@ -184,7 +186,7 @@ export const useMembersPage = (): UseMembersPageReturn => {
   };
 
   const handleBulkDelete = async () => {
-    if (selectedMembers.length === 0 || !org) return;
+    if (selectedMembers.length === 0 || !org?.id) return;
     
     try {
       // Process all deletions sequentially

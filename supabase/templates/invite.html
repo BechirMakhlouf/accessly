@@ -72,6 +72,34 @@
     </div>
     
     <div class="content">
+        {{ if .Data.organization_name }}
+        <!-- Custom organization invite template -->
+        <h2>You're Invited to Join {{ .Data.organization_name }}!</h2>
+        <p>Hi there,</p>
+        <p>You've been invited to join <strong>{{ .Data.organization_name }}</strong> on Accessly! We're excited to have you on board.</p>
+        
+        {{ if .Data.org_role }}
+        <p><strong>Your role:</strong> {{ .Data.org_role }}</p>
+        {{ end }}
+        
+        <p>To accept your invitation and create your account, click the button below:</p>
+        
+        <div style="text-align: center;">
+            <a href="{{ .SiteURL }}/api/auth/confirm-email?token_hash={{ .TokenHash }}&type=email&next=/dashboard" class="button">Accept Invitation</a>
+        </div>
+        
+        <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
+        <p style="word-break: break-all; background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+            {{ .SiteURL }}/api/auth/confirm-email?token_hash={{ .TokenHash }}&type=email&next=/dashboard
+        </p>
+        
+        <p>This invitation will expire in 7 days.</p>
+        
+        <p>If you weren't expecting this invitation, you can safely ignore this email.</p>
+        
+        <p>Welcome aboard!<br>The {{ .Data.organization_name }} Team</p>
+        {{ else }}
+        <!-- Default invite template -->
         <h2>You're Invited to Join Accessly!</h2>
         <p>Hi there,</p>
         <p>You've been invited to join Accessly! We're excited to have you on board.</p>
@@ -92,6 +120,7 @@
         <p>If you weren't expecting this invitation, you can safely ignore this email.</p>
         
         <p>Welcome aboard!<br>The Accessly Team</p>
+        {{ end }}
     </div>
     
     <div class="footer">
