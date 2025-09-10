@@ -11,7 +11,7 @@
     "build": "next build",
     "build:no-lint": "next build --no-lint",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "-- SUPABASE --": "",
     "supabase:types:local": "supabase gen types typescript --local --schema public,auth,storage > src/types/database.types.ts",
     "supabase:stop": "supabase stop",
