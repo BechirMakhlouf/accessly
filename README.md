@@ -97,7 +97,7 @@ This project follows a modular architecture with strong encapsulation:
 
 ## Development Guidelines
 
-This project follows strict coding guidelines to ensure consistency, maintainability, and scalability. Please refer to the comprehensive [Code Guidelines](./code-guidelines.mdc) document for detailed information about:
+This project follows strict coding guidelines to ensure consistency, maintainability, and scalability. Please refer to the comprehensive [Code Guidelines](./code-guidelines.md) document for detailed information about:
 
 - **Modular Architecture**: Each feature is encapsulated in its own module
 - **Type Safety**: No explicit or implicit `any` types
