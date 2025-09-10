@@ -27,6 +27,7 @@ npm run init-local
 ```
 
 This command will:
+
 - Install all project dependencies
 - Copy environment variables from `env.example` to `.env.local`
 
@@ -39,10 +40,11 @@ npm run dev
 ```
 
 This command will:
+
 - Start the Supabase local development environment (requires Docker)
 - Start the Next.js development server with Turbopack
 
-The application will be available at `http://localhost:3000`.
+The application will be available at `http://127.0.0.1:3000`.
 
 ## Project Structure
 
@@ -57,23 +59,27 @@ This project follows a modular architecture with strong encapsulation:
 ## Available Scripts
 
 ### Development
+
 - `npm run dev` - Start development server with Supabase
 - `npm run devs` - Start development server with HTTPS
 - `npm run init-local` - Initialize local environment
 
 ### Supabase
+
 - `npm run supabase:start` - Start Supabase local development
 - `npm run supabase:stop` - Stop Supabase local development
 - `npm run supabase:restart` - Restart Supabase local development
 - `npm run supabase:db:reset` - Reset the local database
 
 ### Database Management
+
 - `npm run supabase:types:local` - Generate TypeScript types from local database
 - `npm run supabase:db:gen-migration` - Generate a new migration
 - `npm run validate:migrations` - Validate migration files
 - `npm run validate:db-types` - Validate database types
 
 ### Testing
+
 - `npm run test:db` - Run database tests
 - `npm run create-test-users` - Create test users (this is a utility to create simple users for debugging)
 
@@ -102,21 +108,25 @@ This project follows strict coding guidelines:
 ## Troubleshooting
 
 ### Docker Issues
+
 If you encounter Docker-related issues:
+
 - Ensure Docker Desktop is running
 - Check that Docker has sufficient resources allocated
 - Try restarting Docker Desktop
 
 ### Supabase Issues
+
 If Supabase fails to start:
+
 - Run `npm run supabase:stop` to stop any running instances
 - Run `npm run supabase:start` to restart
 - Check Docker logs for any error messages
 
 ### Port Conflicts
-If port 3000 is already in use:
-- The Next.js dev server will automatically use the next available port
-- Check the terminal output for the actual port being used
+
+- To ensure all functionality is working, you need to have the :3000 port allocated for the nextjs dev server as many redirect urls in supabase use that.
+- Please prefer using the 127.0.0.1 instead of localhost to mitigate any redirect issues with docker containers redirecting.
 
 ## Contributing
 
@@ -128,3 +138,4 @@ If port 3000 is already in use:
 ## Support
 
 If you encounter any issues or have questions, please reach out to the development team or create an issue in the repository.
+
