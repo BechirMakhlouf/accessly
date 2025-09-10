@@ -12,11 +12,10 @@ export async function middleware(request: NextRequest) {
     authResponse.headers.append("x-pathname", request.nextUrl.pathname);
 
     return i18nResponse;
-  } catch {
-
+  } catch (e: unknown) {
+    console.error("error in middleware: ", e);
   }
 }
-
 
 export const config = {
   matcher: [
