@@ -43,6 +43,9 @@ jobs:
       - name: Type check
         run: npm run ci:type-check
 
+      - name: Validate database types
+        run: npm run validate:db-types
+
       - name: Check file sizes
         run: |
           echo "📊 Large files (>100KB):"

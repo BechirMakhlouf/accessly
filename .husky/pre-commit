@@ -1,1 +1,21 @@
+# Run linting
+echo "🔍 Running linter..."
 npm run lint
+
+# Validate migration-schema consistency
+echo "🔍 Validating migration-schema consistency..."
+npm run validate:migrations
+
+# Check if there are any database-related changes
+echo "🔍 Checking for database-related changes..."
+CHANGED_FILES=$(git diff --cached --name-only)
+
+# Check for migration files, schema changes, or database type files
+if echo "$CHANGED_FILES" | grep -E 'supabase/migrations/.*\.sql$' > /dev/null || \
+   echo "$CHANGED_FILES" | grep -E 'supabase/schemas/.*\.sql$' > /dev/null || \
+   echo "$CHANGED_FILES" | grep -E 'src/types/database\.types\.ts$' > /dev/null; then
+  echo "🗄️  Database-related changes detected, validating types..."
+  npm run validate:db-types
+else
+  echo "ℹ️  No database-related changes detected, skipping type validation"
+fi
