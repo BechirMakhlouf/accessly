@@ -719,7 +719,6 @@ export type Database = {
           email: string
           expires_at: string
           id: string
-          invite_token: string
           invited_by: string
           organization_id: string
           role: Database["public"]["Enums"]["organization_role"]
@@ -731,7 +730,6 @@ export type Database = {
           email: string
           expires_at?: string
           id?: string
-          invite_token: string
           invited_by: string
           organization_id: string
           role?: Database["public"]["Enums"]["organization_role"]
@@ -743,7 +741,6 @@ export type Database = {
           email?: string
           expires_at?: string
           id?: string
-          invite_token?: string
           invited_by?: string
           organization_id?: string
           role?: Database["public"]["Enums"]["organization_role"]
