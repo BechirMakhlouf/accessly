@@ -97,13 +97,20 @@ This project follows a modular architecture with strong encapsulation:
 
 ## Development Guidelines
 
-This project follows strict coding guidelines:
+This project follows strict coding guidelines to ensure consistency, maintainability, and scalability. Please refer to the comprehensive [Code Guidelines](./code-guidelines.mdc) document for detailed information about:
 
 - **Modular Architecture**: Each feature is encapsulated in its own module
 - **Type Safety**: No explicit or implicit `any` types
 - **Internationalization**: All user-facing text must use i18n keys
 - **Database Changes**: All database changes must be represented in migration files
 - **Environment Variables**: All environment variables must be registered in `src/lib/env.ts`
+- **UI Components & Styling**: Using shadcn UI components and semantic tokens
+- **Validation & Data Fetching**: Zod schemas, React Hook Form, and TanStack Query
+- **Error Handling**: Proper HTTP status codes and user-friendly error messages
+- **Routing**: Centralized route management
+- **And much more...**
+
+**Important**: All team members must read and follow the code guidelines before contributing to the project.
 
 ## Troubleshooting
 
