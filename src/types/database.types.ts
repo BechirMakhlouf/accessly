@@ -768,7 +768,7 @@ export type Database = {
           created_at: string
           joined_at: string
           last_active_at: string | null
-          role: Database["public"]["Enums"]["organization_role"]
+          role: Database["public"]["Enums"]["boards_role"]
           updated_at: string
           user_id: string
         }
@@ -777,7 +777,7 @@ export type Database = {
           created_at?: string
           joined_at?: string
           last_active_at?: string | null
-          role?: Database["public"]["Enums"]["organization_role"]
+          role?: Database["public"]["Enums"]["boards_role"]
           updated_at?: string
           user_id: string
         }
@@ -786,7 +786,7 @@ export type Database = {
           created_at?: string
           joined_at?: string
           last_active_at?: string | null
-          role?: Database["public"]["Enums"]["organization_role"]
+          role?: Database["public"]["Enums"]["boards_role"]
           updated_at?: string
           user_id?: string
         }
@@ -810,7 +810,7 @@ export type Database = {
           organization_id: string
           title: string
           updated_at: string
-          visibility: string
+          visibility: Database["public"]["Enums"]["boards_visibility"]
         }
         Insert: {
           created_at?: string
@@ -821,7 +821,7 @@ export type Database = {
           organization_id: string
           title: string
           updated_at?: string
-          visibility?: string
+          visibility?: Database["public"]["Enums"]["boards_visibility"]
         }
         Update: {
           created_at?: string
@@ -832,7 +832,7 @@ export type Database = {
           organization_id?: string
           title?: string
           updated_at?: string
-          visibility?: string
+          visibility?: Database["public"]["Enums"]["boards_visibility"]
         }
         Relationships: [
           {
@@ -1086,6 +1086,8 @@ export type Database = {
       }
     }
     Enums: {
+      boards_role: "admin" | "member"
+      boards_visibility: "public" | "private"
       organization_role: "admin" | "member"
     }
     CompositeTypes: {
@@ -1751,6 +1753,8 @@ export const Constants = {
   },
   public: {
     Enums: {
+      boards_role: ["admin", "member"],
+      boards_visibility: ["public", "private"],
       organization_role: ["admin", "member"],
     },
   },

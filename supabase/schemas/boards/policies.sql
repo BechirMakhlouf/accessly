@@ -35,7 +35,7 @@ CREATE POLICY "Member view boards"
 ON public.boards
 FOR SELECT TO authenticated
 USING (
-  visibility = 'public'
+  visibility = 'public'::boards_visibility
   OR public.is_board_member(boards.id)
 );
 
@@ -49,7 +49,7 @@ USING (
     FROM public.board_members bm
     WHERE bm.board_id = boards.id
       AND bm.user_id = (SELECT auth.uid())
-      AND bm.role = 'admin'::organization_role
+  AND bm.role = 'admin'::boards_role
   )
 )
 WITH CHECK (
@@ -58,7 +58,7 @@ WITH CHECK (
     FROM public.board_members bm
     WHERE bm.board_id = boards.id
       AND bm.user_id = (SELECT auth.uid())
-      AND bm.role = 'admin'::organization_role
+  AND bm.role = 'admin'::boards_role
   )
 );
 
@@ -72,7 +72,7 @@ USING (
     FROM public.board_members bm
     WHERE bm.board_id = boards.id
       AND bm.user_id = (SELECT auth.uid())
-      AND bm.role = 'admin'::organization_role
+  AND bm.role = 'admin'::boards_role
   )
 );
 
@@ -96,7 +96,7 @@ WITH CHECK (
     FROM public.board_members bm
     WHERE bm.board_id = board_members.board_id
       AND bm.user_id = (SELECT auth.uid())
-      AND bm.role = 'admin'::organization_role
+  AND bm.role = 'admin'::boards_role
   )
 );
 
@@ -110,7 +110,7 @@ USING (
     FROM public.board_members bm
     WHERE bm.board_id = board_members.board_id
       AND bm.user_id = (SELECT auth.uid())
-      AND bm.role = 'admin'::organization_role
+  AND bm.role = 'admin'::boards_role
   )
 )
 WITH CHECK (
@@ -119,7 +119,7 @@ WITH CHECK (
     FROM public.board_members bm
     WHERE bm.board_id = board_members.board_id
       AND bm.user_id = (SELECT auth.uid())
-      AND bm.role = 'admin'::organization_role
+  AND bm.role = 'admin'::boards_role
   )
 );
 
@@ -133,6 +133,6 @@ USING (
     FROM public.board_members bm
     WHERE bm.board_id = board_members.board_id
       AND bm.user_id = (SELECT auth.uid())
-      AND bm.role = 'admin'::organization_role
+  AND bm.role = 'admin'::boards_role
   )
 );

@@ -1,7 +1,11 @@
+create type "public"."boards_role" as enum ('admin', 'member');
+
+create type "public"."boards_visibility" as enum ('public', 'private');
+
 create table "public"."board_members" (
     "user_id" uuid not null,
     "board_id" uuid not null,
-    "role" organization_role not null default 'member'::organization_role,
+    "role" boards_role not null default 'member'::boards_role,
     "joined_at" timestamp with time zone not null default now(),
     "last_active_at" timestamp with time zone,
     "created_at" timestamp with time zone not null default now(),
@@ -17,7 +21,7 @@ create table "public"."boards" (
     "title" text not null,
     "description" text,
     "icon_url" text,
-    "visibility" text not null default 'public'::text,
+    "visibility" boards_visibility not null default 'public'::boards_visibility,
     "created_by" uuid not null,
     "created_at" timestamp with time zone not null default now(),
     "updated_at" timestamp with time zone not null default now()
@@ -54,10 +58,6 @@ alter table "public"."boards" add constraint "boards_title_check" CHECK (((lengt
 
 alter table "public"."boards" validate constraint "boards_title_check";
 
-alter table "public"."boards" add constraint "boards_visibility_check" CHECK ((visibility = ANY (ARRAY['public'::text, 'private'::text]))) not valid;
-
-alter table "public"."boards" validate constraint "boards_visibility_check";
-
 set check_function_bodies = off;
 
 CREATE OR REPLACE FUNCTION public.add_creator_to_board()
@@ -66,7 +66,7 @@ CREATE OR REPLACE FUNCTION public.add_creator_to_board()
 AS $function$
 BEGIN
   INSERT INTO public.board_members(user_id, board_id, role, joined_at, created_at, updated_at)
-  VALUES (NEW.created_by, NEW.id, 'admin', now(), now(), now());
+  VALUES (NEW.created_by, NEW.id, 'admin'::boards_role, now(), now(), now());
   RETURN NEW;
 END;
 $function$
@@ -177,7 +177,7 @@ for delete
 to authenticated
 using ((EXISTS ( SELECT 1
    FROM board_members bm
-  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::organization_role)))));
+  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::boards_role)))));
 
 
 create policy "Admins insert board member"
@@ -187,7 +187,7 @@ for insert
 to authenticated
 with check ((EXISTS ( SELECT 1
    FROM board_members bm
-  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::organization_role)))));
+  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::boards_role)))));
 
 
 create policy "Admins update board member"
@@ -197,10 +197,10 @@ for update
 to authenticated
 using ((EXISTS ( SELECT 1
    FROM board_members bm
-  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::organization_role)))))
+  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::boards_role)))))
 with check ((EXISTS ( SELECT 1
    FROM board_members bm
-  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::organization_role)))));
+  WHERE ((bm.board_id = board_members.board_id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::boards_role)))));
 
 
 create policy "Members view board members"
@@ -218,7 +218,7 @@ for delete
 to authenticated
 using ((EXISTS ( SELECT 1
    FROM board_members bm
-  WHERE ((bm.board_id = boards.id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::organization_role)))));
+  WHERE ((bm.board_id = boards.id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::boards_role)))));
 
 
 create policy "Admin update board"
@@ -228,10 +228,10 @@ for update
 to authenticated
 using ((EXISTS ( SELECT 1
    FROM board_members bm
-  WHERE ((bm.board_id = boards.id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::organization_role)))))
+  WHERE ((bm.board_id = boards.id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::boards_role)))))
 with check ((EXISTS ( SELECT 1
    FROM board_members bm
-  WHERE ((bm.board_id = boards.id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::organization_role)))));
+  WHERE ((bm.board_id = boards.id) AND (bm.user_id = ( SELECT auth.uid() AS uid)) AND (bm.role = 'admin'::boards_role)))));
 
 
 create policy "Member view boards"
@@ -239,7 +239,7 @@ on "public"."boards"
 as permissive
 for select
 to authenticated
-using (((visibility = 'public'::text) OR is_board_member(id)));
+using (((visibility = 'public'::boards_visibility) OR is_board_member(id)));
 
 
 CREATE TRIGGER handle_updated_at_board_members BEFORE UPDATE ON public.board_members FOR EACH ROW EXECUTE FUNCTION moddatetime('updated_at');

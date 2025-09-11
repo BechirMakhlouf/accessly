@@ -1,3 +1,9 @@
+-- Enum for board visibility
+CREATE TYPE boards_visibility AS ENUM ('public', 'private');
+CREATE TYPE boards_role AS ENUM (
+    'admin',
+    'member');
+
 -- Boards table
 CREATE TABLE IF NOT EXISTS boards (
     id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -5,7 +11,7 @@ CREATE TABLE IF NOT EXISTS boards (
     title TEXT NOT NULL CHECK (length(title) BETWEEN 2 AND 100),
     description TEXT,
     icon_url TEXT,
-    visibility TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'private')),
+    visibility boards_visibility NOT NULL DEFAULT 'public',
     created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -15,7 +21,7 @@ CREATE TABLE IF NOT EXISTS boards (
 CREATE TABLE IF NOT EXISTS board_members (
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     board_id UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
-    role organization_role NOT NULL DEFAULT 'member',
+    role boards_role NOT NULL DEFAULT 'member',
     joined_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     last_active_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

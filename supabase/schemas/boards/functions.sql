@@ -4,7 +4,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
   INSERT INTO public.board_members(user_id, board_id, role, joined_at, created_at, updated_at)
-  VALUES (NEW.created_by, NEW.id, 'admin', now(), now(), now());
+  VALUES (NEW.created_by, NEW.id, 'admin'::boards_role, now(), now(), now());
   RETURN NEW;
 END;
 $$;
