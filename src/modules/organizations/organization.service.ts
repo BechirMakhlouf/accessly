@@ -8,6 +8,8 @@ import {
   OrgRole,
   OrgUpdate,
   OrgWithMembers,
+  Invite,
+  InviteStatus,
 } from "./types";
 import { isNullOrUndefined, validateEmail } from "@/lib/utils";
 import { isDuplicateKeyError, isRlsError } from "@/lib/supabase/utils";
@@ -273,7 +275,6 @@ export class OrganizationService {
       )
       .eq("organization_id", orgId);
 
-    console.debug("MEMBERS: ", data);
     if (error) {
       console.error("Failed to load organization members:", error);
       const rlsInfo = isRlsError(error);
@@ -516,5 +517,64 @@ export class OrganizationService {
       _invitationId,
     );
     return { data: { success: true } };
+  }
+
+  /**
+   * Get organization invites
+   */
+  async getInvites(orgId: string): Promise<ServiceResult<Invite[]>> {
+    if (!this.userId) {
+      return { error: "org.invite.unauthorized" };
+    }
+
+    const { data, error } = await this.supabase
+      .from("invites")
+      .select("*")
+      .eq("organization_id", orgId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Failed to load organization invites:", error);
+      const rlsInfo = isRlsError(error);
+      if (rlsInfo.isRls) {
+        return { error: "org.invite.unauthorized" };
+      }
+      return { error: "org.invite.failedToLoad" };
+    }
+
+    return { data: data || [] };
+  }
+
+  /**
+   * Update invite status
+   */
+  async updateInviteStatus(
+    inviteId: string,
+    status: InviteStatus,
+  ): Promise<ServiceResult<Invite>> {
+    if (!this.userId) {
+      return { error: "org.invite.unauthorized" };
+    }
+
+    const { data, error } = await this.supabase
+      .from("invites")
+      .update({ 
+        status, 
+        updated_at: new Date().toISOString() 
+      })
+      .eq("id", inviteId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Failed to update invite status:", error);
+      const rlsInfo = isRlsError(error);
+      if (rlsInfo.isRls) {
+        return { error: "org.invite.unauthorized" };
+      }
+      return { error: "org.invite.failedToUpdate" };
+    }
+
+    return { data };
   }
 }

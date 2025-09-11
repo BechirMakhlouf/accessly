@@ -59,7 +59,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
     try {
       const result = await leaveOrganization(organization.id)
       
-      if (result?.error) {
+      if (result.error) {
         toast.error(result.error);
       } else {
         toast.success(t('members.actions.leftOrganization'));

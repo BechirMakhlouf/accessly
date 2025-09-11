@@ -10,9 +10,14 @@ export type OrgInput = Omit<OrgInsert, "slug"> & {
   slug?: string;
 };
 export type Invite = Database["public"]["Tables"]["invites"]["Row"];
+export type InviteInsert = Database["public"]["Tables"]["invites"]["Insert"];
+export type InviteUpdate = Database["public"]["Tables"]["invites"]["Update"];
 
 // Role type derived from Supabase database
 export type OrgRole = Database["public"]["Enums"]["organization_role"];
+
+// Invite status type
+export type InviteStatus = "pending" | "accepted" | "rejected" | "expired";
 
 // Helper type for admin permissions
 export type AdminRole = Extract<OrgRole, "admin">;

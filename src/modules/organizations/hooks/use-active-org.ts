@@ -9,7 +9,6 @@ import {
   updateOrganizationMutationOptions,
   updateMemberRoleMutationOptions,
   removeMemberMutationOptions,
-  inviteMemberMutationOptions,
 } from "../queries";
 import { Organization, OrgMember, OrgRole, OrgUpdate } from "../types";
 import { routes } from "@/lib/routes";
@@ -70,14 +69,6 @@ export function useActiveOrg() {
     },
   });
 
-  // Invite member mutation
-  const inviteMemberMutation = useMutation({
-    ...inviteMemberMutationOptions(queryClient),
-    onSuccess: () => {
-      refetchMembers();
-    },
-  });
-
   // Computed values
   const isLoading = orgLoading || membersLoading;
   const error = orgError || membersError;
@@ -127,17 +118,6 @@ export function useActiveOrg() {
     });
   };
 
-  const inviteMember = async (email: string, role: OrgRole, orgName: string) => {
-    if (!organization?.id) throw new Error("No active organization");
-    
-    await inviteMemberMutation.mutateAsync({ 
-      orgId: organization.id, 
-      email, 
-      role, 
-      orgName 
-    });
-  };
-
   const refetch = () => {
     refetchOrg();
     refetchMembers();
@@ -160,19 +140,16 @@ export function useActiveOrg() {
     updateOrganization,
     updateMemberRole,
     removeMember,
-    inviteMember,
     refetch,
     
     // Mutation states
     isUpdating: updateOrgMutation.isPending,
     isUpdatingRole: updateRoleMutation.isPending,
     isRemovingMember: removeMemberMutation.isPending,
-    isInvitingMember: inviteMemberMutation.isPending,
     
     // Mutation errors
     updateError: updateOrgMutation.error,
     updateRoleError: updateRoleMutation.error,
     removeMemberError: removeMemberMutation.error,
-    inviteMemberError: inviteMemberMutation.error,
   };
 }

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useActiveOrg } from "@/modules/organizations"
+import { useOrgInvite } from "../hooks/use-org-invite"
 import { InviteMemberModal } from "./invite-member-modal"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -23,10 +24,17 @@ export function OrgMembers() {
     error, 
     updateMemberRole, 
     removeMember, 
-    inviteMember,
-    isInvitingMember,
     currentUserRole
   } = useActiveOrg();
+  
+  const {
+    inviteMember,
+    isInviting: isInvitingMember,
+  } = useOrgInvite({
+    organization: org,
+    members: members || []
+  });
+  
   const t = useTranslations('organizations');
   
   const [newMemberEmail, setNewMemberEmail] = useState("")
@@ -60,16 +68,18 @@ export function OrgMembers() {
   const handleInviteMember = async () => {
     if (!org || !newMemberEmail || !newMemberRole) return;
     
-    try {
-      await inviteMember(newMemberEmail, newMemberRole, org.name);
-      toast.success(t('members.actions.invitationSent'));
-      setNewMemberEmail("");
-      setNewMemberRole("member");
-      setIsInviteDialogOpen(false);
-    } catch (error) {
-      console.error("Failed to invite member:", error);
-      toast.error(t('members.actions.invitationError'));
-    }
+    const result = await inviteMember(newMemberEmail, newMemberRole);
+    
+    if (result.error) {
+      console.error("Failed to invite member:", result.error);
+      toast.error(result.error);
+      return;
+    } 
+
+    toast.success(t('members.actions.invitationSent'));
+    setNewMemberEmail("");
+    setNewMemberRole("member");
+    setIsInviteDialogOpen(false);
   }
 
   const getFallbackText = (name: string) => {

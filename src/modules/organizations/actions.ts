@@ -1,7 +1,7 @@
 "use server";
 
 import { createOrgService } from './organization-factory';
-import { OrgUpdate, OrgRole, OrgInput } from './types';
+import { OrgUpdate, OrgRole, OrgInput, InviteStatus } from './types';
 
 export async function getOrgBySlug(slug: string) {
   const orgService = await createOrgService();
@@ -77,4 +77,14 @@ export async function inviteMember(orgId: string, orgName: string, email: string
 export async function deleteOrganization(orgId: string) {
   const orgService = await createOrgService();
   return await orgService.delete(orgId);
+}
+
+export async function getOrgInvites(orgId: string) {
+  const orgService = await createOrgService();
+  return await orgService.getInvites(orgId);
+}
+
+export async function updateInviteStatus(inviteId: string, status: InviteStatus) {
+  const orgService = await createOrgService();
+  return await orgService.updateInviteStatus(inviteId, status);
 }

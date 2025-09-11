@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useActiveOrg, OrgRole, canManageMembers, Organization, OrgMember } from "@/modules/organizations";
+import { useOrgInvite } from "./use-org-invite";
 import { routes } from "@/lib/routes";
 
 const ITEMS_PER_PAGE = 10;
@@ -71,12 +72,18 @@ export const useMembersPage = (): UseMembersPageReturn => {
     error, 
     updateMemberRole, 
     removeMember, 
-    inviteMember, 
     isUpdatingRole, 
     isRemovingMember, 
-    isInvitingMember, 
     currentUserRole: userRole 
   } = useActiveOrg();
+  
+  const {
+    inviteMember,
+    isInviting: isInvitingMember,
+  } = useOrgInvite({
+    organization: org,
+    members: members || []
+  });
   
   const t = useTranslations("org.members");
   const router = useRouter();
@@ -173,7 +180,7 @@ export const useMembersPage = (): UseMembersPageReturn => {
     if (!org?.id || !org || !inviteEmail.trim()) return;
     
     try {
-      await inviteMember(inviteEmail.trim(), inviteRole, org.name);
+      await inviteMember(inviteEmail.trim(), inviteRole);
       toast.success(t('actions.invitationSent'));
       // Reset form
       setIsInviteModalOpen(false);

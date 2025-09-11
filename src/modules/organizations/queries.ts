@@ -1,5 +1,5 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { Organization, OrgUpdate, OrgWithMembers, OrgMember, OrgRole } from "./types";
+import { Organization, OrgUpdate, OrgWithMembers, OrgMember, OrgRole, Invite, InviteStatus } from "./types";
 import { QueryClient, UndefinedInitialDataOptions } from "@tanstack/react-query";
 import { 
   getUserOrgs, 
@@ -12,7 +12,9 @@ import {
   inviteMember,
   createOrg,
   isSlugUnique,
-  deleteOrganization
+  deleteOrganization,
+  getOrgInvites,
+  updateInviteStatus
 } from "./actions";
 import { isNullOrUndefined } from "@/lib/utils";
 
@@ -21,6 +23,7 @@ export const USER_ORGANIZATIONS_KEY = ["user-organizations"] as const;
 export const ORGANIZATION_KEY = (orgId: string) => ["organization", orgId] as const;
 export const ORGANIZATION_BY_SLUG_KEY = (slug: string) => ["organization-by-slug", slug] as const;
 export const ORGANIZATION_MEMBERS_KEY = (orgId: string) => ["organization-members", orgId] as const;
+export const ORGANIZATION_INVITES_KEY = (orgId: string) => ["organization-invites", orgId] as const;
 
 //TODO: rely on useReactQuery for queries options like staleTime gcTime an other generic caching options
 
@@ -39,10 +42,6 @@ export const getUserOrganizationsQueryOptions: () =>
       return result;
 
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
 // Get organization by ID query
@@ -60,10 +59,6 @@ export const getOrganizationQueryOptions = (orgId: string): UndefinedInitialData
     return result.find(org => org.id === orgId) || null;
   },
   enabled: !!orgId,
-  staleTime: 5 * 60 * 1000,
-  gcTime: 10 * 60 * 1000,
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
 });
 
 // Get organization by slug query
@@ -79,10 +74,6 @@ export const getOrganizationBySlugQueryOptions = (slug: string): UndefinedInitia
     return result?.data || null;
   },
   enabled: !!slug,
-  staleTime: 5 * 60 * 1000,
-  gcTime: 10 * 60 * 1000,
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
 });
 
 // Get organization members query
@@ -98,10 +89,6 @@ export const getOrganizationMembersQueryOptions = (orgId: string): UndefinedInit
     return result?.data || null;
   },
   enabled: !!orgId,
-  staleTime: 2 * 60 * 1000, // 2 minutes for members (more dynamic)
-  gcTime: 5 * 60 * 1000, // 5 minutes
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
 });
 
 // Create organization mutation
@@ -141,7 +128,7 @@ export const updateMemberRoleMutationOptions = (queryClient: QueryClient) => ({
   }: { 
     orgId: string; 
     memberId: string; 
-    newRole: "admin" | "member" 
+    newRole: OrgRole
   }) => await updateMemberRole(orgId, memberId, newRole),
   onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
     if (!data?.error) {
@@ -207,6 +194,39 @@ export const deleteOrganizationMutationOptions = (queryClient: QueryClient) => (
   mutationFn: async (orgId: string) => await deleteOrganization(orgId),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
+  },
+});
+
+// Get organization invites query
+export const getOrganizationInvitesQueryOptions = (orgId: string): UndefinedInitialDataOptions<Invite[] | null> => ({
+  queryKey: ORGANIZATION_INVITES_KEY(orgId),
+  queryFn: async () => {
+    const result = await getOrgInvites(orgId);
+    
+    if (result?.error) {
+      throw new Error(typeof result.error === 'string' ? result.error : 'Unknown error');
+    }
+    
+    return result?.data || null;
+  },
+  enabled: !!orgId,
+});
+
+// Update invite status mutation
+export const updateInviteStatusMutationOptions = (queryClient: QueryClient) => ({
+  mutationFn: async ({ 
+    inviteId, 
+    status 
+  }: { 
+    inviteId: string; 
+    status: InviteStatus 
+  }) => await updateInviteStatus(inviteId, status),
+  onSuccess: (data: { data?: Invite; error?: string } | null) => {
+    if (!data?.error && data?.data) {
+      // Invalidate invites for the organization
+      const orgId = data.data.organization_id;
+      queryClient.invalidateQueries({ queryKey: ORGANIZATION_INVITES_KEY(orgId) });
+    }
   },
 });
 

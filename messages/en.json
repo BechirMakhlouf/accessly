@@ -248,7 +248,9 @@
       "invalidEmail": "Invalid email address",
       "alreadyMember": "User is already a member of this organization",
       "failedToCheckUser": "Failed to check if user exists",
-      "failedToInsert": "Failed to insert invitation"
+      "failedToInsert": "Failed to insert invitation",
+      "failedToLoad": "Failed to load organization invites",
+      "failedToUpdate": "Failed to update invite status"
     },
     "member": {
       "unauthorized": "You are not authorized to perform this action",

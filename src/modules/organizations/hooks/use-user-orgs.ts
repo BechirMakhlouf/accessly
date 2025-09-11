@@ -73,7 +73,7 @@ export function useUserOrgs() {
   };
 
   const leaveOrganization = async (orgId: string) => {
-    await leaveOrgMutation.mutateAsync({ orgId });
+    return await leaveOrgMutation.mutateAsync({ orgId });
   };
 
   const checkSlugUniqueness = async (slug: string) => {
