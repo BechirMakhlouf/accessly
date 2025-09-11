@@ -17,7 +17,7 @@ create table "public"."boards" (
     "title" text not null,
     "description" text,
     "icon_url" text,
-    "privacy" text not null default 'public'::text,
+    "visibility" text not null default 'public'::text,
     "created_by" uuid not null,
     "created_at" timestamp with time zone not null default now(),
     "updated_at" timestamp with time zone not null default now()
@@ -50,13 +50,13 @@ alter table "public"."boards" add constraint "boards_organization_id_fkey" FOREI
 
 alter table "public"."boards" validate constraint "boards_organization_id_fkey";
 
-alter table "public"."boards" add constraint "boards_privacy_check" CHECK ((privacy = ANY (ARRAY['public'::text, 'private'::text]))) not valid;
-
-alter table "public"."boards" validate constraint "boards_privacy_check";
-
 alter table "public"."boards" add constraint "boards_title_check" CHECK (((length(title) >= 2) AND (length(title) <= 100))) not valid;
 
 alter table "public"."boards" validate constraint "boards_title_check";
+
+alter table "public"."boards" add constraint "boards_visibility_check" CHECK ((visibility = ANY (ARRAY['public'::text, 'private'::text]))) not valid;
+
+alter table "public"."boards" validate constraint "boards_visibility_check";
 
 set check_function_bodies = off;
 
@@ -239,7 +239,7 @@ on "public"."boards"
 as permissive
 for select
 to authenticated
-using (((privacy = 'public'::text) OR is_board_member(id)));
+using (((visibility = 'public'::text) OR is_board_member(id)));
 
 
 CREATE TRIGGER handle_updated_at_board_members BEFORE UPDATE ON public.board_members FOR EACH ROW EXECUTE FUNCTION moddatetime('updated_at');

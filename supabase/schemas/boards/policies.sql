@@ -35,7 +35,7 @@ CREATE POLICY "Member view boards"
 ON public.boards
 FOR SELECT TO authenticated
 USING (
-  privacy = 'public'
+  visibility = 'public'
   OR public.is_board_member(boards.id)
 );
 

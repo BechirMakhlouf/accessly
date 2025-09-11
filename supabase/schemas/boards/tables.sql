@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS boards (
     title TEXT NOT NULL CHECK (length(title) BETWEEN 2 AND 100),
     description TEXT,
     icon_url TEXT,
-    privacy TEXT NOT NULL DEFAULT 'public' CHECK (privacy IN ('public', 'private')),
+    visibility TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'private')),
     created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
