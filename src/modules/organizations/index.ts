@@ -21,6 +21,7 @@ export { useActiveOrg } from './hooks/use-active-org';
 export { useUserOrgs } from './hooks/use-user-orgs';
 export { useMembersPage } from './hooks/use-members-page';
 export { useOrganizationsPage } from './hooks/use-organizations-page';
+export { useUserInvites } from './hooks/use-user-invites';
 
 
 // Types
@@ -57,5 +58,7 @@ export {
   updateMemberRole,
   removeMember,
   leaveOrganization,
-  inviteMember
+  inviteMember,
+  getUserInvites,
+  updateUserInvite
 } from './actions';

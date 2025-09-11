@@ -88,3 +88,13 @@ export async function updateInviteStatus(inviteId: string, status: InviteStatus)
   const orgService = await createOrgService();
   return await orgService.updateInviteStatus(inviteId, status);
 }
+
+export async function getUserInvites() {
+  const orgService = await createOrgService();
+  return await orgService.getUserInvites();
+}
+
+export async function updateUserInvite(inviteId: string, status: "accepted" | "rejected") {
+  const orgService = await createOrgService();
+  return await orgService.updateUserInvite(inviteId, status);
+}

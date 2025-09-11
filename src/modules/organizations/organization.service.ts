@@ -577,4 +577,134 @@ export class OrganizationService {
 
     return { data };
   }
+
+  /**
+   * Get user invites - invites sent to the current user
+   */
+  async getUserInvites(): Promise<ServiceResult<Invite[]>> {
+    if (!this.userId) {
+      return { error: "org.invite.unauthorized" };
+    }
+
+    // Get user's email from auth
+    const { data: { user } } = await this.supabase.auth.getUser();
+    if (!user?.email) {
+      return { error: "org.invite.unauthorized" };
+    }
+
+    const { data, error } = await this.supabase
+      .from("invites")
+      .select(`
+        *,
+        organizations!inner(
+          id,
+          name,
+          slug,
+          description,
+          icon_url
+        )
+      `)
+      .eq("email", user.email)
+      .in("status", ["pending"])
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Failed to load user invites:", error);
+      const rlsInfo = isRlsError(error);
+      if (rlsInfo.isRls) {
+        return { error: "org.invite.unauthorized" };
+      }
+      return { error: "org.invite.failedToLoadUserInvites" };
+    }
+
+    return { data: data || [] };
+  }
+
+  /**
+   * Update user invite status (accept/reject)
+   */
+  async updateUserInvite(
+    inviteId: string,
+    status: "accepted" | "rejected",
+  ): Promise<ServiceResult<Invite>> {
+    if (!this.userId) {
+      return { error: "org.invite.unauthorized" };
+    }
+
+    // First, get the invite to check if it's valid
+    const { data: invite, error: fetchError } = await this.supabase
+      .from("invites")
+      .select("*")
+      .eq("id", inviteId)
+      .single();
+
+    if (fetchError || !invite) {
+      console.error("Failed to fetch invite:", fetchError);
+      return { error: "org.invite.notFound" };
+    }
+
+    // Check if invite is expired
+    const now = new Date();
+    const expiresAt = new Date(invite.expires_at);
+    if (now > expiresAt) {
+      return { error: "org.invite.expired" };
+    }
+
+    // Check if invite is already processed
+    if (invite.status !== "pending") {
+      if (invite.status === "expired") {
+        return { error: "org.invite.expired" };
+      }
+      return { error: "org.invite.revoked" };
+    }
+
+    // Get user's email to verify they're the intended recipient
+    const { data: { user } } = await this.supabase.auth.getUser();
+    if (!user?.email || user.email !== invite.email) {
+      return { error: "org.invite.unauthorized" };
+    }
+
+    // Update invite status
+    const { data, error } = await this.supabase
+      .from("invites")
+      .update({ 
+        status, 
+        updated_at: new Date().toISOString() 
+      })
+      .eq("id", inviteId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Failed to update user invite:", error);
+      const rlsInfo = isRlsError(error);
+      if (rlsInfo.isRls) {
+        return { error: "org.invite.unauthorized" };
+      }
+      return { error: "org.invite.failedToUpdateUserInvite" };
+    }
+
+    // If accepted, add user to organization
+    if (status === "accepted") {
+      const addMemberResult = await this.addMemberToOrganization(
+        invite.organization_id,
+        invite.role
+      );
+      
+      if (addMemberResult.error) {
+        // If adding to organization fails, revert the invite status
+        await this.supabase
+          .from("invites")
+          .update({ 
+            status: "pending", 
+            updated_at: new Date().toISOString() 
+          })
+          .eq("id", inviteId);
+        
+        return { error: addMemberResult.error };
+      }
+    }
+
+    return { data };
+  }
 }

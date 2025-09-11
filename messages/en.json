@@ -250,7 +250,12 @@
       "failedToCheckUser": "Failed to check if user exists",
       "failedToInsert": "Failed to insert invitation",
       "failedToLoad": "Failed to load organization invites",
-      "failedToUpdate": "Failed to update invite status"
+      "failedToUpdate": "Failed to update invite status",
+      "expired": "This invitation has expired",
+      "revoked": "This invitation has been revoked",
+      "notFound": "Invitation not found",
+      "failedToLoadUserInvites": "Failed to load your invitations",
+      "failedToUpdateUserInvite": "Failed to update invitation status"
     },
     "member": {
       "unauthorized": "You are not authorized to perform this action",

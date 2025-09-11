@@ -14,7 +14,9 @@ import {
   isSlugUnique,
   deleteOrganization,
   getOrgInvites,
-  updateInviteStatus
+  updateInviteStatus,
+  getUserInvites,
+  updateUserInvite
 } from "./actions";
 import { isNullOrUndefined } from "@/lib/utils";
 
@@ -24,6 +26,7 @@ export const ORGANIZATION_KEY = (orgId: string) => ["organization", orgId] as co
 export const ORGANIZATION_BY_SLUG_KEY = (slug: string) => ["organization-by-slug", slug] as const;
 export const ORGANIZATION_MEMBERS_KEY = (orgId: string) => ["organization-members", orgId] as const;
 export const ORGANIZATION_INVITES_KEY = (orgId: string) => ["organization-invites", orgId] as const;
+export const USER_INVITES_KEY = ["user-invites"] as const;
 
 //TODO: rely on useReactQuery for queries options like staleTime gcTime an other generic caching options
 
@@ -226,6 +229,39 @@ export const updateInviteStatusMutationOptions = (queryClient: QueryClient) => (
       // Invalidate invites for the organization
       const orgId = data.data.organization_id;
       queryClient.invalidateQueries({ queryKey: ORGANIZATION_INVITES_KEY(orgId) });
+    }
+  },
+});
+
+// Get user invites query
+export const getUserInvitesQueryOptions: () => UndefinedInitialDataOptions<Invite[] | null> = () => ({
+  queryKey: USER_INVITES_KEY,
+  queryFn: async () => {
+    const result = await getUserInvites();
+    
+    if (result?.error) {
+      throw new Error(typeof result.error === 'string' ? result.error : 'Unknown error');
+    }
+    
+    return result?.data || null;
+  },
+});
+
+// Update user invite mutation
+export const updateUserInviteMutationOptions = (queryClient: QueryClient) => ({
+  mutationFn: async ({ 
+    inviteId, 
+    status 
+  }: { 
+    inviteId: string; 
+    status: "accepted" | "rejected" 
+  }) => await updateUserInvite(inviteId, status),
+  onSuccess: (data: { data?: Invite; error?: string } | null) => {
+    if (!data?.error) {
+      // Invalidate user invites to refresh the list
+      queryClient.invalidateQueries({ queryKey: USER_INVITES_KEY });
+      // Also invalidate user organizations in case they accepted an invite
+      queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
     }
   },
 });
