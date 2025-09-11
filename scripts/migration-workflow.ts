@@ -38,7 +38,7 @@ function main() {
 
     // Step 2: Generate diff
     console.log('2️⃣ Generating diff...');
-    execSync(`npx supabase db diff -f ${migrationName}`, { stdio: 'inherit' });
+    execSync(`npx supabase db diff -f ${migrationName} --debug`, { stdio: 'inherit' });
     console.log('✅ Diff generation completed');
     console.log('');
 

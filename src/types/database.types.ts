@@ -713,6 +713,88 @@ export type Database = {
   }
   public: {
     Tables: {
+      board_members: {
+        Row: {
+          board_id: string
+          created_at: string
+          joined_at: string
+          last_active_at: string | null
+          role: Database["public"]["Enums"]["boards_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          joined_at?: string
+          last_active_at?: string | null
+          role?: Database["public"]["Enums"]["boards_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          joined_at?: string
+          last_active_at?: string | null
+          role?: Database["public"]["Enums"]["boards_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_members_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      boards: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          icon_url: string | null
+          id: string
+          organization_id: string
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["boards_visibility"]
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          organization_id: string
+          title: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["boards_visibility"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          organization_id?: string
+          title?: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["boards_visibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boards_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invites: {
         Row: {
           created_at: string
@@ -938,6 +1020,10 @@ export type Database = {
           updated_at: string | null
         }
       }
+      is_board_member: {
+        Args: { board_id: string }
+        Returns: boolean
+      }
       is_org_member: {
         Args: { org_id: string }
         Returns: boolean
@@ -948,6 +1034,8 @@ export type Database = {
       }
     }
     Enums: {
+      boards_role: "admin" | "member"
+      boards_visibility: "public" | "private"
       organization_role: "admin" | "member"
     }
     CompositeTypes: {
@@ -1396,6 +1484,8 @@ export const Constants = {
   },
   public: {
     Enums: {
+      boards_role: ["admin", "member"],
+      boards_visibility: ["public", "private"],
       organization_role: ["admin", "member"],
     },
   },
