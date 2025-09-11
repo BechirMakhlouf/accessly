@@ -107,15 +107,15 @@ async function validateDatabaseTypes(updateTypes = false): Promise<ValidationRes
     
     // Step 1: Check if Supabase is running
     try {
-      execCommand('supabase status', 'Checking Supabase status');
+      execCommand('npx supabase status', 'Checking Supabase status');
     } catch (error) {
       log('⚠️  Supabase not running, starting it...', 'warn');
-      execCommand('supabase start', 'Starting Supabase');
+      execCommand('npx supabase start', 'Starting Supabase');
     }
     
     // Step 2: Run migrations
     try {
-      execCommand('supabase db reset', 'Running database migrations');
+      execCommand('npx supabase db reset', 'Running database migrations');
     } catch (error) {
       log('⚠️  Database reset failed, trying to continue with current state...', 'warn');
       // Continue with validation even if reset fails
@@ -123,7 +123,7 @@ async function validateDatabaseTypes(updateTypes = false): Promise<ValidationRes
     
     // Step 3: Generate fresh types
     execCommand(
-      `supabase gen types typescript --local --schema public,auth,storage > ${TEMP_TYPES_PATH}`,
+      `npx supabase gen types typescript --local --schema public,auth,storage > ${TEMP_TYPES_PATH}`,
       'Generating fresh database types'
     );
     

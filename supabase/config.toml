@@ -51,10 +51,11 @@ max_client_conn = 100
 schema_paths = [
   "./schemas/extensions.sql",
   "./schemas/*.sql",
+  "./schemas/organizations/tables.sql",
   "./schemas/*/tables.sql",
   "./schemas/*/functions.sql",
   "./schemas/*/triggers.sql",
-  "./schemas/**/*.sql",
+  "./schemas/**/*.sql"
 ]
 
 [db.seed]
