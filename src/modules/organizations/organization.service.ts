@@ -1,5 +1,4 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { getFullRoute, routes } from "@/lib/routes";
 import {
   Organization,
   OrgInput,
@@ -434,25 +433,20 @@ export class OrganizationService {
       return { error: "org.invite.failedToInsert" };
     }
 
-    console.log("invite data: ", {
-      invite_id: inviteData.id,
-      organization_name: orgName,
-      org_role: inviteData.role,
-    });
-    const { error: inviteError } = await this.supabaseAdmin.auth.admin
-      .inviteUserByEmail(email, {
-        redirectTo: getFullRoute(routes.api.auth.inviteEmail),
-        data: {
-          invite_id: inviteData.id,
-          organization_name: orgName,
-          org_role: inviteData.role,
-        },
-      });
+    // const { error: inviteError } = await this.supabaseAdmin.auth.admin
+    //   .inviteUserByEmail(email, {
+    //     redirectTo: getFullRoute(routes.api.auth.inviteEmail),
+    //     data: {
+    //       invite_id: inviteData.id,
+    //       organization_name: orgName,
+    //       org_role: inviteData.role,
+    //     },
+    //   });
 
-    if (inviteError) {
-      console.error("Failed to send invite:", inviteError);
-      return { error: "org.invite.failedToSend" };
-    }
+    // if (inviteError) {
+    //   console.error("Failed to send invite:", inviteError);
+    //   return { error: "org.invite.failedToSend" };
+    // }
 
     // TODO: Implement invite logic
     return { data: { success: true } };
@@ -608,6 +602,7 @@ export class OrganizationService {
       .in("status", ["pending"])
       .order("created_at", { ascending: false });
 
+    console.log("result: ", data);
     if (error) {
       console.error("Failed to load user invites:", error);
       const rlsInfo = isRlsError(error);

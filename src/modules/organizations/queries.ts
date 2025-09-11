@@ -182,7 +182,7 @@ export const inviteMemberMutationOptions = (queryClient: QueryClient) => ({
   }) => await inviteMember(orgId, orgName, email, role),
   onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
     if (!data?.error) {
-      queryClient.invalidateQueries({ queryKey: ORGANIZATION_MEMBERS_KEY(orgId) });
+      queryClient.invalidateQueries({ queryKey: ORGANIZATION_INVITES_KEY(orgId) });
     }
   },
 });

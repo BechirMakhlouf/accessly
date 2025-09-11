@@ -8,6 +8,11 @@ export async function getOrgBySlug(slug: string) {
   return await orgService.getBySlug(slug);
 }
 
+export async function getOrgById(orgId: string) {
+  const orgService = await createOrgService();
+  return await orgService.getById(orgId);
+}
+
 export async function createOrg(newOrg: OrgInput) {
   const orgService = await createOrgService();
   const result = await orgService.create(newOrg);

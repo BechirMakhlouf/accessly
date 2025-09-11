@@ -30,17 +30,11 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
   // Update invite status mutation
   const updateInviteStatusMutation = useMutation({
     ...updateInviteStatusMutationOptions(queryClient),
-    onSuccess: () => {
-      refetchInvites();
-    },
   });
 
   // Invite member mutation
   const inviteMemberMutation = useMutation({
     ...inviteMemberMutationOptions(queryClient),
-    onSuccess: () => {
-      refetchInvites();
-    },
   });
 
   // Client-side check to prevent inviting existing members

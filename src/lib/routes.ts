@@ -60,7 +60,11 @@ export const routes = {
       },
       organizations: {
         root: "/dashboard/organizations",
-        new: "/dashboard/organizations/new"
+        new: "/dashboard/organizations/new",
+        invites: "/dashboard/organizations/invites",
+        invite: {
+          root: (inviteId: string) => `/dashboard/organizations/invite/${inviteId}`
+        }
       },
       org: {
         root: "/org",
@@ -93,7 +97,6 @@ export const routes = {
       callback: "/api/auth/callback",
       confirmEmail: "/api/auth/confirm-email",
       resetPassword: "/api/auth/reset-password",
-      inviteEmail: "/api/auth/invite-email",
     },
   },
 } as const;
