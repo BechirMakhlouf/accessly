@@ -808,6 +808,7 @@ export type Database = {
           icon_url: string | null
           id: string
           organization_id: string
+          slug: string
           title: string
           updated_at: string
           visibility: Database["public"]["Enums"]["boards_visibility"]
@@ -819,6 +820,7 @@ export type Database = {
           icon_url?: string | null
           id?: string
           organization_id: string
+          slug?: string
           title: string
           updated_at?: string
           visibility?: Database["public"]["Enums"]["boards_visibility"]
@@ -830,6 +832,7 @@ export type Database = {
           icon_url?: string | null
           id?: string
           organization_id?: string
+          slug?: string
           title?: string
           updated_at?: string
           visibility?: Database["public"]["Enums"]["boards_visibility"]
@@ -1028,6 +1031,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_board_slug: {
+        Args: { p_id: string; p_title: string }
+        Returns: string
+      }
       generate_unique_organization_slug: {
         Args: { p_name: string }
         Returns: string

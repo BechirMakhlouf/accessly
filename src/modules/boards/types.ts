@@ -1,0 +1,32 @@
+import { Database } from "@/types/database.types";
+import { Profile } from "../profiles/types";
+
+export type Board = Database["public"]["Tables"]["boards"]["Row"];
+export type BoardInsert = Database["public"]["Tables"]["boards"]["Insert"];
+export type BoardUpdate = Database["public"]["Tables"]["boards"]["Update"];
+export type BoardMember = Database["public"]["Tables"]["board_members"]["Row"];
+
+// Enums
+export type BoardRole = Database["public"]["Enums"]["boards_role"];
+export type BoardVisibility = Database["public"]["Enums"]["boards_visibility"];
+
+// Convenience role type
+export type BoardAdminRole = Extract<BoardRole, "admin">;
+
+// Input used by service/UI when creating a board (created_by may be injected from session)
+export type BoardInput = Omit<BoardInsert, "created_by"> & {
+  created_by?: string;
+};
+
+export interface BoardWithMembers extends Board {
+  board_members: {
+    user_id: string;
+    role: BoardRole;
+    joined_at: string;
+    last_active_at: string | null;
+  }[];
+}
+
+export interface BoardMemberWithProfile extends BoardMember {
+  profile?: Profile;
+}

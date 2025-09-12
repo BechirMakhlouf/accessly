@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS boards (
     id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     title TEXT NOT NULL CHECK (length(title) BETWEEN 2 AND 100),
+    slug TEXT NOT NULL UNIQUE DEFAULT '',
     description TEXT,
     icon_url TEXT,
     visibility boards_visibility NOT NULL DEFAULT 'public',

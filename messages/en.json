@@ -663,5 +663,8 @@
     "invalidCode": "Invalid verification code. Please try again.",
     "verificationSuccess": "Email verified successfully!",
     "verificationError": "Could not verify code. Please try again."
+  },
+  "board": {
+    "unauthorized": "You are not authorized to perform this board action"
   }
 }

@@ -455,5 +455,8 @@
     "invalidCode": "Ungültiger Bestätigungscode. Bitte versuchen Sie es erneut.",
     "verificationSuccess": "E-Mail erfolgreich bestätigt!",
     "verificationError": "Code konnte nicht überprüft werden. Bitte versuchen Sie es erneut."
+  },
+  "board": {
+    "unauthorized": "Sie sind nicht berechtigt, diese Board-Aktion auszuführen"
   }
 }
