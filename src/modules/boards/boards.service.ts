@@ -47,7 +47,7 @@ export class BoardsService {
         return { data };
        }  
     async deleteBoard(boardId: string): Promise<ServiceResult<null>> {
-        const { data, error } = await this.supabase
+    const { error } = await this.supabase
             .from('boards')
             .delete()
             .eq('id', boardId);
@@ -105,7 +105,7 @@ export class BoardsService {
            if (!this.supabaseAdmin) {
       return { error: "board.unauthorized" };
     } 
-        const { data, error } = await this.supabase
+    const { error } = await this.supabase
             .from('boards')
             .delete()
             .eq('id', boardId);
