@@ -37,8 +37,8 @@ export const MembersSearchBar = ({
       {selectedMembersCount > 0 && canManageMembers && (
         <div className="flex items-center gap-2">
           <Badge variant="secondary">{t('selected', { count: selectedMembersCount })}</Badge>
-          <Button 
-            variant="destructive" 
+          <Button
+            variant="destructive"
             size="sm"
             onClick={onBulkDelete}
             disabled={isDeleting}

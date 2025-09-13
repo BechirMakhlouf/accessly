@@ -189,6 +189,25 @@
         "description": "Connectez votre organisation à des services tiers.",
         "comingSoon": "Les intégrations arrivent bientôt !"
       }
+    },
+    "invitesPage": {
+      "title": "Invitations d'organisation",
+      "subtitle": "Consultez vos invitations d'organisation en attente",
+      "noInvites": "Aucune invitation en attente",
+      "noInvitesDescription": "Vous n'avez actuellement aucune invitation d'organisation en attente.",
+      "inviteCard": {
+        "invitedBy": "Invité par",
+        "role": "Rôle",
+        "expiresAt": "Expire",
+        "expired": "Expiré",
+        "accept": "Accepter",
+        "decline": "Refuser",
+        "accepting": "Acceptation...",
+        "declining": "Refus...",
+        "accepted": "Accepté",
+        "declined": "Refusé",
+        "clickToVisit": "Cliquez pour visiter l'organisation"
+      }
     }
   },
   "sidebar": {

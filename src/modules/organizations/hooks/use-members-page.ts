@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useActiveOrg, OrgRole, canManageMembers, Organization, OrgMember } from "@/modules/organizations";
+import {
+  canManageMembers,
+  Organization,
+  OrgMember,
+  OrgRole,
+  useActiveOrg,
+} from "@/modules/organizations";
 import { useOrgInvite } from "./use-org-invite";
 import { routes } from "@/lib/routes";
 
@@ -65,29 +71,30 @@ export interface UseMembersPageReturn {
 }
 
 export const useMembersPage = (): UseMembersPageReturn => {
-  const { 
-    organization: org, 
-    members, 
-    isLoading, 
-    error, 
-    updateMemberRole, 
-    removeMember, 
-    isUpdatingRole, 
-    isRemovingMember, 
-    currentUserRole: userRole 
+  const {
+    organization: org,
+    members,
+    isLoading,
+    error,
+    updateMemberRole,
+    removeMember,
+    isUpdatingRole,
+    isRemovingMember,
+    currentUserRole: userRole,
   } = useActiveOrg();
-  
+
   const {
     inviteMember,
     isInviting: isInvitingMember,
   } = useOrgInvite({
     organization: org,
-    members: members || []
+    members: members || [],
   });
-  
+
   const t = useTranslations("org.members");
+  const rootT = useTranslations();
   const router = useRouter();
-  
+
   // State
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
@@ -108,7 +115,9 @@ export const useMembersPage = (): UseMembersPageReturn => {
   }, [org, isLoading, router]);
 
   // Computed values
-  const canManageMembersRole = currentUserRole ? canManageMembers(currentUserRole.role) : false;
+  const canManageMembersRole = currentUserRole
+    ? canManageMembers(currentUserRole.role)
+    : false;
 
   const filteredMembers = useMemo(() => {
     if (!members) return [];
@@ -119,8 +128,12 @@ export const useMembersPage = (): UseMembersPageReturn => {
 
   const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedMembers = filteredMembers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  const isAllSelected = paginatedMembers.length > 0 && selectedMembers.length === paginatedMembers.length;
+  const paginatedMembers = filteredMembers.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+  const isAllSelected = paginatedMembers.length > 0 &&
+    selectedMembers.length === paginatedMembers.length;
   const totalFilteredMembers = filteredMembers.length;
 
   // Actions
@@ -128,12 +141,14 @@ export const useMembersPage = (): UseMembersPageReturn => {
     if (!org?.id) return;
     const memberList = members || [];
 
-    if (newRole === 'member') {
-      const target = memberList.find(m => m.user_id === memberId);
-      if (target?.role === 'admin') {
-        const otherAdmins = memberList.filter(m => m.role === 'admin' && m.user_id !== memberId);
+    if (newRole === "member") {
+      const target = memberList.find((m) => m.user_id === memberId);
+      if (target?.role === "admin") {
+        const otherAdmins = memberList.filter((m) =>
+          m.role === "admin" && m.user_id !== memberId
+        );
         if (otherAdmins.length === 0) {
-          toast.error(t('actions.cannotDemoteLastAdmin'));
+          toast.error(t("actions.cannotDemoteLastAdmin"));
           return;
         }
       }
@@ -141,28 +156,30 @@ export const useMembersPage = (): UseMembersPageReturn => {
 
     try {
       await updateMemberRole(memberId, newRole);
-      toast.success(t('actions.roleUpdated'));
+      toast.success(t("actions.roleUpdated"));
     } catch (error) {
-      console.error('Failed to update role:', error);
-      toast.error(t('actions.roleUpdateError'));
+      console.error("Failed to update role:", error);
+      toast.error(t("actions.roleUpdateError"));
     }
   };
 
   const handleDeleteMember = async (memberId: string) => {
     if (!org?.id) return;
-    
+
     try {
       await removeMember(memberId);
-      toast.success(t('actions.memberRemoved'));
+      toast.success(t("actions.memberRemoved"));
     } catch (error) {
       console.error("Failed to remove member:", error);
-      toast.error(t('actions.memberRemoveError'));
+      toast.error(t("actions.memberRemoveError"));
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedMembers(paginatedMembers.map((member: OrgMember) => member.user_id));
+      setSelectedMembers(
+        paginatedMembers.map((member: OrgMember) => member.user_id),
+      );
     } else {
       setSelectedMembers([]);
     }
@@ -178,34 +195,38 @@ export const useMembersPage = (): UseMembersPageReturn => {
 
   const handleInviteMember = async () => {
     if (!org?.id || !org || !inviteEmail.trim()) return;
-    
+
     try {
-      await inviteMember(inviteEmail.trim(), inviteRole);
-      toast.success(t('actions.invitationSent'));
+      const result = await inviteMember(inviteEmail.trim(), inviteRole);
+      console.log("invite result: ", result);
+      if (result?.error) {
+        toast.error(rootT(result.error));
+      }
+      toast.success(t("actions.invitationSent"));
       // Reset form
       setIsInviteModalOpen(false);
       setInviteEmail("");
       setInviteRole("member");
     } catch (error) {
       console.error("Failed to invite member:", error);
-      toast.error(t('actions.invitationError'));
+      toast.error(t("actions.invitationError"));
     }
   };
 
   const handleBulkDelete = async () => {
     if (selectedMembers.length === 0 || !org?.id) return;
-    
+
     try {
       // Process all deletions sequentially
       for (const memberId of selectedMembers) {
         await removeMember(memberId);
       }
-      
-      toast.success(t('actions.memberRemoved'));
+
+      toast.success(t("actions.memberRemoved"));
       setSelectedMembers([]);
     } catch (error) {
       console.error("Failed to bulk delete members:", error);
-      toast.error(t('actions.memberRemoveError'));
+      toast.error(t("actions.memberRemoveError"));
     }
   };
 

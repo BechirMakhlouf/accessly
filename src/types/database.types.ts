@@ -804,7 +804,7 @@ export type Database = {
           invited_by: string
           organization_id: string
           role: Database["public"]["Enums"]["organization_role"]
-          status: string
+          status: Database["public"]["Enums"]["org_invite_status"]
           updated_at: string
         }
         Insert: {
@@ -815,7 +815,7 @@ export type Database = {
           invited_by: string
           organization_id: string
           role?: Database["public"]["Enums"]["organization_role"]
-          status?: string
+          status?: Database["public"]["Enums"]["org_invite_status"]
           updated_at?: string
         }
         Update: {
@@ -826,10 +826,17 @@ export type Database = {
           invited_by?: string
           organization_id?: string
           role?: Database["public"]["Enums"]["organization_role"]
-          status?: string
+          status?: Database["public"]["Enums"]["org_invite_status"]
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "invites_organization_id_fkey"
             columns: ["organization_id"]
@@ -1036,6 +1043,7 @@ export type Database = {
     Enums: {
       boards_role: "admin" | "member"
       boards_visibility: "public" | "private"
+      org_invite_status: "pending" | "accepted" | "rejected" | "revoked"
       organization_role: "admin" | "member"
     }
     CompositeTypes: {
@@ -1486,6 +1494,7 @@ export const Constants = {
     Enums: {
       boards_role: ["admin", "member"],
       boards_visibility: ["public", "private"],
+      org_invite_status: ["pending", "accepted", "rejected", "revoked"],
       organization_role: ["admin", "member"],
     },
   },

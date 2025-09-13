@@ -95,7 +95,6 @@
       "roles": {
         "admin": "Admin",
         "member": "Mitglied"
-
       },
       "errors": {
         "orgNotFound": "Organisation nicht gefunden",
@@ -189,6 +188,25 @@
         "title": "Integrationen",
         "description": "Verbinden Sie Ihre Organisation mit Diensten von Drittanbietern.",
         "comingSoon": "Integrationen folgen in Kürze!"
+      }
+    },
+    "invitesPage": {
+      "title": "Organisationseinladungen",
+      "subtitle": "Zeigen Sie Ihre ausstehenden Organisationseinladungen an",
+      "noInvites": "Keine ausstehenden Einladungen",
+      "noInvitesDescription": "Sie haben derzeit keine ausstehenden Organisationseinladungen.",
+      "inviteCard": {
+        "invitedBy": "Eingeladen von",
+        "role": "Rolle",
+        "expiresAt": "Läuft ab",
+        "expired": "Abgelaufen",
+        "accept": "Annehmen",
+        "decline": "Ablehnen",
+        "accepting": "Wird angenommen...",
+        "declining": "Wird abgelehnt...",
+        "accepted": "Angenommen",
+        "declined": "Abgelehnt",
+        "clickToVisit": "Klicken Sie, um die Organisation zu besuchen"
       }
     }
   },

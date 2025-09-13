@@ -1,4 +1,4 @@
-import { env } from "./env"
+import { env } from "./env";
 
 function joinPath(base: string, path: string): string {
   return `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
@@ -22,8 +22,7 @@ export function getFullRoute(path: Route, params?: Params): string {
 }
 
 ///bayi: to make a type for our routes
-type ValueOf<T> = T extends object
-  ? { [K in keyof T]: ValueOf<T[K]> }[keyof T]
+type ValueOf<T> = T extends object ? { [K in keyof T]: ValueOf<T[K]> }[keyof T]
   : T;
 
 export type Route = ValueOf<typeof routes>;
@@ -43,6 +42,11 @@ export const routes = {
     confirmEmail: "/confirm-email",
     updatePassword: "/update-password",
     signUpSuccess: "/sign-up-success",
+    invite: {
+      inviteId: {
+        root: (inviteId: string) => `/invite/${inviteId}`,
+      },
+    },
   },
 
   protected: {
@@ -56,15 +60,12 @@ export const routes = {
           account: "/dashboard/account/settings/account",
           preferences: "/dashboard/account/settings/preferences",
           billing: "/dashboard/account/settings/billing",
-        }
+        },
       },
       organizations: {
         root: "/dashboard/organizations",
         new: "/dashboard/organizations/new",
         invites: "/dashboard/organizations/invites",
-        invite: {
-          root: (inviteId: string) => `/dashboard/organizations/invite/${inviteId}`
-        }
       },
       org: {
         root: "/org",
@@ -73,14 +74,18 @@ export const routes = {
           members: (slug: string) => `/dashboard/org/${slug}/members`,
           settings: {
             root: (slug: string) => `/dashboard/org/${slug}/settings`,
-            general: (slug: string) => `/dashboard/org/${slug}/settings/general`,
-            billing: (slug: string) => `/dashboard/org/${slug}/settings/billing`,
-            security: (slug: string) => `/dashboard/org/${slug}/settings/security`,
-            integrations: (slug: string) => `/dashboard/org/${slug}/settings/integrations`,
+            general: (slug: string) =>
+              `/dashboard/org/${slug}/settings/general`,
+            billing: (slug: string) =>
+              `/dashboard/org/${slug}/settings/billing`,
+            security: (slug: string) =>
+              `/dashboard/org/${slug}/settings/security`,
+            integrations: (slug: string) =>
+              `/dashboard/org/${slug}/settings/integrations`,
           },
-        }
-      }
-    }
+        },
+      },
+    },
   },
 
   marketing: {

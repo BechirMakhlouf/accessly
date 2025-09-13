@@ -17,20 +17,23 @@ export type InviteUpdate = Database["public"]["Tables"]["invites"]["Update"];
 export type OrgRole = Database["public"]["Enums"]["organization_role"];
 
 // Invite status type
-export type InviteStatus = "pending" | "accepted" | "rejected" | "expired";
+export type InviteStatus = Database["public"]["Enums"]["org_invite_status"];
 
 // Helper type for admin permissions
 export type AdminRole = Extract<OrgRole, "admin">;
 
 export interface OrgWithMembers extends Organization {
-  organization_members: {
-    user_id: string;
-    role: OrgRole;
-    joined_at: string;
-    last_active_at: string | null;
-  }[];
+  organization_members: OrgMemberWithProfile[];
 }
 
 export interface OrgMemberWithProfile extends OrgMember {
   profile?: Profile;
+}
+
+export interface InviteWithInviter extends Invite {
+  inviterProfile: Profile;
+}
+
+export interface InviteWithOrgAndInviter extends InviteWithInviter {
+  organization: Organization;
 }

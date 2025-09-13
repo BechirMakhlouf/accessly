@@ -25,7 +25,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
-import { OrgRole } from "@/modules/organizations";
+import { OrgRole, useMembersPage } from "@/modules/organizations";
 import { useFormatRelativeDate } from "@/lib/utils/date-utils";
 import { OrgMemberWithProfile } from "../types";
 
@@ -59,7 +59,6 @@ export const MembersTable = ({
   searchQuery,
 }: MembersTableProps) => {
   const t = useTranslations("org.members");
-  const formatRelativeDate = useFormatRelativeDate();
 
   if (isLoading) {
     return (
@@ -89,7 +88,6 @@ export const MembersTable = ({
             <TableHead>{t("table.email")}</TableHead>
             <TableHead>{t("table.role")}</TableHead>
             <TableHead>{t("tableHeaders.joined")}</TableHead>
-            <TableHead>{t("tableHeaders.lastActive")}</TableHead>
             {canManageMembers && <TableHead className="w-12"></TableHead>}
           </TableRow>
         </TableHeader>
@@ -109,95 +107,17 @@ export const MembersTable = ({
             )
             : (
               members.map((member) => (
-                <TableRow key={member.user_id}>
-                  {canManageMembers && (
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedMembers.includes(member.user_id)}
-                        onCheckedChange={(checked) =>
-                          onSelectMember(member.user_id, checked as boolean)}
-                        aria-label={`Select ${member.profile?.full_name}`}
-                      />
-                    </TableCell>
-                  )}
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage 
-                          src={member.profile?.avatar_url || undefined} 
-                          alt={member.profile?.full_name || "Member avatar"} 
-                        />
-                        <AvatarFallback>
-                          <User className="text-muted-foreground" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium text-foreground">
-                        {member?.profile?.full_name}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {member.profile?.email}
-                  </TableCell>
-                  <TableCell>
-                    {canManageMembers
-                      ? (
-                        <Select
-                          value={member.role}
-                          onValueChange={(value: OrgRole) =>
-                            onRoleChange(member.user_id, value)}
-                          disabled={isUpdatingRole}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="member">
-                              {t("roles.member")}
-                            </SelectItem>
-                            <SelectItem value="admin">
-                              {t("roles.admin")}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )
-                      : (
-                        <Badge variant="secondary">
-                          {t(`roles.${member.role}`)}
-                        </Badge>
-                      )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatRelativeDate(member.joined_at)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {member.last_active_at
-                      ? formatRelativeDate(member.last_active_at)
-                      : t("errors.never")}
-                  </TableCell>
-                  {canManageMembers && (
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Open menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => onDeleteMember(member.user_id)}
-                            className="text-destructive focus:text-destructive"
-                            disabled={isRemovingMember}
-                          >
-                            <Trash2 className="text-destructive h-4 w-4 mr-2" />
-                            {t("actions.deleteMember")}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  )}
-                </TableRow>
+                <MemberRow
+                  key={member.user_id}
+                  member={member}
+                  canManageMembers={canManageMembers}
+                  selectedMembers={selectedMembers}
+                  isUpdatingRole={isUpdatingRole}
+                  isRemovingMember={isRemovingMember}
+                  onSelectMember={onSelectMember}
+                  onRoleChange={onRoleChange}
+                  onDeleteMember={onDeleteMember}
+                />
               ))
             )}
         </TableBody>
@@ -205,3 +125,150 @@ export const MembersTable = ({
     </div>
   );
 };
+
+
+interface MemberRowProps {
+  member: OrgMemberWithProfile;
+  canManageMembers: boolean;
+  selectedMembers: string[];
+  isUpdatingRole: boolean;
+  isRemovingMember: boolean;
+  onSelectMember: (memberId: string, checked: boolean) => void;
+  onRoleChange: (memberId: string, newRole: OrgRole) => void;
+  onDeleteMember: (memberId: string) => void;
+};
+
+const MemberRow = ({ member, canManageMembers, selectedMembers, isUpdatingRole, isRemovingMember, onSelectMember, onRoleChange, onDeleteMember }: MemberRowProps) => {
+  const t = useTranslations("org.members");
+  const formatRelativeDate = useFormatRelativeDate();
+
+  return (
+    <TableRow key={member.user_id}>
+      {canManageMembers && (
+        <TableCell>
+          <Checkbox
+            checked={selectedMembers.includes(member.user_id)}
+            onCheckedChange={(checked) =>
+              onSelectMember(member.user_id, checked as boolean)}
+            aria-label={`Select ${member.profile?.full_name}`}
+          />
+        </TableCell>
+      )}
+      <TableCell>
+        <div className="flex items-center space-x-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={member.profile?.avatar_url || undefined}
+              alt={member.profile?.full_name || "Member avatar"}
+            />
+            <AvatarFallback>
+              <User className="text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+          <span className="font-medium text-foreground">
+            {member?.profile?.full_name}
+          </span>
+        </div>
+      </TableCell>
+      <TableCell className="text-muted-foreground">
+        {member.profile?.email}
+      </TableCell>
+      <TableCell>
+        {canManageMembers
+          ? (
+            <Select
+              value={member.role}
+              onValueChange={(value: OrgRole) =>
+                onRoleChange(member.user_id, value)}
+              disabled={isUpdatingRole}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="member">
+                  {t("roles.member")}
+                </SelectItem>
+                <SelectItem value="admin">
+                  {t("roles.admin")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )
+          : (
+            <Badge variant="secondary">
+              {t(`roles.${member.role}`)}
+            </Badge>
+          )}
+      </TableCell>
+      <TableCell className="text-muted-foreground">
+        {formatRelativeDate(member.joined_at)}
+      </TableCell>
+      {canManageMembers && (
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => onDeleteMember(member.user_id)}
+                className="text-destructive focus:text-destructive"
+                disabled={isRemovingMember}
+              >
+                <Trash2 className="text-destructive h-4 w-4 mr-2" />
+                {t("actions.deleteMember")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      )}
+    </TableRow>
+  );
+};
+
+export const MembersTableWithState = () => {
+  const {
+    // State
+    searchQuery,
+    selectedMembers,
+
+    // Data
+    paginatedMembers,
+    canManageMembersRole,
+    isLoading,
+
+    // Computed values
+    isAllSelected,
+
+    // Actions
+    handleRoleChange,
+    handleDeleteMember,
+    handleSelectAll,
+    handleSelectMember,
+
+    // Mutations
+    updateRoleMutation,
+    removeMemberMutation,
+  } = useMembersPage();
+
+  return (
+    <MembersTable
+      members={paginatedMembers}
+      isLoading={isLoading}
+      canManageMembers={canManageMembersRole}
+      selectedMembers={selectedMembers}
+      isAllSelected={isAllSelected}
+      isUpdatingRole={updateRoleMutation.isPending}
+      isRemovingMember={removeMemberMutation.isPending}
+      onSelectAll={handleSelectAll}
+      onSelectMember={handleSelectMember}
+      onRoleChange={handleRoleChange}
+      onDeleteMember={handleDeleteMember}
+      searchQuery={searchQuery}
+    />
+  );
+}

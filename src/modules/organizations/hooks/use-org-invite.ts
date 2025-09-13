@@ -1,12 +1,13 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getOrganizationInvitesQueryOptions,
-  updateInviteStatusMutationOptions,
   inviteMemberMutationOptions,
+  updateInviteStatusMutationOptions,
 } from "../queries";
-import { OrgRole, InviteStatus } from "../types";
+import { Invite, InviteStatus, OrgRole } from "../types";
+import { ServiceResult } from "../organization.service";
 
 interface UseOrgInviteOptions {
   organization: { id: string; name: string } | null | undefined;
@@ -39,30 +40,37 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
 
   // Client-side check to prevent inviting existing members
   const isEmailAlreadyMember = (email: string): boolean => {
-    return members.some(member => 
+    return members.some((member) =>
       member.email?.toLowerCase() === email.toLowerCase()
     );
   };
 
   // Actions
-  const inviteMember = async (email: string, role: OrgRole) => {
+  const inviteMember = async (
+    email: string,
+    role: OrgRole,
+  ): Promise<ServiceResult<{ success: boolean; invite?: Invite }>> => {
+    console.log("inviting member: ", email, role);
+
     if (!organization?.id) {
-      return { error: "org.invite.noOrganizationSelected" };
+      return { error: "org.invite.notFound" };
     }
-    
+
     // Client-side validation to prevent inviting existing members
     if (isEmailAlreadyMember(email)) {
       return { error: "org.invite.alreadyMember" };
     }
 
     try {
-      await inviteMemberMutation.mutateAsync({ 
-        orgId: organization.id, 
-        email, 
-        role, 
-        orgName: organization.name 
+      const result = await inviteMemberMutation.mutateAsync({
+        orgId: organization.id,
+        email,
+        role,
       });
-      return { success: true };
+      if (result.error) {
+        return { error: result.error };
+      }
+      return { data: { success: true, invite: result.data?.invite } };
     } catch {
       return { error: "org.invite.failedToSend" };
     }
@@ -74,9 +82,9 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
     }
 
     try {
-      await updateInviteStatusMutation.mutateAsync({ 
-        inviteId, 
-        status 
+      await updateInviteStatusMutation.mutateAsync({
+        inviteId,
+        status,
       });
       return { success: true };
     } catch {
@@ -91,23 +99,23 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
   return {
     // Data
     invites,
-    
+
     // State
     isLoading: invitesLoading,
     error: invitesError,
-    
+
     // Actions
     inviteMember,
     updateInviteStatus,
     refetch,
-    
+
     // Validation
     isEmailAlreadyMember,
-    
+
     // Mutation states
     isInviting: inviteMemberMutation.isPending,
     isUpdatingStatus: updateInviteStatusMutation.isPending,
-    
+
     // Mutation errors
     inviteError: inviteMemberMutation.error,
     updateStatusError: updateInviteStatusMutation.error,

@@ -1,7 +1,7 @@
 "use server";
 
-import { createOrgService } from './organization-factory';
-import { OrgUpdate, OrgRole, OrgInput, InviteStatus } from './types';
+import { createOrgService } from "./organization.factory";
+import { InviteStatus, OrgInput, OrgRole, OrgUpdate } from "./types";
 
 export async function getOrgBySlug(slug: string) {
   const orgService = await createOrgService();
@@ -16,12 +16,12 @@ export async function getOrgById(orgId: string) {
 export async function createOrg(newOrg: OrgInput) {
   const orgService = await createOrgService();
   const result = await orgService.create(newOrg);
-  
+
   console.debug("result: ", result);
   if (result.error || !result.data) {
     return result;
   }
-  
+
   // Return the created organization
   return await orgService.getBySlug(result.data.slug);
 }
@@ -39,13 +39,13 @@ export async function genUniqueOrgSlug(name: string) {
 
 export async function getUserOrgs() {
   const orgService = await createOrgService();
-  const result = await orgService.getUserOrganizations();
-  
+  const result = await orgService.getUserOrgs();
+
   if (result.error) {
     console.error("Failed to load organizations:", result.error);
     return null;
   }
-  
+
   return result.data;
 }
 
@@ -59,7 +59,11 @@ export async function getOrganizationMembers(orgId: string) {
   return await orgService.getMembers(orgId);
 }
 
-export async function updateMemberRole(orgId: string, memberId: string, newRole: OrgRole) {
+export async function updateMemberRole(
+  orgId: string,
+  memberId: string,
+  newRole: OrgRole,
+) {
   const orgService = await createOrgService();
   return await orgService.updateMemberRole(orgId, memberId, newRole);
 }
@@ -74,9 +78,13 @@ export async function leaveOrganization(orgId: string) {
   return await orgService.leaveOrganization(orgId);
 }
 
-export async function inviteMember(orgId: string, orgName: string, email: string, role: OrgRole,) {
+export async function inviteMember(
+  orgId: string,
+  email: string,
+  role: OrgRole,
+) {
   const orgService = await createOrgService();
-  return await orgService.inviteMember(orgId, orgName, role, email);
+  return await orgService.inviteMember(orgId, role, email);
 }
 
 export async function deleteOrganization(orgId: string) {
@@ -86,10 +94,13 @@ export async function deleteOrganization(orgId: string) {
 
 export async function getOrgInvites(orgId: string) {
   const orgService = await createOrgService();
-  return await orgService.getInvites(orgId);
+  return await orgService.getOrgInvites(orgId);
 }
 
-export async function updateInviteStatus(inviteId: string, status: InviteStatus) {
+export async function updateInviteStatus(
+  inviteId: string,
+  status: InviteStatus,
+) {
   const orgService = await createOrgService();
   return await orgService.updateInviteStatus(inviteId, status);
 }
@@ -99,7 +110,15 @@ export async function getUserInvites() {
   return await orgService.getUserInvites();
 }
 
-export async function updateUserInvite(inviteId: string, status: "accepted" | "rejected") {
+export async function updateUserOwnInvite(
+  inviteId: string,
+  status: "accepted" | "rejected",
+) {
   const orgService = await createOrgService();
-  return await orgService.updateUserInvite(inviteId, status);
+  return await orgService.updateUserOwnInvite(inviteId, status);
+}
+
+export async function getUserInvitesWithOrganizations() {
+  const orgService = await createOrgService();
+  return await orgService.getUserInvitesWithOrganizations();
 }

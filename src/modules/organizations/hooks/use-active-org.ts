@@ -1,14 +1,15 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useParams } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import {
   getOrganizationBySlugQueryOptions,
   getOrganizationMembersQueryOptions,
-  updateOrganizationMutationOptions,
-  updateMemberRoleMutationOptions,
+  ORGANIZATION_MEMBERS_KEY,
   removeMemberMutationOptions,
+  updateMemberRoleMutationOptions,
+  updateOrganizationMutationOptions,
 } from "../queries";
 import { Organization, OrgMember, OrgRole, OrgUpdate } from "../types";
 import { routes } from "@/lib/routes";
@@ -18,7 +19,7 @@ export function useActiveOrg() {
   const router = useRouter();
   const params = useParams();
   const queryClient = useQueryClient();
-  
+
   // Get the current organization slug from URL params
   const slug = params.slug as string;
 
@@ -65,22 +66,24 @@ export function useActiveOrg() {
   const removeMemberMutation = useMutation({
     ...removeMemberMutationOptions(queryClient),
     onSuccess: () => {
-      refetchMembers();
+      queryClient.invalidateQueries({
+        queryKey: ORGANIZATION_MEMBERS_KEY(organization?.id || ""),
+      });
     },
   });
 
   // Computed values
   const isLoading = orgLoading || membersLoading;
   const error = orgError || membersError;
-  
+
   // Current user's role in the active organization
   const currentUserRole: OrgRole | null = user && members
-    ? members.find(m => m.user_id === user.id)?.role || null
+    ? members.find((m) => m.user_id === user.id)?.role || null
     : null;
 
   // Current user's membership details
   const currentUserMembership: OrgMember | null = user && members
-    ? members.find(m => m.user_id === user.id) || null
+    ? members.find((m) => m.user_id === user.id) || null
     : null;
 
   // Actions
@@ -92,29 +95,32 @@ export function useActiveOrg() {
 
   const updateOrganization = async (updates: OrgUpdate) => {
     if (!organization?.id) throw new Error("No active organization");
-    
+
     await updateOrgMutation.mutateAsync({
       orgId: organization.id,
       updates,
     });
   };
 
-  const updateMemberRole = async (memberId: string, newRole: "admin" | "member") => {
+  const updateMemberRole = async (
+    memberId: string,
+    newRole: OrgRole,
+  ) => {
     if (!organization?.id) throw new Error("No active organization");
-    
-    await updateRoleMutation.mutateAsync({ 
-      orgId: organization.id, 
-      memberId, 
-      newRole 
+
+    await updateRoleMutation.mutateAsync({
+      orgId: organization.id,
+      memberId,
+      newRole,
     });
   };
 
   const removeMember = async (memberId: string) => {
     if (!organization?.id) throw new Error("No active organization");
-    
-    await removeMemberMutation.mutateAsync({ 
-      orgId: organization.id, 
-      memberId 
+
+    await removeMemberMutation.mutateAsync({
+      orgId: organization.id,
+      memberId,
     });
   };
 
@@ -130,23 +136,23 @@ export function useActiveOrg() {
     members,
     currentUserRole,
     currentUserMembership,
-    
+
     // State
     isLoading,
     error,
-    
+
     // Actions
     setActiveOrganization,
     updateOrganization,
     updateMemberRole,
     removeMember,
     refetch,
-    
+
     // Mutation states
     isUpdating: updateOrgMutation.isPending,
     isUpdatingRole: updateRoleMutation.isPending,
     isRemovingMember: removeMemberMutation.isPending,
-    
+
     // Mutation errors
     updateError: updateOrgMutation.error,
     updateRoleError: updateRoleMutation.error,
