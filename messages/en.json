@@ -665,6 +665,37 @@
     "verificationError": "Could not verify code. Please try again."
   },
   "board": {
-    "unauthorized": "You are not authorized to perform this board action"
+    "unauthorized": "You are not authorized to perform this board action",
+    "form": {
+      "title": "Create Board",
+      "subtitle": "Create a new board to organize work.",
+      "titleField": {
+        "label": "Title",
+        "placeholder": "My Board",
+        "helpText": "2-100 characters.",
+        "required": "Title required"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "What is this board about?",
+        "helpText": "Optional context for collaborators."
+      },
+      "iconUrl": {
+        "label": "Icon URL",
+        "placeholder": "https://...",
+        "helpText": "Optional image for quick recognition."
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "creating": "Creating...",
+        "create": "Create"
+      },
+      "success": "Board created",
+      "errors": {
+        "titleRequired": "Title required",
+        "createFailed": "Failed to create board",
+        "genericError": "Unexpected error"
+      }
+    }
   }
 }

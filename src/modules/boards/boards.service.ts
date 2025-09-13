@@ -61,6 +61,7 @@ export class BoardsService {
             .from("boards")
             .update(updates)
             .eq("id", boardId)
+            .select("*")
             .single();
         if (dbError) return { error: "error_updating_board" as I18nMessageKey };
         return { data };
