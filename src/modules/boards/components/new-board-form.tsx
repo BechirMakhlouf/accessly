@@ -41,15 +41,21 @@ export function NewBoardForm({ organizationId }: { organizationId: string }) {
         visibility: 'public'
       });
       if (result?.data) {
-  toast.success(t('board.form.success'));
+	toast.success(t('board.form.success'));
         // If slug exists navigate by slug else fallback maybe board id route (placeholder)
         // router.push(routes.protected.dashboard.board.slug.root(result.data.slug || '')); // adjust when routes ready
       } else {
-  toast.error(t('board.form.errors.createFailed'));
+        const key = result?.error || 'board.form.errors.createFailed';
+        const boardFormPrefix = 'board.form.';
+        const translation = key.startsWith(boardFormPrefix) ? t(key as unknown as Parameters<typeof t>[0]) : t('board.form.errors.createFailed');
+        toast.error(translation);
+        if (result?.meta) {
+          console.debug('[BoardCreate][debug-meta]', result.meta);
+        }
       }
     } catch (err) {
       console.error('Error creating board', err);
-  toast.error(t('board.form.errors.genericError'));
+	toast.error(t('board.form.errors.genericError'));
     }
   };
 

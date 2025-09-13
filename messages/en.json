@@ -694,7 +694,13 @@
       "errors": {
         "titleRequired": "Title required",
         "createFailed": "Failed to create board",
-        "genericError": "Unexpected error"
+  "genericError": "Unexpected error",
+  "notAuthenticated": "You must be signed in to create a board",
+  "duplicateSlug": "A board with this slug already exists",
+  "invalidOrganization": "Invalid organization reference",
+  "constraintViolation": "Board could not be created due to a constraint",
+  "dbUnavailable": "Database temporarily unavailable, try again",
+  "unknown": "Unknown error creating board"
       }
     }
   }

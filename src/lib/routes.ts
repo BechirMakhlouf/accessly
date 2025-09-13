@@ -67,6 +67,9 @@ export const routes = {
         slug: {
           root: (slug: string) => `/dashboard/org/${slug}/`,
           members: (slug: string) => `/dashboard/org/${slug}/members`,
+          boards: {
+            new: (slug: string) => `/dashboard/org/${slug}/boards/new`
+          },
           settings: {
             root: (slug: string) => `/dashboard/org/${slug}/settings`,
             general: (slug: string) => `/dashboard/org/${slug}/settings/general`,

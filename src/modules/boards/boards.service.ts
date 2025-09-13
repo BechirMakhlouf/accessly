@@ -2,7 +2,50 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import { Board, BoardInput, BoardInsert, BoardRole, BoardUpdate } from "./types";
 import { I18nMessageKey } from "@/lib/i18n";
 
-export interface ServiceResult<T> { data?: T; error?: I18nMessageKey }
+interface ServiceErrorMeta {
+  code?: string;
+  message?: string;
+  hint?: string | null;
+  details?: string | null;
+}
+
+export interface ServiceResult<T> { data?: T; error?: I18nMessageKey; meta?: ServiceErrorMeta }
+
+interface PostgrestErrorLike {
+    code?: string;
+    message?: string;
+    hint?: string | null;
+    details?: string | null;
+    table?: string | null;
+    constraint?: string | null;
+}
+
+function isPostgrestErrorLike(err: unknown): err is PostgrestErrorLike {
+    return typeof err === 'object' && err !== null && 'message' in err;
+}
+
+// Helper to map PostgrestError to i18n key
+function mapCreateBoardError(err: unknown): I18nMessageKey {
+    if (!isPostgrestErrorLike(err)) return "board.form.errors.unknown" as I18nMessageKey;
+    const constraint = err.constraint;
+    const code = err.code;
+    const message = err.message;
+
+    // Common Postgres / Supabase patterns
+    if (code === '23503') return "board.form.errors.invalidOrganization" as I18nMessageKey; // foreign key violation
+    if (code === '23505') {
+        // unique violation: slug unique idx maybe boards_slug_key
+        if (constraint?.includes('slug')) return "board.form.errors.duplicateSlug" as I18nMessageKey;
+        return "board.form.errors.constraintViolation" as I18nMessageKey;
+    }
+    if (code === '57P01') return "board.form.errors.dbUnavailable" as I18nMessageKey; // admin shutdown
+
+    // Fallbacks
+    if (message?.toLowerCase().includes('duplicate') && message.toLowerCase().includes('slug')) {
+        return "board.form.errors.duplicateSlug" as I18nMessageKey;
+    }
+    return "board.form.errors.createFailed" as I18nMessageKey;
+}
 
 // BoardsService: encapsulates board data access & mutations (no UI concerns)
 export class BoardsService {
@@ -44,7 +87,7 @@ export class BoardsService {
     // Mutations
     async createBoard(input: BoardInput): Promise<ServiceResult<Board>> {
         const createdBy = input.created_by ?? this.userId;
-        if (!createdBy) return { error: "error_not_authenticated" as I18nMessageKey };
+        if (!createdBy) return { error: "board.form.errors.notAuthenticated" as I18nMessageKey };
 
         const payload: BoardInsert = { ...input, created_by: createdBy };
         const { data, error: dbError } = await this.supabase
@@ -52,7 +95,16 @@ export class BoardsService {
             .insert(payload)
             .select("*")
             .single();
-        if (dbError || !data) return { error: "error_creating_board" as I18nMessageKey };
+        if (dbError || !data) {
+            const mapped = mapCreateBoardError(dbError);
+            const meta: ServiceErrorMeta | undefined = process.env.NODE_ENV !== 'production' && isPostgrestErrorLike(dbError) ? {
+                code: dbError.code,
+                message: dbError.message,
+                hint: dbError.hint ?? null,
+                details: dbError.details ?? null,
+            } : undefined;
+            return { error: mapped, meta };
+        }
         return { data };
     }
 
