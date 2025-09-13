@@ -31,9 +31,9 @@ export interface ServiceResult<T> {
  * Supports both normal and admin Supabase clients for different operations
  */
 export class OrganizationService {
-  private supabase: TypedSupabaseClient;
-  private supabaseAdmin: TypedSupabaseClient;
-  private userId?: string;
+    private readonly supabase: TypedSupabaseClient;
+  private readonly supabaseAdmin: TypedSupabaseClient;
+  private readonly userId?: string;
 
   constructor(options: OrganizationServiceOptions) {
     this.supabase = options.supabase;
