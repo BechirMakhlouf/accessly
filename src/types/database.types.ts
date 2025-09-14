@@ -815,7 +815,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by: string
+          created_by?: string
           description?: string | null
           icon_url?: string | null
           id?: string

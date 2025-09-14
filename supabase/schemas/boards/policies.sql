@@ -38,6 +38,7 @@ WITH CHECK (
     SELECT 1
     FROM public.organization_members om
     WHERE om.organization_id = boards.organization_id
+        AND om.role = 'admin'
       AND om.user_id = (SELECT auth.uid())
   -- any role qualifies (admin or member); role predicate removed intentionally
   )

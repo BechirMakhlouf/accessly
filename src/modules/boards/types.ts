@@ -14,9 +14,7 @@ export type BoardVisibility = Database["public"]["Enums"]["boards_visibility"];
 export type BoardAdminRole = Extract<BoardRole, "admin">;
 
 // Input used by service/UI when creating a board (created_by may be injected from session)
-export type BoardInput = Omit<BoardInsert, "created_by"> & {
-  created_by?: string;
-};
+export type BoardInput = BoardInsert ;
 
 export interface BoardWithMembers extends Board {
   board_members: Database["public"]["Tables"]["board_members"]["Row"][];

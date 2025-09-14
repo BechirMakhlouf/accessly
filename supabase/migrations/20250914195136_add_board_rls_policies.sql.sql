@@ -1,8 +1,6 @@
-alter table "public"."boards" drop constraint "boards_slug_key";
+alter table "public"."boards" add column "slug" text not null;
 
-drop index if exists "public"."boards_slug_key";
-
-alter table "public"."boards" alter column "slug" drop default;
+alter table "public"."boards" alter column "created_by" set default auth.uid();
 
 CREATE UNIQUE INDEX boards_organization_id_slug_key ON public.boards USING btree (organization_id, slug);
 
@@ -54,6 +52,21 @@ END;
 $function$
 ;
 
+CREATE OR REPLACE FUNCTION public.set_board_slug()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'extensions'
+AS $function$
+BEGIN
+  IF NEW.slug IS NULL OR length(trim(NEW.slug)) = 0 THEN
+    NEW.slug := public.generate_board_slug(NEW.title, NEW.id);
+  END IF;
+  RETURN NEW;
+END;
+$function$
+;
+
 create policy "Board creator self membership"
 on "public"."board_members"
 as permissive
@@ -71,7 +84,9 @@ for insert
 to authenticated
 with check (((created_by = ( SELECT auth.uid() AS uid)) AND (EXISTS ( SELECT 1
    FROM organization_members om
-  WHERE ((om.organization_id = boards.organization_id) AND (om.user_id = ( SELECT auth.uid() AS uid)))))));
+  WHERE ((om.organization_id = boards.organization_id) AND (om.role = 'admin'::organization_role) AND (om.user_id = ( SELECT auth.uid() AS uid)))))));
 
+
+CREATE TRIGGER trg_set_board_slug BEFORE INSERT ON public.boards FOR EACH ROW EXECUTE FUNCTION set_board_slug();
 
 
