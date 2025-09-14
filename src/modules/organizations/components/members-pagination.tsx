@@ -30,9 +30,9 @@ export const MembersPagination = ({
     <div className="flex items-center justify-between">
       <p className="text-sm text-muted-foreground">
         {t('showing', {
-          start: startIndex + 1,
-          end: endIndex,
-          total: totalItems
+          start: String(startIndex + 1),
+          end: String(endIndex),
+          total: String(totalItems)
         })}
       </p>
       <div className="flex items-center space-x-2">

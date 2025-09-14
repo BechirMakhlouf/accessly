@@ -1,5 +1,5 @@
 import { INTL_FORMATS, locales } from "@/lib/i18n";
-import messages from "./messages/en.d.json";
+import messages from "./messages/en.json";
 
 declare module "next-intl" {
   interface AppConfig {

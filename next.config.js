@@ -22,8 +22,6 @@ const nextConfig = {
 export default withBotId(
   createNextIntlPlugin({
     requestConfig: "./src/lib/i18n/request.ts",
-    experimental: {
-      createMessagesDeclaration: "./messages/en.json"
-    }
+    experimental: {}
   })(nextConfig),
 );

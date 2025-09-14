@@ -36,7 +36,7 @@ export const MembersSearchBar = ({
       </div>
       {selectedMembersCount > 0 && canManageMembers && (
         <div className="flex items-center gap-2">
-          <Badge variant="secondary">{t('selected', { count: selectedMembersCount })}</Badge>
+          <Badge variant="secondary">{t('selected', { count: String(selectedMembersCount) })}</Badge>
           <Button
             variant="destructive"
             size="sm"
