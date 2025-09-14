@@ -28,6 +28,21 @@ REVOKE EXECUTE ON FUNCTION public.is_board_member(uuid) FROM anon, authenticated
    Policies for "boards"
    ------------------------------------------------- */
 
+/* INSERT – any organization member (admin or member) can create boards in their org */
+CREATE POLICY "Org member create board"
+ON public.boards
+FOR INSERT TO authenticated
+WITH CHECK (
+  created_by = (SELECT auth.uid())
+  AND EXISTS (
+    SELECT 1
+    FROM public.organization_members om
+    WHERE om.organization_id = boards.organization_id
+      AND om.user_id = (SELECT auth.uid())
+  -- any role qualifies (admin or member); role predicate removed intentionally
+  )
+);
+
 
 
 /* SELECT – members can view boards they belong to or public boards */
@@ -86,7 +101,19 @@ ON public.board_members
 FOR SELECT TO authenticated
 USING ( public.is_board_member(board_members.board_id) );
 
-/* INSERT – admins can add members */
+/* INSERT – board creator self-membership (trigger add_creator_to_board) */
+CREATE POLICY "Board creator self membership"
+ON public.board_members
+FOR INSERT TO authenticated
+WITH CHECK (
+  board_members.user_id = (SELECT auth.uid())
+  AND EXISTS (
+    SELECT 1 FROM public.boards b
+    WHERE b.id = board_members.board_id
+      AND b.created_by = (SELECT auth.uid())
+  )
+);
+
 CREATE POLICY "Admins insert board member"
 ON public.board_members
 FOR INSERT TO authenticated

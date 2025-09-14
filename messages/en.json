@@ -700,7 +700,8 @@
   "invalidOrganization": "Invalid organization reference",
   "constraintViolation": "Board could not be created due to a constraint",
   "dbUnavailable": "Database temporarily unavailable, try again",
-  "unknown": "Unknown error creating board"
+  "unknown": "Unknown error creating board",
+  "insufficientPermissions": "You are not allowed to create a board in this organization"
       }
     }
   }
