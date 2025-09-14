@@ -2,6 +2,7 @@
   "organizations": {
     "title": "Organisationen",
     "description": "Verwalten Sie Ihre Organisationen und arbeiten Sie mit Ihrem Team zusammen.",
+    "selectOrganization": "Organisation auswählen",
     "search": {
       "placeholder": "Organisationen suchen...",
       "noResults": {

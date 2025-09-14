@@ -18,6 +18,7 @@ export type OrgRole = Database["public"]["Enums"]["organization_role"];
 
 // Invite status type
 export type InviteStatus = Database["public"]["Enums"]["org_invite_status"];
+export type InviteStatusOrExpired = InviteStatus | "expired";
 
 // Helper type for admin permissions
 export type AdminRole = Extract<OrgRole, "admin">;

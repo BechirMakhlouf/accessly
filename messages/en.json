@@ -2,6 +2,9 @@
   "organizations": {
     "title": "Organizations",
     "description": "Manage your organizations and collaborate with your team.",
+    "selectOrganization": "Select Organization",
+    "invitations": "Invitations",
+    "invitedBy": "Invited by",
     "search": {
       "placeholder": "Search organizations...",
       "noResults": {

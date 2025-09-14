@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { Loader2, MoreHorizontal, Trash2, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -68,7 +69,6 @@ export const MembersTable = ({
   onRoleChange,
   onDeleteMember,
   onRevokeInvite,
-  onToggleExpiredInvites,
   searchQuery,
 }: MembersTableProps) => {
   const t = useTranslations("org.members");
@@ -76,7 +76,8 @@ export const MembersTable = ({
   // Filter invites based on expired status
   const filteredInvitedMembers = invitedMembers.filter((invite) => {
     const isExpired = isInviteExpired(invite);
-    return showExpiredInvites || !isExpired;
+    const isAccepted = invite.status === "accepted";
+    return (showExpiredInvites || !isExpired) && !isAccepted;
   });
 
   if (isLoading) {
@@ -91,25 +92,6 @@ export const MembersTable = ({
 
   return (
     <div className="space-y-4">
-      {/* Filter controls */}
-      {invitedMembers.length > 0 && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="show-expired"
-              checked={showExpiredInvites}
-              onCheckedChange={onToggleExpiredInvites}
-            />
-            <label
-              htmlFor="show-expired"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {showExpiredInvites ? t("filters.hideExpired") : t("filters.showExpired")}
-            </label>
-          </div>
-        </div>
-      )}
-
       <div className="border border-border rounded-lg">
         <Table>
           <TableHeader>
