@@ -690,5 +690,53 @@
     "invalidCode": "Invalid verification code. Please try again.",
     "verificationSuccess": "Email verified successfully!",
     "verificationError": "Could not verify code. Please try again."
+  },
+  "invitePage": {
+    "title": "Organization Invitation",
+    "loading": "Loading invitation...",
+    "notFound": {
+      "title": "Invitation Not Found",
+      "description": "This invitation could not be found or may have expired.",
+      "backToHome": "Back to Home"
+    },
+    "expired": {
+      "title": "Invitation Expired",
+      "description": "This invitation has expired. Please contact the organization administrator for a new invitation.",
+      "backToHome": "Back to Home"
+    },
+    "revoked": {
+      "title": "Invitation Revoked",
+      "description": "This invitation has been revoked by the organization administrator.",
+      "backToHome": "Back to Home"
+    },
+    "loginRequired": {
+      "title": "Login Required",
+      "description": "You need to log in with the email address this invitation was sent to in order to accept or decline it.",
+      "invitedEmail": "Invited email: {email}",
+      "loginButton": "Log In",
+      "signUpButton": "Sign Up"
+    },
+    "inviteDetails": {
+      "title": "You're invited to join {organizationName}",
+      "invitedBy": "Invited by {inviterName}",
+      "role": "Role: {role}",
+      "expiresAt": "Expires: {expiresAt}",
+      "description": "You've been invited to join this organization. Accept the invitation to start collaborating with your team.",
+      "acceptButton": "Accept Invitation",
+      "declineButton": "Decline",
+      "accepting": "Accepting...",
+      "declining": "Declining...",
+      "accepted": "Invitation Accepted",
+      "declined": "Invitation Declined",
+      "success": {
+        "accepted": "You've successfully joined {organizationName}!",
+        "declined": "You've declined the invitation to join {organizationName}."
+      },
+      "error": {
+        "acceptFailed": "Failed to accept invitation. Please try again.",
+        "declineFailed": "Failed to decline invitation. Please try again.",
+        "generic": "An error occurred. Please try again."
+      }
+    }
   }
 }

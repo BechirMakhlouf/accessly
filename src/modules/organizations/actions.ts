@@ -1,6 +1,6 @@
 "use server";
 
-import { createOrgService } from "./organization.factory";
+import { createOrgService } from "./organization-factory";
 import { InviteStatus, OrgInput, OrgRole, OrgUpdate } from "./types";
 
 export async function getOrgBySlug(slug: string) {
@@ -116,6 +116,11 @@ export async function updateUserOwnInvite(
 ) {
   const orgService = await createOrgService();
   return await orgService.updateUserOwnInvite(inviteId, status);
+}
+
+export async function getInviteById(inviteId: string) {
+  const orgService = await createOrgService();
+  return await orgService.getInviteById(inviteId);
 }
 
 export async function getUserInvitesWithOrganizations() {

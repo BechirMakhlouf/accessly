@@ -16,10 +16,14 @@ import { isNullOrUndefined, validateEmail } from "@/lib/utils";
 import { isDuplicateKeyError, isRlsError } from "@/lib/supabase/utils";
 
 import { I18nMessageKey } from "@/lib/i18n";
+import { EmailService } from "@/lib/mail";
+import { sendInviteMemberEmail } from "./emails";
+import { getFullRoute, routes } from "@/lib/routes";
 
 export interface OrganizationServiceOptions {
   supabase: TypedSupabaseClient;
   adminSupabase: TypedSupabaseClient;
+  emailService: EmailService;
   userId: string;
 }
 
@@ -36,11 +40,13 @@ export interface ServiceResult<T> {
 export class OrganizationService {
   private supabase: TypedSupabaseClient;
   private supabaseAdmin: TypedSupabaseClient;
+  private emailService: EmailService;
   private userId: string;
 
   constructor(options: OrganizationServiceOptions) {
     this.supabase = options.supabase;
     this.supabaseAdmin = options.adminSupabase;
+    this.emailService = options.emailService;
     this.userId = options.userId;
   }
 
@@ -437,7 +443,61 @@ export class OrganizationService {
       return { error: "org.invite.failedToInsert" };
     }
 
-    // TODO: Implement invite logic
+    // Send invite email
+    try {
+      // Get organization data
+      const { data: organization, error: orgError } = await this.supabaseAdmin
+        .from("organizations")
+        .select("name, slug")
+        .eq("id", orgId)
+        .single();
+
+      if (orgError || !organization) {
+        console.error("Failed to get organization:", orgError);
+        return { error: "org.invite.failedToCreate" };
+      }
+
+      // Get inviter profile data
+      const { data: inviterProfile, error: inviterError } = await this
+        .supabaseAdmin
+        .from("user_profiles")
+        .select("full_name")
+        .eq("user_id", this.userId)
+        .single();
+
+      if (inviterError || !inviterProfile) {
+        console.error("Failed to get inviter profile:", inviterError);
+        return { error: "org.invite.failedToCreate" };
+      }
+
+      // Generate invite URL
+      const inviteUrl = getFullRoute(
+        routes.invite.inviteId.root(inviteData.id),
+      );
+
+      // Prepare inviter name
+      const inviterName = inviterProfile.full_name || "Someone";
+
+      // Send the invite email
+      const emailResult = await sendInviteMemberEmail({
+        inviterName,
+        organizationName: organization.name,
+        inviteUrl,
+        recipientEmail: email,
+        role,
+      });
+
+      if (!emailResult.success) {
+        console.error("Failed to send invite email:", emailResult.error);
+        // Don't fail the entire operation if email fails, but log it
+        console.warn("Invite created but email failed to send");
+      }
+    } catch (error) {
+      console.error("Error sending invite email:", error);
+      // Don't fail the entire operation if email fails, but log it
+      console.warn("Invite created but email failed to send");
+    }
+
     return { data: { success: true, invite: inviteData } };
   }
 
@@ -698,6 +758,37 @@ export class OrganizationService {
     }
 
     return { data: updateInviteData || undefined };
+  }
+
+  /**
+   * Get invite by ID with organization and inviter details
+   */
+  async getInviteById(
+    inviteId: string,
+  ): Promise<ServiceResult<InviteWithOrgAndInviter>> {
+    const { data, error } = await this.supabaseAdmin
+      .from("invites")
+      .select(`
+        *,
+        organization:organizations!inner(
+          *
+        ),
+        inviterProfile:user_profiles!invited_by(
+          *
+        )
+      `)
+      .eq("id", inviteId)
+      .single();
+
+    if (error) {
+      console.error("Failed to load invite:", error);
+      if (error.code === "PGRST116") {
+        return { error: "org.invite.notFound" };
+      }
+      return { error: "org.invite.failedToLoad" };
+    }
+
+    return { data };
   }
 
   /**

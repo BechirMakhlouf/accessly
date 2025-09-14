@@ -25,7 +25,7 @@ export function getFullRoute(path: Route, params?: Params): string {
 type ValueOf<T> = T extends object ? { [K in keyof T]: ValueOf<T[K]> }[keyof T]
   : T;
 
-export type Route = ValueOf<typeof routes>;
+export type Route = ValueOf<typeof routes> | (string & {});
 
 export const routes = {
   // Public routes
@@ -42,13 +42,13 @@ export const routes = {
     confirmEmail: "/confirm-email",
     updatePassword: "/update-password",
     signUpSuccess: "/sign-up-success",
-    invite: {
-      inviteId: {
-        root: (inviteId: string) => `/invite/${inviteId}`,
-      },
-    },
   },
 
+  invite: {
+    inviteId: {
+      root: (inviteId: string) => `/invite/${inviteId}`,
+    },
+  },
   protected: {
     dashboard: {
       root: "/dashboard",

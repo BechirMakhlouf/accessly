@@ -7,7 +7,7 @@ import {
   updateInviteStatusMutationOptions,
 } from "../queries";
 import { Invite, InviteStatus, OrgRole } from "../types";
-import { ServiceResult } from "../organization.service";
+import { ServiceResult } from "../organization-service";
 
 interface UseOrgInviteOptions {
   organization: { id: string; name: string } | null | undefined;
