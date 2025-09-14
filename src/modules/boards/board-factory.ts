@@ -1,6 +1,6 @@
 import { createSSRClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/adminClient';
-import { BoardsService } from './boards.service';
+import { BoardsService } from './boards-service';
 import { assertSignedInAndGetUserId } from '@/lib/auth/server';
 
 /**

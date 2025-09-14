@@ -665,6 +665,14 @@
     "verificationError": "Could not verify code. Please try again."
   },
   "board": {
-    "unauthorized": "You are not authorized to perform this board action"
+  "unauthorized": "You are not authorized to perform this board action",
+  "notFound": "Board not found",
+  "failedToLoad": "Failed to load board",
+  "failedToCreate": "Failed to create board",
+  "failedToUpdate": "Failed to update board",
+  "failedToDelete": "Failed to delete board",
+  "insufficientPermissions": "You do not have sufficient permissions to perform this action"
+
+
   }
 }

@@ -23,6 +23,17 @@ DECLARE
   candidate text;
   suffix    int := 0;
 BEGIN
+-- Check if a board with the same title slug exists in the same org
+base_slug := lower(trim(coalesce(p_title, 'board')));
+base_slug := regexp_replace(base_slug, '[^a-z0-9]+', '-', 'g');
+base_slug := regexp_replace(base_slug, '(^-+)|(-+$)', '', 'g');
+
+IF NOT EXISTS (
+  SELECT 1 FROM public.boards
+  WHERE slug = base_slug AND org_id = (SELECT org_id FROM public.boards WHERE id = p_id)
+) THEN
+  RETURN base_slug;
+END IF;
   -- slugify title
   base_slug := lower(trim(coalesce(p_title, 'board')));
   base_slug := regexp_replace(base_slug, '[^a-z0-9]+', '-', 'g');

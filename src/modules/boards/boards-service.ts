@@ -2,6 +2,7 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import { Board, BoardInput, BoardInsert, BoardRole, BoardUpdate } from "./types";
 import { I18nMessageKey } from "@/lib/i18n";
 
+
 export interface ServiceResult<T> { data?: T; error?: I18nMessageKey }
 
 // BoardsService: encapsulates board data access & mutations (no UI concerns)
@@ -21,38 +22,48 @@ export class BoardsService {
     }
 
     // Retrieval
-    async getBoardBySlug(slug: string): Promise<Board> {
-        const { data, error: dbError } = await this.supabase
+    async getBoardBySlug(slug: string): Promise<ServiceResult<Board>>     {
+        const { data, error } = await this.supabase
             .from("boards")
             .select("*")
             .eq("slug", slug)
             .single();
-        if (dbError) throw dbError;
-        return data;
+   if (error) {
+      console.error("Failed to get board by slug:", error);
+      return { error: "board.failedToLoad" };
     }
 
-    async getBoardById(boardId: string): Promise<Board> {
-        const { data, error: dbError } = await this.supabase
+    if (!data) {
+      return { error: "board.notFound" };
+    }        return {data};
+    }
+
+    async getBoardById(boardId: string): Promise<ServiceResult<Board>> {
+        const { data, error } = await this.supabase
             .from("boards")
             .select("*")
             .eq("id", boardId)
             .single();
-        if (dbError) throw dbError;
-        return data;
+        if (error) {
+            console.error("Failed to get board by id:", error);
+            return { error: "board.failedToLoad" };
+        }
+        if (!data) {
+            return { error: "board.notFound" };
+        }
+        return { data };
     }
 
     // Mutations
     async createBoard(input: BoardInput): Promise<ServiceResult<Board>> {
-        const createdBy = input.created_by ?? this.userId;
-        if (!createdBy) return { error: "error_not_authenticated" as I18nMessageKey };
+        
 
-        const payload: BoardInsert = { ...input, created_by: createdBy };
-        const { data, error: dbError } = await this.supabase
+        const { data, error } = await this.supabase
             .from("boards")
-            .insert(payload)
-            .select("*")
+            .insert(input as BoardInsert)
+            .select("*")    
             .single();
-        if (dbError || !data) return { error: "error_creating_board" as I18nMessageKey };
+        if (error || !data) return { error: "board.failedToCreate" };
         return { data };
     }
 
@@ -62,7 +73,7 @@ export class BoardsService {
             .update(updates)
             .eq("id", boardId)
             .single();
-        if (dbError) return { error: "error_updating_board" as I18nMessageKey };
+        if (dbError) return { error: "board.failedToUpdate" };
         return { data };
     }
 
@@ -71,7 +82,7 @@ export class BoardsService {
             .from("boards")
             .delete()
             .eq("id", boardId);
-        if (dbError) return { error: "error_deleting_board" as I18nMessageKey };
+        if (dbError) return { error: "board.failedToDelete" };
         return { data: null };
     }
 
@@ -81,7 +92,7 @@ export class BoardsService {
         memberId: string,
         newRole: BoardRole
     ): Promise<ServiceResult<{ role: BoardRole }>> {
-        if (!this.userId) return { error: "error_not_authenticated" as I18nMessageKey };
+        if (!this.userId) return { error: "board.unauthorized"  };
 
         const { data: currentUserMembership, error: membershipError } = await this.supabase
             .from("board_members")
@@ -91,7 +102,7 @@ export class BoardsService {
             .single();
 
         if (membershipError || !currentUserMembership || currentUserMembership.role !== "admin") {
-            return { error: "error_insufficient_permissions" as I18nMessageKey };
+            return { error: "board.insufficientPermissions" };
         }
 
         const { data, error: dbError } = await this.supabase
@@ -101,18 +112,18 @@ export class BoardsService {
             .eq("user_id", memberId)
             .select("role")
             .single();
-        if (dbError) return { error: "error_updating_member_role" as I18nMessageKey };
+        if (dbError) return { error: "board.failedToUpdate" };
         return { data };
     }
 
     // Hard delete (admin service role required)
     async delete(boardId: string): Promise<ServiceResult<null>> {
-        if (!this.supabaseAdmin) return { error: "board.unauthorized" as I18nMessageKey };
+        if (!this.supabaseAdmin) return { error: "board.unauthorized"  };
         const { error: dbError } = await this.supabase
             .from("boards")
             .delete()
             .eq("id", boardId);
-        if (dbError) return { error: "error_deleting_board" as I18nMessageKey };
+        if (dbError) return { error: "board.failedToDelete" };
         return { data: null };
     }
 }

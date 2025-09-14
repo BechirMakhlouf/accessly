@@ -1,5 +1,5 @@
 import { Database } from "@/types/database.types";
-import { Profile } from "../profiles/types";
+import { Profile } from "@/modules/profiles/types";
 
 export type Board = Database["public"]["Tables"]["boards"]["Row"];
 export type BoardInsert = Database["public"]["Tables"]["boards"]["Insert"];
@@ -19,12 +19,7 @@ export type BoardInput = Omit<BoardInsert, "created_by"> & {
 };
 
 export interface BoardWithMembers extends Board {
-  board_members: {
-    user_id: string;
-    role: BoardRole;
-    joined_at: string;
-    last_active_at: string | null;
-  }[];
+  board_members: Database["public"]["Tables"]["board_members"]["Row"][];
 }
 
 export interface BoardMemberWithProfile extends BoardMember {
