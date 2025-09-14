@@ -473,5 +473,15 @@
     "invalidCode": "Code de vérification invalide. Veuillez réessayer.",
     "verificationSuccess": "E-mail vérifié avec succès !",
     "verificationError": "Impossible de vérifier le code. Veuillez réessayer."
+  },
+  "invitePage": {
+    "emailMismatch": {
+      "title": "Adresse e-mail incorrecte",
+      "description": "Cette invitation a été envoyée à une adresse e-mail différente. Veuillez vous connecter avec la bonne adresse e-mail pour accepter cette invitation.",
+      "invitedEmail": "E-mail invité : {invitedEmail}",
+      "currentEmail": "Votre e-mail : {currentEmail}",
+      "loginWithCorrectEmail": "Se connecter avec la bonne adresse e-mail",
+      "signOutAndLogin": "Se déconnecter et se connecter avec la bonne adresse e-mail"
+    }
   }
 }

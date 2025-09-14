@@ -123,6 +123,39 @@ export async function getInviteById(inviteId: string) {
   return await orgService.getInviteById(inviteId);
 }
 
+/**
+ * Get invite by ID for public access (no authentication required)
+ * Used for invite pages that need to work for both authenticated and unauthenticated users
+ */
+export async function getPublicInviteById(inviteId: string) {
+  const { createAdminClient } = await import("@/lib/supabase/adminClient");
+  const adminSupabase = await createAdminClient();
+
+  const { data, error } = await adminSupabase
+    .from("invites")
+    .select(`
+      *,
+      organization:organizations!inner(
+        *
+      ),
+      inviterProfile:user_profiles!invited_by(
+        *
+      )
+    `)
+    .eq("id", inviteId)
+    .single();
+
+  if (error) {
+    console.error("Failed to load invite:", error);
+    if (error.code === "PGRST116") {
+      return { error: "org.invite.notFound" };
+    }
+    return { error: "org.invite.failedToLoad" };
+  }
+
+  return { data };
+}
+
 export async function getUserInvitesWithOrganizations() {
   const orgService = await createOrgService();
   return await orgService.getUserInvitesWithOrganizations();

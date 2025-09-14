@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { getInviteById, updateUserOwnInvite } from "@/modules/organizations/actions";
-import { isAuthenticated } from "@/lib/auth/actions";
+import { getPublicInviteById, updateUserOwnInvite } from "@/modules/organizations/actions";
+import { isAuthenticated, getUserEmail, signOut } from "@/lib/auth/actions";
 import { routes } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +27,52 @@ export default async function InvitePage({ params, searchParams }: InvitePagePro
     const isUserAuthenticated = await isAuthenticated();
 
     // Get invite details
-    const inviteResult = await getInviteById(inviteId);
+    const inviteResult = await getPublicInviteById(inviteId);
+
+    // Check for email mismatch if user is authenticated
+    if (isUserAuthenticated && inviteResult.data) {
+        const currentUserEmailResult = await getUserEmail();
+        const currentUserEmail = currentUserEmailResult.data;
+        const invitedEmail = inviteResult.data.email;
+
+        if (currentUserEmail && currentUserEmail !== invitedEmail) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="max-w-md w-full mx-auto p-6">
+                        <Card>
+                            <CardHeader className="text-center">
+                                <CardTitle>{t("emailMismatch.title")}</CardTitle>
+                                <CardDescription>
+                                    {t("emailMismatch.description")}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <div className="text-center">
+                                        <p className="text-sm text-muted-foreground">
+                                            {t("emailMismatch.invitedEmail", { invitedEmail })}
+                                        </p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm text-muted-foreground">
+                                            {t("emailMismatch.currentEmail", { currentEmail: currentUserEmail })}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <form action={signOut} className="flex-1">
+                                        <Button type="submit" variant="outline" className="w-full">
+                                            {t("emailMismatch.signOutAndLogin")}
+                                        </Button>
+                                    </form>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            );
+        }
+    }
 
     if (inviteResult.error) {
         if (inviteResult.error === "org.invite.notFound") {

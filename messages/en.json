@@ -716,6 +716,14 @@
       "loginButton": "Log In",
       "signUpButton": "Sign Up"
     },
+    "emailMismatch": {
+      "title": "Email Mismatch",
+      "description": "This invitation was sent to a different email address. Please log in with the correct email address to accept this invitation.",
+      "invitedEmail": "Invited email: {invitedEmail}",
+      "currentEmail": "Your email: {currentEmail}",
+      "loginWithCorrectEmail": "Log in with correct email",
+      "signOutAndLogin": "Sign out and log in with correct email"
+    },
     "inviteDetails": {
       "title": "You're invited to join {organizationName}",
       "invitedBy": "Invited by {inviterName}",

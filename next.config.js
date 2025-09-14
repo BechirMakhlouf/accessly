@@ -13,10 +13,17 @@ const nextConfig = {
   allowedDevOrigins: [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
+    "127.0.0.1:3000",
+    "localhost:3000",
   ],
-  experimental: {},
+  experimental: {
+  },
 };
 
 export default withBotId(
-  createNextIntlPlugin("./src/lib/i18n/request.ts")(nextConfig),
+  createNextIntlPlugin({
+    experimental: {
+      createMessagesDeclaration: "./src/lib/i18n/request.ts"
+    }
+  })(nextConfig),
 );
