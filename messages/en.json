@@ -2,6 +2,9 @@
   "organizations": {
     "title": "Organizations",
     "description": "Manage your organizations and collaborate with your team.",
+    "selectOrganization": "Select Organization",
+    "invitations": "Invitations",
+    "invitedBy": "Invited by",
     "search": {
       "placeholder": "Search organizations...",
       "noResults": {
@@ -133,7 +136,7 @@
     "errors": {
       "org": {
         "notFound": "Organization not found",
-        "unauthorized": "You are not authorized to access this organization", 
+        "unauthorized": "You are not authorized to access this organization",
         "failedToLoad": "Failed to load organization",
         "failedToUpdate": "Failed to update organization",
         "failedToCreate": "Failed to create organization",
@@ -143,7 +146,7 @@
           "unauthorized": "You are not authorized to view members of this organization",
           "failedToLoad": "Failed to load organization members",
           "failedToUpdate": "Failed to update member role",
-          "failedToRemove": "Failed to remove member", 
+          "failedToRemove": "Failed to remove member",
           "failedToAdd": "Failed to add member",
           "notMember": "You are not a member of this organization",
           "insufficientPermissions": "Insufficient permissions to perform this action"
@@ -204,13 +207,17 @@
         "member": "Member",
         "email": "Email",
         "role": "Role",
-        "selectAll": "Select all members"
+        "selectAll": "Select all members",
+        "invited": "Invited"
       },
       "actions": {
         "deleteMember": "Delete Member",
+        "revokeInvite": "Revoke Invite",
         "roleUpdated": "Member role updated successfully",
         "roleUpdateError": "Failed to update member role",
-  "cannotDemoteLastAdmin": "You cannot demote the last remaining admin",
+        "cannotDemoteLastAdmin": "You cannot demote the last remaining admin",
+        "inviteRevoked": "Invite revoked successfully",
+        "inviteRevokeError": "Failed to revoke invite",
         "memberRemoved": "Member removed successfully",
         "memberRemoveError": "Failed to remove member",
         "leftOrganization": "Left organization successfully",
@@ -221,6 +228,17 @@
       "roles": {
         "admin": "Admin",
         "member": "Member"
+      },
+      "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "revoked": "Revoked",
+        "expired": "Expired"
+      },
+      "filters": {
+        "showExpired": "Show expired invites",
+        "hideExpired": "Hide expired invites"
       },
       "errors": {
         "orgNotFound": "Organization not found",
@@ -247,7 +265,34 @@
       "failedToSend": "Failed to send invitation",
       "invalidEmail": "Invalid email address",
       "alreadyMember": "User is already a member of this organization",
-      "failedToCheckUser": "Failed to check if user exists"
+      "failedToCheckUser": "Failed to check if user exists",
+      "failedToInsert": "Failed to insert invitation",
+      "failedToLoad": "Failed to load organization invites",
+      "failedToUpdate": "Failed to update invite status",
+      "expired": "This invitation has expired",
+      "revoked": "This invitation has been revoked",
+      "notFound": "Invitation not found",
+      "failedToLoadUserInvites": "Failed to load your invitations",
+      "failedToUpdateUserInvite": "Failed to update invitation status"
+    },
+    "invitesPage": {
+      "title": "Organization Invitations",
+      "subtitle": "View your pending organization invitations",
+      "noInvites": "No pending invitations",
+      "noInvitesDescription": "You don't have any pending organization invitations at the moment.",
+      "inviteCard": {
+        "invitedBy": "Invited by",
+        "role": "Role",
+        "expiresAt": "Expires",
+        "expired": "Expired",
+        "accept": "Accept",
+        "decline": "Decline",
+        "accepting": "Accepting...",
+        "declining": "Declining...",
+        "accepted": "Accepted",
+        "declined": "Declined",
+        "clickToVisit": "Click to visit organization"
+      }
     },
     "member": {
       "unauthorized": "You are not authorized to perform this action",
@@ -663,5 +708,61 @@
     "invalidCode": "Invalid verification code. Please try again.",
     "verificationSuccess": "Email verified successfully!",
     "verificationError": "Could not verify code. Please try again."
+  },
+  "invitePage": {
+    "title": "Organization Invitation",
+    "loading": "Loading invitation...",
+    "notFound": {
+      "title": "Invitation Not Found",
+      "description": "This invitation could not be found or may have expired.",
+      "backToHome": "Back to Home"
+    },
+    "expired": {
+      "title": "Invitation Expired",
+      "description": "This invitation has expired. Please contact the organization administrator for a new invitation.",
+      "backToHome": "Back to Home"
+    },
+    "revoked": {
+      "title": "Invitation Revoked",
+      "description": "This invitation has been revoked by the organization administrator.",
+      "backToHome": "Back to Home"
+    },
+    "loginRequired": {
+      "title": "Login Required",
+      "description": "You need to log in with the email address this invitation was sent to in order to accept or decline it.",
+      "invitedEmail": "Invited email: {email}",
+      "loginButton": "Log In",
+      "signUpButton": "Sign Up"
+    },
+    "emailMismatch": {
+      "title": "Email Mismatch",
+      "description": "This invitation was sent to a different email address. Please log in with the correct email address to accept this invitation.",
+      "invitedEmail": "Invited email: {invitedEmail}",
+      "currentEmail": "Your email: {currentEmail}",
+      "loginWithCorrectEmail": "Log in with correct email",
+      "signOutAndLogin": "Sign out and log in with correct email"
+    },
+    "inviteDetails": {
+      "title": "You're invited to join {organizationName}",
+      "invitedBy": "Invited by {inviterName}",
+      "role": "Role: {role}",
+      "expiresAt": "Expires: {expiresAt}",
+      "description": "You've been invited to join this organization. Accept the invitation to start collaborating with your team.",
+      "acceptButton": "Accept Invitation",
+      "declineButton": "Decline",
+      "accepting": "Accepting...",
+      "declining": "Declining...",
+      "accepted": "Invitation Accepted",
+      "declined": "Invitation Declined",
+      "success": {
+        "accepted": "You've successfully joined {organizationName}!",
+        "declined": "You've declined the invitation to join {organizationName}."
+      },
+      "error": {
+        "acceptFailed": "Failed to accept invitation. Please try again.",
+        "declineFailed": "Failed to decline invitation. Please try again.",
+        "generic": "An error occurred. Please try again."
+      }
+    }
   }
 }

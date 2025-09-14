@@ -39,7 +39,12 @@ WITH CHECK ( (SELECT auth.uid()) = created_by );
 CREATE POLICY "Members view organization"
 ON public.organizations
 FOR SELECT TO authenticated
-USING ( public.is_org_member(organizations.id) );
+USING ( 
+  public.is_org_member(organizations.id) -- already a member
+  OR EXISTS (
+    SELECT 1 FROM public.invites WHERE auth.email() = email -- an invitee
+  )
+);
 
 /* UPDATE – admins can update */
 CREATE POLICY "Admins update organization"
@@ -157,19 +162,20 @@ WITH CHECK (
   )
 );
 
-/* SELECT – invite creator, admins can view */
-CREATE POLICY "Invite viewer (admin/creator)"
+/* SELECT – invite creator, admins, and invitee can view */
+CREATE POLICY "Invite viewer (admin/creator/invitee)"
 ON public.invites
 FOR SELECT TO authenticated
 USING (
-  (SELECT auth.uid()) = invited_by
-  OR EXISTS (
+  (SELECT auth.uid()) = invited_by -- is the invite creator
+  OR EXISTS ( -- is an admin
     SELECT 1
     FROM public.organization_members om
     WHERE om.organization_id = invites.organization_id
       AND om.user_id = (SELECT auth.uid())
       AND om.role = 'admin'::organization_role
   )
+  OR (SELECT auth.email()) = email -- is the invitee
 );
 
 /* DELETE – admins can delete invites */

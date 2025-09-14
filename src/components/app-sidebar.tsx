@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "motion/react";
-import { useActiveOrganization } from "@/modules/organizations";
+import { useActiveOrg } from "@/modules/organizations";
 import { routes } from "@/lib/routes";
 import { useTranslations } from "next-intl";
 
@@ -32,7 +32,7 @@ type NavItem = {
 export function AppSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { activeOrganization: org } = useActiveOrganization();
+  const { activeOrganization: org } = useActiveOrg();
   const t = useTranslations("sidebar");
 
   // Check if we're in an organization context

@@ -1,32 +1,33 @@
-import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
-import { routes } from '@/lib/routes'
-import { useUserOrganizations } from './use-user-organizations'
+"use client";
 
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { routes } from "@/lib/routes";
+import { useUserOrgs } from "./use-user-orgs";
 
 export function useOrganizationsPage() {
-  const router = useRouter()
-  const { organizations, isLoading, error, createOrganization } = useUserOrganizations()
-  const [searchQuery, setSearchQuery] = useState("")
+  const router = useRouter();
+  const { organizations, isLoading, error, createOrganization } = useUserOrgs();
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Filter organizations based on search query
   const filteredOrganizations = useMemo(() => {
-    if (!organizations || !searchQuery.trim()) return organizations || []
-    
-    return organizations.filter(org => 
+    if (!organizations || !searchQuery.trim()) return organizations || [];
+
+    return organizations.filter((org) =>
       org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       org.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       org.slug.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }, [organizations, searchQuery])
+    );
+  }, [organizations, searchQuery]);
 
   const handleCreateOrganization = () => {
-    router.push(routes.protected.dashboard.organizations.new)
-  }
+    router.push(routes.protected.dashboard.organizations.new);
+  };
 
   const handleClearSearch = () => {
-    setSearchQuery("")
-  }
+    setSearchQuery("");
+  };
 
   return {
     organizations: filteredOrganizations,
@@ -37,5 +38,5 @@ export function useOrganizationsPage() {
     createOrganization,
     handleCreateOrganization,
     handleClearSearch,
-  }
+  };
 }

@@ -189,6 +189,25 @@
         "description": "Connectez votre organisation à des services tiers.",
         "comingSoon": "Les intégrations arrivent bientôt !"
       }
+    },
+    "invitesPage": {
+      "title": "Invitations d'organisation",
+      "subtitle": "Consultez vos invitations d'organisation en attente",
+      "noInvites": "Aucune invitation en attente",
+      "noInvitesDescription": "Vous n'avez actuellement aucune invitation d'organisation en attente.",
+      "inviteCard": {
+        "invitedBy": "Invité par",
+        "role": "Rôle",
+        "expiresAt": "Expire",
+        "expired": "Expiré",
+        "accept": "Accepter",
+        "decline": "Refuser",
+        "accepting": "Acceptation...",
+        "declining": "Refus...",
+        "accepted": "Accepté",
+        "declined": "Refusé",
+        "clickToVisit": "Cliquez pour visiter l'organisation"
+      }
     }
   },
   "sidebar": {
@@ -454,5 +473,15 @@
     "invalidCode": "Code de vérification invalide. Veuillez réessayer.",
     "verificationSuccess": "E-mail vérifié avec succès !",
     "verificationError": "Impossible de vérifier le code. Veuillez réessayer."
+  },
+  "invitePage": {
+    "emailMismatch": {
+      "title": "Adresse e-mail incorrecte",
+      "description": "Cette invitation a été envoyée à une adresse e-mail différente. Veuillez vous connecter avec la bonne adresse e-mail pour accepter cette invitation.",
+      "invitedEmail": "E-mail invité : {invitedEmail}",
+      "currentEmail": "Votre e-mail : {currentEmail}",
+      "loginWithCorrectEmail": "Se connecter avec la bonne adresse e-mail",
+      "signOutAndLogin": "Se déconnecter et se connecter avec la bonne adresse e-mail"
+    }
   }
 }

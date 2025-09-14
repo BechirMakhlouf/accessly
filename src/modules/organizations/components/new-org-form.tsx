@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useUserOrganizations } from "../hooks/use-user-organizations";
+import { useUserOrgs } from "@/modules/organizations";
 import { toast } from "sonner";
 import { routes } from "@/lib/routes";
 
 export function NewOrgForm() {
   const router = useRouter();
   const t = useTranslations();
-  const { createOrganization, isCreating } = useUserOrganizations();
+  const { createOrganization, isCreating } = useUserOrgs();
   const [formData, setFormData] = useState({
     name: "",
     description: "",

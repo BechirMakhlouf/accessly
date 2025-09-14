@@ -2,6 +2,7 @@
   "organizations": {
     "title": "Organisationen",
     "description": "Verwalten Sie Ihre Organisationen und arbeiten Sie mit Ihrem Team zusammen.",
+    "selectOrganization": "Organisation auswählen",
     "search": {
       "placeholder": "Organisationen suchen...",
       "noResults": {
@@ -95,7 +96,6 @@
       "roles": {
         "admin": "Admin",
         "member": "Mitglied"
-
       },
       "errors": {
         "orgNotFound": "Organisation nicht gefunden",
@@ -189,6 +189,25 @@
         "title": "Integrationen",
         "description": "Verbinden Sie Ihre Organisation mit Diensten von Drittanbietern.",
         "comingSoon": "Integrationen folgen in Kürze!"
+      }
+    },
+    "invitesPage": {
+      "title": "Organisationseinladungen",
+      "subtitle": "Zeigen Sie Ihre ausstehenden Organisationseinladungen an",
+      "noInvites": "Keine ausstehenden Einladungen",
+      "noInvitesDescription": "Sie haben derzeit keine ausstehenden Organisationseinladungen.",
+      "inviteCard": {
+        "invitedBy": "Eingeladen von",
+        "role": "Rolle",
+        "expiresAt": "Läuft ab",
+        "expired": "Abgelaufen",
+        "accept": "Annehmen",
+        "decline": "Ablehnen",
+        "accepting": "Wird angenommen...",
+        "declining": "Wird abgelehnt...",
+        "accepted": "Angenommen",
+        "declined": "Abgelehnt",
+        "clickToVisit": "Klicken Sie, um die Organisation zu besuchen"
       }
     }
   },
@@ -455,5 +474,15 @@
     "invalidCode": "Ungültiger Bestätigungscode. Bitte versuchen Sie es erneut.",
     "verificationSuccess": "E-Mail erfolgreich bestätigt!",
     "verificationError": "Code konnte nicht überprüft werden. Bitte versuchen Sie es erneut."
+  },
+  "invitePage": {
+    "emailMismatch": {
+      "title": "E-Mail-Adresse stimmt nicht überein",
+      "description": "Diese Einladung wurde an eine andere E-Mail-Adresse gesendet. Bitte melden Sie sich mit der korrekten E-Mail-Adresse an, um diese Einladung anzunehmen.",
+      "invitedEmail": "Eingeladene E-Mail: {invitedEmail}",
+      "currentEmail": "Ihre E-Mail: {currentEmail}",
+      "loginWithCorrectEmail": "Mit korrekter E-Mail anmelden",
+      "signOutAndLogin": "Abmelden und mit korrekter E-Mail anmelden"
+    }
   }
 }

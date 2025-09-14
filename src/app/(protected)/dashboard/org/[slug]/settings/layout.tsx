@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useActiveOrganization } from "@/modules/organizations"
+import { useActiveOrg } from "@/modules/organizations"
 import { routes } from "@/lib/routes"
 import { useTranslations } from "next-intl"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -37,7 +37,7 @@ function SettingsLayoutSkeleton() {
 }
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
-  const { activeOrganization: org, currentUserRole } = useActiveOrganization();
+  const { activeOrganization: org, currentUserRole } = useActiveOrg();
   const pathname = usePathname();
   const t = useTranslations("org.settings");
   const [isLoading, setIsLoading] = useState(true);

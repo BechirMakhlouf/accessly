@@ -1,112 +1,129 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { Organization, OrgUpdate, OrgWithMembers, OrgMember, OrgRole } from "./types";
-import { QueryClient, UndefinedInitialDataOptions } from "@tanstack/react-query";
-import { 
-  getUserOrgs, 
-  getOrgBySlug, 
-  getOrganizationMembers, 
-  updateOrganization, 
-  updateMemberRole, 
-  removeMember, 
-  leaveOrganization, 
-  inviteMember,
+import {
+  Invite,
+  InviteStatus,
+  InviteWithInviter,
+  InviteWithOrgAndInviter,
+  Organization,
+  OrgMember,
+  OrgRole,
+  OrgUpdate,
+  OrgWithMembers,
+} from "./types";
+import {
+  QueryClient,
+  UndefinedInitialDataOptions,
+} from "@tanstack/react-query";
+import {
   createOrg,
+  deleteOrganization,
+  getOrganizationMembers,
+  getOrgBySlug,
+  getOrgInvites,
+  getUserInvites,
+  getUserOrgs,
+  inviteMember,
   isSlugUnique,
-  deleteOrganization
+  leaveOrganization,
+  removeMember,
+  updateInviteStatus,
+  updateMemberRole,
+  updateOrganization,
+  updateUserOwnInvite,
 } from "./actions";
 import { isNullOrUndefined } from "@/lib/utils";
 
 // Query keys
 export const USER_ORGANIZATIONS_KEY = ["user-organizations"] as const;
-export const ORGANIZATION_KEY = (orgId: string) => ["organization", orgId] as const;
-export const ORGANIZATION_BY_SLUG_KEY = (slug: string) => ["organization-by-slug", slug] as const;
-export const ORGANIZATION_MEMBERS_KEY = (orgId: string) => ["organization-members", orgId] as const;
+export const ORGANIZATION_KEY = (orgId: string) =>
+  ["organization", orgId] as const;
+export const ORGANIZATION_BY_SLUG_KEY = (slug: string) =>
+  ["organization-by-slug", slug] as const;
+export const ORGANIZATION_MEMBERS_KEY = (orgId: string) =>
+  ["organization-members", orgId] as const;
+export const ORGANIZATION_INVITES_KEY = (orgId: string) =>
+  ["organization-invites", orgId] as const;
+export const USER_INVITES_KEY = ["user-invites"] as const;
 
 //TODO: rely on useReactQuery for queries options like staleTime gcTime an other generic caching options
 
 // Get user organizations query
 export const getUserOrganizationsQueryOptions: () =>
-  UndefinedInitialDataOptions<OrgWithMembers[] | null> =
-  () => ({
+  UndefinedInitialDataOptions<OrgWithMembers[] | null> = () => ({
     queryKey: USER_ORGANIZATIONS_KEY,
     queryFn: async () => {
       const result = await getUserOrgs();
-      
+
       if (isNullOrUndefined(result)) {
         return null;
       }
-      
-      return result;
 
+      return result;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
 // Get organization by ID query
-export const getOrganizationQueryOptions = (orgId: string): UndefinedInitialDataOptions<OrgWithMembers | null> => ({
+export const getOrganizationQueryOptions = (
+  orgId: string,
+): UndefinedInitialDataOptions<OrgWithMembers | null> => ({
   queryKey: ORGANIZATION_KEY(orgId),
   queryFn: async () => {
     // This would need a getOrganization action to be implemented
     // For now, we'll use the user organizations query and filter
     const result = await getUserOrgs();
-    
+
     if (isNullOrUndefined(result)) {
       return null;
     }
-    
-    return result.find(org => org.id === orgId) || null;
+
+    return result.find((org) => org.id === orgId) || null;
   },
   enabled: !!orgId,
-  staleTime: 5 * 60 * 1000,
-  gcTime: 10 * 60 * 1000,
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
 });
 
 // Get organization by slug query
-export const getOrganizationBySlugQueryOptions = (slug: string): UndefinedInitialDataOptions<Organization | null> => ({
+export const getOrganizationBySlugQueryOptions = (
+  slug: string,
+): UndefinedInitialDataOptions<Organization | null> => ({
   queryKey: ORGANIZATION_BY_SLUG_KEY(slug),
   queryFn: async () => {
     const result = await getOrgBySlug(slug);
-    
+
     if (result?.error) {
-      throw new Error(typeof result.error === 'string' ? result.error : 'Unknown error');
+      throw new Error(
+        typeof result.error === "string" ? result.error : "Unknown error",
+      );
     }
-    
+
     return result?.data || null;
   },
   enabled: !!slug,
-  staleTime: 5 * 60 * 1000,
-  gcTime: 10 * 60 * 1000,
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
 });
 
 // Get organization members query
-export const getOrganizationMembersQueryOptions = (orgId: string): UndefinedInitialDataOptions<OrgMember[] | null> => ({
+export const getOrganizationMembersQueryOptions = (
+  orgId: string,
+): UndefinedInitialDataOptions<OrgMember[] | null> => ({
   queryKey: ORGANIZATION_MEMBERS_KEY(orgId),
   queryFn: async () => {
     const result = await getOrganizationMembers(orgId);
-    
+
     if (result?.error) {
-      throw new Error(typeof result.error === 'string' ? result.error : 'Unknown error');
+      throw new Error(
+        typeof result.error === "string" ? result.error : "Unknown error",
+      );
     }
-    
+
     return result?.data || null;
   },
   enabled: !!orgId,
-  staleTime: 2 * 60 * 1000, // 2 minutes for members (more dynamic)
-  gcTime: 5 * 60 * 1000, // 5 minutes
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
 });
 
 // Create organization mutation
-export const createOrganizationMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async (newOrg: Parameters<typeof createOrg>[0]) => 
+export const createOrganizationMutationOptions = (
+  queryClient: QueryClient,
+) => ({
+  mutationFn: async (newOrg: Parameters<typeof createOrg>[0]) =>
     await createOrg(newOrg),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
@@ -114,19 +131,29 @@ export const createOrganizationMutationOptions = (queryClient: QueryClient) => (
 });
 
 // Update organization mutation
-export const updateOrganizationMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async ({ orgId, updates }: { orgId: string; updates: OrgUpdate }) => 
-    await updateOrganization(orgId, updates),
-  onSuccess: (data: { data?: unknown; error?: string } | null, { orgId, updates }: { orgId: string; updates: OrgUpdate }) => {
+export const updateOrganizationMutationOptions = (
+  queryClient: QueryClient,
+) => ({
+  mutationFn: async (
+    { orgId, updates }: { orgId: string; updates: OrgUpdate },
+  ) => await updateOrganization(orgId, updates),
+  onSuccess: (
+    data: { data?: unknown; error?: string } | null,
+    { orgId, updates }: { orgId: string; updates: OrgUpdate },
+  ) => {
     if (!data?.error && data?.data) {
       queryClient.invalidateQueries({ queryKey: ORGANIZATION_KEY(orgId) });
       queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
-      
+
       // If slug was updated, invalidate the old slug query
       // TODO: the check doesn't look right
-      if (updates.slug && typeof data.data === 'object' && 'slug' in data.data) {
+      if (
+        updates.slug && typeof data.data === "object" && "slug" in data.data
+      ) {
         const oldSlug = (data.data as { slug: string }).slug;
-        queryClient.invalidateQueries({ queryKey: ORGANIZATION_BY_SLUG_KEY(oldSlug) });
+        queryClient.invalidateQueries({
+          queryKey: ORGANIZATION_BY_SLUG_KEY(oldSlug),
+        });
       }
     }
   },
@@ -134,41 +161,51 @@ export const updateOrganizationMutationOptions = (queryClient: QueryClient) => (
 
 // Update member role mutation
 export const updateMemberRoleMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async ({ 
-    orgId, 
-    memberId, 
-    newRole 
-  }: { 
-    orgId: string; 
-    memberId: string; 
-    newRole: "admin" | "member" 
+  mutationFn: async ({
+    orgId,
+    memberId,
+    newRole,
+  }: {
+    orgId: string;
+    memberId: string;
+    newRole: OrgRole;
   }) => await updateMemberRole(orgId, memberId, newRole),
-  onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
+  onSuccess: (
+    data: { data?: unknown; error?: string } | null,
+    { orgId }: { orgId: string },
+  ) => {
     if (!data?.error) {
-      queryClient.invalidateQueries({ queryKey: ORGANIZATION_MEMBERS_KEY(orgId) });
+      queryClient.invalidateQueries({
+        queryKey: ORGANIZATION_MEMBERS_KEY(orgId),
+      });
     }
   },
 });
 
 // Remove member mutation
 export const removeMemberMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async ({ 
-    orgId, 
-    memberId 
-  }: { 
-    orgId: string; 
-    memberId: string 
+  mutationFn: async ({
+    orgId,
+    memberId,
+  }: {
+    orgId: string;
+    memberId: string;
   }) => await removeMember(orgId, memberId),
-  onSuccess: (data: { success?: boolean; error?: string } | null, { orgId }: { orgId: string }) => {
+  onSuccess: (
+    data: { success?: boolean; error?: string } | null,
+    { orgId }: { orgId: string },
+  ) => {
     if (!data?.error) {
-      queryClient.invalidateQueries({ queryKey: ORGANIZATION_MEMBERS_KEY(orgId) });
+      queryClient.invalidateQueries({
+        queryKey: ORGANIZATION_MEMBERS_KEY(orgId),
+      });
     }
   },
 });
 
 // Leave organization mutation
 export const leaveOrganizationMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async ({ orgId }: { orgId: string }) => 
+  mutationFn: async ({ orgId }: { orgId: string }) =>
     await leaveOrganization(orgId),
   onSuccess: (data: { success?: boolean; error?: string } | null) => {
     if (!data?.error) {
@@ -179,18 +216,23 @@ export const leaveOrganizationMutationOptions = (queryClient: QueryClient) => ({
 
 // Invite member mutation
 export const inviteMemberMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async ({ 
-    orgId, 
-    email, 
-    role 
-  }: { 
-    orgId: string; 
-    email: string; 
-    role: OrgRole 
+  mutationFn: async ({
+    orgId,
+    email,
+    role,
+  }: {
+    orgId: string;
+    email: string;
+    role: OrgRole;
   }) => await inviteMember(orgId, email, role),
-  onSuccess: (data: { data?: unknown; error?: string } | null, { orgId }: { orgId: string }) => {
+  onSuccess: (
+    data: { data?: unknown; error?: string } | null,
+    { orgId }: { orgId: string },
+  ) => {
     if (!data?.error) {
-      queryClient.invalidateQueries({ queryKey: ORGANIZATION_MEMBERS_KEY(orgId) });
+      queryClient.invalidateQueries({
+        queryKey: ORGANIZATION_INVITES_KEY(orgId),
+      });
     }
   },
 });
@@ -201,19 +243,117 @@ export const checkSlugUniquenessMutationOptions = () => ({
 });
 
 // Delete organization mutation
-export const deleteOrganizationMutationOptions = (queryClient: QueryClient) => ({
+export const deleteOrganizationMutationOptions = (
+  queryClient: QueryClient,
+) => ({
   mutationFn: async (orgId: string) => await deleteOrganization(orgId),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
   },
 });
 
+// Get organization invites query
+export const getOrganizationInvitesQueryOptions = (
+  orgId: string,
+): UndefinedInitialDataOptions<InviteWithInviter[] | null> => ({
+  queryKey: ORGANIZATION_INVITES_KEY(orgId),
+  queryFn: async () => {
+    const result = await getOrgInvites(orgId);
+
+    if (result?.error) {
+      throw new Error(
+        typeof result.error === "string" ? result.error : "Unknown error",
+      );
+    }
+
+    return result?.data || null;
+  },
+  enabled: !!orgId,
+});
+
+// Update invite status mutation
+export const updateInviteStatusMutationOptions = (
+  queryClient: QueryClient,
+) => ({
+  mutationFn: async ({
+    inviteId,
+    status,
+  }: {
+    inviteId: string;
+    status: InviteStatus;
+  }) => await updateInviteStatus(inviteId, status),
+  onSuccess: (data: { data?: Invite; error?: string } | null) => {
+    if (!data?.error && data?.data) {
+      // Invalidate invites for the organization
+      const orgId = data.data.organization_id;
+      queryClient.invalidateQueries({
+        queryKey: ORGANIZATION_INVITES_KEY(orgId),
+      });
+    }
+  },
+});
+
+// Revoke invite mutation (convenience wrapper for updateInviteStatus with "revoked" status)
+export const revokeInviteMutationOptions = (queryClient: QueryClient) => ({
+  mutationFn: async ({ inviteId }: { inviteId: string }) =>
+    await updateInviteStatus(inviteId, "revoked"),
+  onSuccess: (data: { data?: Invite; error?: string } | null) => {
+    if (!data?.error && data?.data) {
+      // Invalidate invites for the organization
+      const orgId = data.data.organization_id;
+      queryClient.invalidateQueries({
+        queryKey: ORGANIZATION_INVITES_KEY(orgId),
+      });
+    }
+  },
+});
+
+// Get user invites query
+export const getUserInvitesQueryOptions: () => UndefinedInitialDataOptions<
+  InviteWithOrgAndInviter[] | null
+> = () => ({
+  queryKey: USER_INVITES_KEY,
+  queryFn: async () => {
+    const result = await getUserInvites();
+
+    if (result?.error) {
+      throw new Error(
+        typeof result.error === "string" ? result.error : "Unknown error",
+      );
+    }
+
+    return result?.data || null;
+  },
+});
+
+// Update user invite mutation
+export const updateUserInviteMutationOptions = (queryClient: QueryClient) => ({
+  mutationFn: async ({
+    inviteId,
+    status,
+  }: {
+    inviteId: string;
+    status: "accepted" | "rejected";
+  }) => await updateUserOwnInvite(inviteId, status),
+  onSuccess: (data: { data?: Invite; error?: string } | null) => {
+    if (!data?.error) {
+      // Invalidate user invites to refresh the list
+      queryClient.invalidateQueries({ queryKey: USER_INVITES_KEY });
+      // Also invalidate user organizations in case they accepted an invite
+      queryClient.invalidateQueries({ queryKey: USER_ORGANIZATIONS_KEY });
+    }
+  },
+});
+
 // Utility function for getting organization by slug (for server-side use)
-export const getOrganizationBySlug = async (supabase: TypedSupabaseClient, slug: string) => {
+export const getOrganizationBySlug = async (
+  supabase: TypedSupabaseClient,
+  slug: string,
+) => {
   return await supabase
-    .from('organizations')
-    .select('*')
-    .eq('slug', slug)
+    .from("organizations")
+    .select("*")
+    .eq("slug", slug)
     .limit(1)
     .maybeSingle();
 };

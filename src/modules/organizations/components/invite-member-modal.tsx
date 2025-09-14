@@ -75,8 +75,8 @@ export const InviteMemberModal = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('inviteModal.cancel')}
           </Button>
-          <Button 
-            onClick={onInvite} 
+          <Button
+            onClick={onInvite}
             disabled={!email.trim() || isInviting}
           >
             {isInviting ? (

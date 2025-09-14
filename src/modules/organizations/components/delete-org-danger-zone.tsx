@@ -17,8 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useActiveOrganization } from "../hooks/use-active-organization"
-import { useOrganizationMutations } from "../hooks/use-organization-mutations"
+import { useActiveOrg, useUserOrgs } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -27,8 +26,8 @@ import { isAdminRole } from "../utils"
 import { createDeleteOrgConfirmationSchema, type DeleteOrgConfirmationFormData } from "../schemas"
 
 export function DeleteOrgDangerZone() {
-  const { activeOrganization: org, currentUserRole } = useActiveOrganization();
-  const { deleteOrganization, isDeleting } = useOrganizationMutations();
+  const { activeOrganization: org, currentUserRole } = useActiveOrg();
+  const { deleteOrganization, isDeleting } = useUserOrgs();
   const t = useTranslations("org.settings.general");
   const router = useRouter();
   

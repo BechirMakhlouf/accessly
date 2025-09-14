@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { DownloadIcon } from "lucide-react"
-import { useActiveOrganization } from "@/modules/organizations"
+import { useActiveOrg } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { Badge } from "@/components/ui/badge"
 import { isAdminRole } from "@/modules/organizations/utils"
@@ -49,7 +49,7 @@ const invoices = [
 ]
 
 export default function BillingSettingsPage() {
-  const { organization: org, currentUserRole } = useActiveOrganization();
+  const { organization: org, currentUserRole } = useActiveOrg();
   const t = useTranslations("org.settings.billing");
   const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false);
 

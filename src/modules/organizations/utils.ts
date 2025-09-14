@@ -1,5 +1,5 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { OrgRole, AdminRole } from "./types";
+import { AdminRole, Invite, InviteStatus, OrgRole } from "./types";
 
 function slugify(text: string): string {
   return text
@@ -10,7 +10,10 @@ function slugify(text: string): string {
 }
 
 // Generate a unique slug, appending a numeric suffix if needed.
-export async function generateUniqueOrganizationSlug(supabase: TypedSupabaseClient, name: string): Promise<string> {
+export async function generateUniqueOrganizationSlug(
+  supabase: TypedSupabaseClient,
+  name: string,
+): Promise<string> {
   const base = slugify(name);
   let slug = base;
   let suffix = 0;
@@ -41,18 +44,37 @@ export async function generateUniqueOrganizationSlug(supabase: TypedSupabaseClie
 
 // Utility functions for role checking
 export const isAdminRole = (role: OrgRole): role is AdminRole => {
-  return role === "admin"
+  return role === "admin";
 };
 
 export const canManageMembers = (role: OrgRole): boolean => {
   return isAdminRole(role);
-}
+};
 
 // Normalize slug input for real-time validation
 export function normalizeSlug(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/--+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/--+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+// Invite utility functions
+export function isInviteExpired(invite: Invite): boolean {
+  const now = new Date();
+  const expiresAt = new Date(invite.expires_at);
+  return now > expiresAt;
+}
+
+export function getInviteStatus(invite: Invite): InviteStatus | "expired" {
+  if (isInviteExpired(invite)) {
+    return "expired";
+  }
+  return invite.status;
+}
+
+export function canRevokeInvite(invite: Invite): boolean {
+  const status = getInviteStatus(invite);
+  return status === "pending" || status === "expired";
 }

@@ -16,9 +16,7 @@ export async function getUserId(supabase: SupabaseClient) {
 
   try {
     const { data, error } = await supabase.auth.getUser();
-    if (error) {
-      console.info("error while getting user: ", error);
-    } else if (data) {
+    if (data?.user && !error) {
       return data.user.id;
     }
   } catch (e) {
