@@ -4,9 +4,9 @@ on:
     branches:
       - main
     paths:
-      - 'supabase/migrations/**'
-      - 'supabase/schemas/**'
-      - 'supabase/tests/**'
+      - "supabase/migrations/**"
+      - "supabase/schemas/**"
+      - "supabase/tests/**"
   workflow_dispatch:
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
           version: latest
 
       - name: Start Supabase locally
-        run: supabase start
+        run: supabase start -x=storage-api,imgproxy,inbucket,edge-runtime,logflare,vector
 
       - name: Run database tests
         run: supabase test db
