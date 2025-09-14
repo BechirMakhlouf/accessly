@@ -204,13 +204,17 @@
         "member": "Member",
         "email": "Email",
         "role": "Role",
-        "selectAll": "Select all members"
+        "selectAll": "Select all members",
+        "invited": "Invited"
       },
       "actions": {
         "deleteMember": "Delete Member",
+        "revokeInvite": "Revoke Invite",
         "roleUpdated": "Member role updated successfully",
         "roleUpdateError": "Failed to update member role",
         "cannotDemoteLastAdmin": "You cannot demote the last remaining admin",
+        "inviteRevoked": "Invite revoked successfully",
+        "inviteRevokeError": "Failed to revoke invite",
         "memberRemoved": "Member removed successfully",
         "memberRemoveError": "Failed to remove member",
         "leftOrganization": "Left organization successfully",
@@ -221,6 +225,17 @@
       "roles": {
         "admin": "Admin",
         "member": "Member"
+      },
+      "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "revoked": "Revoked",
+        "expired": "Expired"
+      },
+      "filters": {
+        "showExpired": "Show expired invites",
+        "hideExpired": "Hide expired invites"
       },
       "errors": {
         "orgNotFound": "Organization not found",

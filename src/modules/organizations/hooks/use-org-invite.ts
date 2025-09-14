@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getOrganizationInvitesQueryOptions,
   inviteMemberMutationOptions,
+  revokeInviteMutationOptions,
   updateInviteStatusMutationOptions,
 } from "../queries";
 import { Invite, InviteStatus, OrgRole } from "../types";
@@ -31,6 +32,11 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
   // Update invite status mutation
   const updateInviteStatusMutation = useMutation({
     ...updateInviteStatusMutationOptions(queryClient),
+  });
+
+  // Revoke invite mutation
+  const revokeInviteMutation = useMutation({
+    ...revokeInviteMutationOptions(queryClient),
   });
 
   // Invite member mutation
@@ -92,6 +98,21 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
     }
   };
 
+  const revokeInvite = async (inviteId: string) => {
+    if (!organization?.id) {
+      return { error: "org.invite.noOrganizationSelected" };
+    }
+
+    try {
+      await revokeInviteMutation.mutateAsync({
+        inviteId,
+      });
+      return { success: true };
+    } catch {
+      return { error: "org.invite.failedToUpdate" };
+    }
+  };
+
   const refetch = () => {
     refetchInvites();
   };
@@ -107,6 +128,7 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
     // Actions
     inviteMember,
     updateInviteStatus,
+    revokeInvite,
     refetch,
 
     // Validation
@@ -115,9 +137,11 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
     // Mutation states
     isInviting: inviteMemberMutation.isPending,
     isUpdatingStatus: updateInviteStatusMutation.isPending,
+    isRevoking: revokeInviteMutation.isPending,
 
     // Mutation errors
     inviteError: inviteMemberMutation.error,
     updateStatusError: updateInviteStatusMutation.error,
+    revokeError: revokeInviteMutation.error,
   };
 }

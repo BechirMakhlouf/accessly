@@ -2,6 +2,7 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import {
   Invite,
   InviteStatus,
+  InviteWithInviter,
   InviteWithOrgAndInviter,
   Organization,
   OrgMember,
@@ -254,7 +255,7 @@ export const deleteOrganizationMutationOptions = (
 // Get organization invites query
 export const getOrganizationInvitesQueryOptions = (
   orgId: string,
-): UndefinedInitialDataOptions<Invite[] | null> => ({
+): UndefinedInitialDataOptions<InviteWithInviter[] | null> => ({
   queryKey: ORGANIZATION_INVITES_KEY(orgId),
   queryFn: async () => {
     const result = await getOrgInvites(orgId);
@@ -281,6 +282,21 @@ export const updateInviteStatusMutationOptions = (
     inviteId: string;
     status: InviteStatus;
   }) => await updateInviteStatus(inviteId, status),
+  onSuccess: (data: { data?: Invite; error?: string } | null) => {
+    if (!data?.error && data?.data) {
+      // Invalidate invites for the organization
+      const orgId = data.data.organization_id;
+      queryClient.invalidateQueries({
+        queryKey: ORGANIZATION_INVITES_KEY(orgId),
+      });
+    }
+  },
+});
+
+// Revoke invite mutation (convenience wrapper for updateInviteStatus with "revoked" status)
+export const revokeInviteMutationOptions = (queryClient: QueryClient) => ({
+  mutationFn: async ({ inviteId }: { inviteId: string }) =>
+    await updateInviteStatus(inviteId, "revoked"),
   onSuccess: (data: { data?: Invite; error?: string } | null) => {
     if (!data?.error && data?.data) {
       // Invalidate invites for the organization

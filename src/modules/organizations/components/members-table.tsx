@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Loader2, MoreHorizontal, Trash2, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -27,38 +28,56 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { OrgRole, useMembersPage } from "@/modules/organizations";
 import { useFormatRelativeDate } from "@/lib/utils/date-utils";
-import { OrgMemberWithProfile } from "../types";
+import { InviteWithInviter, OrgMemberWithProfile, InviteStatus } from "../types";
+import { useOrgInvite } from "../hooks/use-org-invite";
+import { isInviteExpired, getInviteStatus, canRevokeInvite } from "../utils";
 
 interface MembersTableProps {
   members: OrgMemberWithProfile[];
+  invitedMembers: InviteWithInviter[];
   isLoading: boolean;
   canManageMembers: boolean;
   selectedMembers: string[];
   isAllSelected: boolean;
   isUpdatingRole: boolean;
   isRemovingMember: boolean;
+  isRevokingInvite: boolean;
+  showExpiredInvites: boolean;
   onSelectAll: (checked: boolean) => void;
   onSelectMember: (memberId: string, checked: boolean) => void;
   onRoleChange: (memberId: string, newRole: OrgRole) => void;
   onDeleteMember: (memberId: string) => void;
+  onRevokeInvite: (inviteId: string) => void;
+  onToggleExpiredInvites: () => void;
   searchQuery: string;
 }
 
 export const MembersTable = ({
   members,
+  invitedMembers,
   isLoading,
   canManageMembers,
   selectedMembers,
   isAllSelected,
   isUpdatingRole,
   isRemovingMember,
+  isRevokingInvite,
+  showExpiredInvites,
   onSelectAll,
   onSelectMember,
   onRoleChange,
   onDeleteMember,
+  onRevokeInvite,
+  onToggleExpiredInvites,
   searchQuery,
 }: MembersTableProps) => {
   const t = useTranslations("org.members");
+
+  // Filter invites based on expired status
+  const filteredInvitedMembers = invitedMembers.filter((invite) => {
+    const isExpired = isInviteExpired(invite);
+    return showExpiredInvites || !isExpired;
+  });
 
   if (isLoading) {
     return (
@@ -71,57 +90,91 @@ export const MembersTable = ({
   }
 
   return (
-    <div className="border border-border rounded-lg">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {canManageMembers && (
-              <TableHead className="w-12">
-                <Checkbox
-                  checked={isAllSelected}
-                  onCheckedChange={onSelectAll}
-                  aria-label={t("table.selectAll")}
-                />
-              </TableHead>
-            )}
-            <TableHead>{t("table.member")}</TableHead>
-            <TableHead>{t("table.email")}</TableHead>
-            <TableHead>{t("table.role")}</TableHead>
-            <TableHead>{t("tableHeaders.joined")}</TableHead>
-            {canManageMembers && <TableHead className="w-12"></TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {members.length === 0
-            ? (
-              <TableRow>
-                <TableCell
-                  colSpan={canManageMembers ? 7 : 6}
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  {searchQuery
-                    ? t("errors.noMembersMatchingSearch")
-                    : t("errors.noMembersFound")}
-                </TableCell>
-              </TableRow>
-            )
-            : (
-              members.map((member) => (
-                <MemberRow
-                  key={member.user_id}
-                  member={member}
-                  canManageMembers={canManageMembers}
-                  selectedMembers={selectedMembers}
-                  isUpdatingRole={isUpdatingRole}
-                  isRemovingMember={isRemovingMember}
-                  onSelectMember={onSelectMember}
-                  onRoleChange={onRoleChange}
-                  onDeleteMember={onDeleteMember}
-                />
-              ))
-            )}
-        </TableBody>
-      </Table>
+    <div className="space-y-4">
+      {/* Filter controls */}
+      {invitedMembers.length > 0 && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="show-expired"
+              checked={showExpiredInvites}
+              onCheckedChange={onToggleExpiredInvites}
+            />
+            <label
+              htmlFor="show-expired"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {showExpiredInvites ? t("filters.hideExpired") : t("filters.showExpired")}
+            </label>
+          </div>
+        </div>
+      )}
+
+      <div className="border border-border rounded-lg">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {canManageMembers && (
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={onSelectAll}
+                    aria-label={t("table.selectAll")}
+                  />
+                </TableHead>
+              )}
+              <TableHead>{t("table.member")}</TableHead>
+              <TableHead>{t("table.email")}</TableHead>
+              <TableHead>{t("table.role")}</TableHead>
+              <TableHead>{t("tableHeaders.joined")}</TableHead>
+              {canManageMembers && <TableHead className="w-12"></TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {members.length === 0 && filteredInvitedMembers.length === 0
+              ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={canManageMembers ? 6 : 5}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    {searchQuery
+                      ? t("errors.noMembersMatchingSearch")
+                      : t("errors.noMembersFound")}
+                  </TableCell>
+                </TableRow>
+              )
+              : (
+                <>
+                  {/* Member rows */}
+                  {members.map((member) => (
+                    <MemberRow
+                      key={member.user_id}
+                      member={member}
+                      canManageMembers={canManageMembers}
+                      selectedMembers={selectedMembers}
+                      isUpdatingRole={isUpdatingRole}
+                      isRemovingMember={isRemovingMember}
+                      onSelectMember={onSelectMember}
+                      onRoleChange={onRoleChange}
+                      onDeleteMember={onDeleteMember}
+                    />
+                  ))}
+                  {/* Invite rows */}
+                  {filteredInvitedMembers.map((invite) => (
+                    <InviteRow
+                      key={invite.id}
+                      invite={invite}
+                      canManageMembers={canManageMembers}
+                      isRevokingInvite={isRevokingInvite}
+                      onRevokeInvite={onRevokeInvite}
+                    />
+                  ))}
+                </>
+              )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };
@@ -230,6 +283,126 @@ const MemberRow = ({ member, canManageMembers, selectedMembers, isUpdatingRole, 
   );
 };
 
+interface InviteRowProps {
+  invite: InviteWithInviter;
+  canManageMembers: boolean;
+  isRevokingInvite: boolean;
+  onRevokeInvite: (inviteId: string) => void;
+}
+
+const InviteRow = ({ invite, canManageMembers, isRevokingInvite, onRevokeInvite }: InviteRowProps) => {
+  const t = useTranslations("org.members");
+  const formatRelativeDate = useFormatRelativeDate();
+
+  const inviteStatus = getInviteStatus(invite);
+  const isExpired = isInviteExpired(invite);
+  const canRevoke = canRevokeInvite(invite);
+
+  const getStatusBadgeVariant = (status: InviteStatus | "expired") => {
+    switch (status) {
+      case "pending":
+        return "secondary";
+      case "accepted":
+        return "secondary";
+      case "rejected":
+        return "destructive";
+      case "revoked":
+        return "destructive";
+      case "expired":
+        return "outline";
+      default:
+        return "secondary";
+    }
+  };
+
+  const getStatusBadgeClass = (status: InviteStatus | "expired") => {
+    switch (status) {
+      case "pending":
+        return "text-blue-600";
+      case "accepted":
+        return "text-green-600";
+      case "rejected":
+        return "text-destructive";
+      case "revoked":
+        return "text-destructive";
+      case "expired":
+        return "text-orange-600";
+      default:
+        return "";
+    }
+  };
+
+  return (
+    <TableRow key={invite.id} className={isExpired ? "opacity-60" : ""}>
+      {canManageMembers && (
+        <TableCell>
+          {/* No checkbox for invites */}
+        </TableCell>
+      )}
+      <TableCell>
+        <div className="flex items-center space-x-3">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>
+              <User className="text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col space-y-1">
+            <div className="flex items-center space-x-2">
+              <span className="font-medium text-foreground">
+                {invite.email}
+              </span>
+              <Badge
+                variant={getStatusBadgeVariant(inviteStatus)}
+                className={getStatusBadgeClass(inviteStatus)}
+              >
+                {t(`status.${inviteStatus}`)}
+              </Badge>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {t("table.invited")} by {invite.inviterProfile?.full_name || "Unknown"}
+            </div>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell className="text-muted-foreground">
+        {invite.email}
+      </TableCell>
+      <TableCell>
+        <Badge variant="secondary">
+          {t(`roles.${invite.role}`)}
+        </Badge>
+      </TableCell>
+      <TableCell className="text-muted-foreground">
+        {formatRelativeDate(invite.created_at)}
+      </TableCell>
+      {canManageMembers && (
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {canRevoke && (
+                <DropdownMenuItem
+                  onClick={() => onRevokeInvite(invite.id)}
+                  className="text-destructive focus:text-destructive"
+                  disabled={isRevokingInvite}
+                >
+                  <Trash2 className="text-destructive h-4 w-4 mr-2" />
+                  {t("actions.revokeInvite")}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      )}
+    </TableRow>
+  );
+};
+
 export const MembersTableWithState = () => {
   const {
     // State
@@ -240,6 +413,7 @@ export const MembersTableWithState = () => {
     paginatedMembers,
     canManageMembersRole,
     isLoading,
+    org,
 
     // Computed values
     isAllSelected,
@@ -255,19 +429,45 @@ export const MembersTableWithState = () => {
     removeMemberMutation,
   } = useMembersPage();
 
+  const {
+    invites,
+    revokeInvite,
+    isRevoking
+  } = useOrgInvite({ organization: org, members: paginatedMembers });
+
+  const invitedMembers = invites || [];
+  const [showExpiredInvites, setShowExpiredInvites] = useState(false);
+
+  const handleRevokeInvite = async (inviteId: string) => {
+    try {
+      await revokeInvite(inviteId);
+    } catch (error) {
+      console.error("Failed to revoke invite:", error);
+    }
+  };
+
+  const handleToggleExpiredInvites = () => {
+    setShowExpiredInvites(!showExpiredInvites);
+  };
+
   return (
     <MembersTable
       members={paginatedMembers}
+      invitedMembers={invitedMembers}
       isLoading={isLoading}
       canManageMembers={canManageMembersRole}
       selectedMembers={selectedMembers}
       isAllSelected={isAllSelected}
       isUpdatingRole={updateRoleMutation.isPending}
       isRemovingMember={removeMemberMutation.isPending}
+      isRevokingInvite={isRevoking}
+      showExpiredInvites={showExpiredInvites}
       onSelectAll={handleSelectAll}
       onSelectMember={handleSelectMember}
       onRoleChange={handleRoleChange}
       onDeleteMember={handleDeleteMember}
+      onRevokeInvite={handleRevokeInvite}
+      onToggleExpiredInvites={handleToggleExpiredInvites}
       searchQuery={searchQuery}
     />
   );
