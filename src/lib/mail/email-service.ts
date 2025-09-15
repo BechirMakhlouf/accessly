@@ -1,5 +1,6 @@
 import { env } from "../env";
 import type { CreateEmailOptions, CreateEmailResponse, Resend } from "resend";
+import { EmailOptions, EmailResponse, IMailService } from "./types";
 
 /**
  * Development environment email routing
@@ -26,12 +27,10 @@ function routeEmailForDevelopment(email: string | string[]): string | string[] {
   return email;
 }
 
-type EmailOptions = Omit<CreateEmailOptions, "from"> & { from?: string };
-
 /**
  * Generic email service that can send any type of email
  */
-export class EmailService {
+export class EmailService implements IMailService {
   private readonly mailClient: Resend;
 
   constructor(mailClient: Resend) {
@@ -41,22 +40,39 @@ export class EmailService {
   /**
    * Send an email with the provided options
    */
-  async send(options: EmailOptions): Promise<CreateEmailResponse> {
+  async send(options: EmailOptions): Promise<EmailResponse> {
     // Route emails to test address in development
     const to = routeEmailForDevelopment(options.to);
     const from = options.from || getDefaultFromEmail();
 
-    // Send the email
-    const result: CreateEmailResponse = await this.mailClient.emails.send({
-      ...options,
-      to,
-      from,
-    } as CreateEmailOptions);
+    try {
+      // Send the email
+      const result: CreateEmailResponse = await this.mailClient.emails.send({
+        ...options,
+        to,
+        from,
+      } as CreateEmailOptions);
 
-    if (result.error) {
-      console.error("Failed to send email:", result.error);
+      if (result.error) {
+        console.error("Failed to send email:", result.error);
+        return {
+          data: null,
+          error: {
+            message: result.error.message || "Unknown error",
+            code: "RESEND_ERROR",
+          },
+        };
+      }
+      return { data: { id: result.data.id }, error: null };
+    } catch (error) {
+      console.error("Failed to send email:", error);
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error",
+          code: "RESEND_ERROR",
+        },
+      };
     }
-
-    return result;
   }
 }

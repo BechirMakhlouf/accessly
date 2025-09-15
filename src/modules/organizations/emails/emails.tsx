@@ -1,8 +1,8 @@
-import { EmailService } from '@/lib/mail';
+import { IMailService } from '@/lib/mail';
 import { InviteMemberEmail } from './invite-member-email';
 
 export interface SendInviteEmailParams {
-  emailService: EmailService;
+  emailService: IMailService;
   inviterName: string;
   organizationName: string;
   inviteUrl: string;
@@ -32,10 +32,5 @@ export async function sendInviteMemberEmail({
       />
     ),
     from: fromEmail,
-    tags: [
-      { name: 'email_type', value: 'invite' },
-      { name: 'organization', value: organizationName },
-      { name: 'role', value: role },
-    ],
   });
 }

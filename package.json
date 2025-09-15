@@ -6,8 +6,8 @@
   "scripts": {
     "-- NEXT --": "",
     "init-local": "npm install && shx cp env.example .env.local",
-    "dev": "supabase start && NODE_OPTIONS='--inspect' next dev --turbopack",
-    "devs": "supabase start && NODE_OPTIONS='--inspect' next dev --turbopack --experimental-https",
+    "dev": "supabase start && next dev --turbopack",
+    "devs": "supabase start && next dev --turbopack --experimental-https",
     "build": "next build",
     "build:no-lint": "next build --no-lint",
     "start": "next start",

@@ -16,14 +16,14 @@ import { isNullOrUndefined, validateEmail } from "@/lib/utils";
 import { isDuplicateKeyError, isRlsError } from "@/lib/supabase/utils";
 
 import { I18nMessageKey } from "@/lib/i18n";
-import { EmailService } from "@/lib/mail";
+import { IMailService } from "@/lib/mail";
 import { sendInviteMemberEmail } from "./emails";
 import { getFullRoute, routes } from "@/lib/routes";
 
 export interface OrganizationServiceOptions {
   supabase: TypedSupabaseClient;
   adminSupabase: TypedSupabaseClient;
-  emailService: EmailService;
+  emailService: IMailService;
   userId: string;
 }
 
@@ -40,7 +40,7 @@ export interface ServiceResult<T> {
 export class OrganizationService {
   private supabase: TypedSupabaseClient;
   private supabaseAdmin: TypedSupabaseClient;
-  private emailService: EmailService;
+  private emailService: IMailService;
   private userId: string;
 
   constructor(options: OrganizationServiceOptions) {
