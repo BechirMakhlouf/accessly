@@ -736,7 +736,7 @@ export class OrganizationService {
           .from("invites")
           .update({
             id: inviteId,
-            status: "pending",
+            status: invite.status,
             updated_at: new Date().toISOString(),
           })
           .eq("id", inviteId);
