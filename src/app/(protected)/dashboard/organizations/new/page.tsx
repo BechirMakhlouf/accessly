@@ -7,14 +7,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useUserOrganizations } from "@/modules/organizations"
+import { useUserOrgs } from "@/modules/organizations"
 import { isNullOrUndefined } from "@/lib/utils"
 import { toast } from "sonner"
 import { routes } from "@/lib/routes"
 
 export default function NewOrganizationPage() {
   const router = useRouter()
-  const { createOrganization, isCreating } = useUserOrganizations()
+  const { createOrganization, isCreating } = useUserOrgs()
   const [formData, setFormData] = useState({
     name: "",
     description: ""

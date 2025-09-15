@@ -1,3 +1,5 @@
+"use client";
+
 import { Plus, Search } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,15 +11,15 @@ interface OrganizationsHeaderProps {
   onCreateOrganization: () => void
 }
 
-export function OrganizationsHeader({ 
-  searchQuery, 
-  onSearchChange, 
-  onCreateOrganization 
+export function OrganizationsHeader({
+  searchQuery,
+  onSearchChange,
+  onCreateOrganization
 }: OrganizationsHeaderProps) {
   const t = useTranslations('organizations')
 
   return (
-    <div className="flex items-center justify-between mb-8">
+    <div className="flex items-center justify-between mb-8 gap-x-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground mt-2">

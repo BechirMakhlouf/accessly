@@ -43,3 +43,6 @@ next-env.d.ts
 # scripts
 scripts/*.log
 scripts/temp/
+
+# intl declarations:
+messages/*.d.json.ts

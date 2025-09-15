@@ -7,16 +7,14 @@ import {
   useMembersPage,
   MembersHeader,
   MembersSearchBar,
-  MembersTable,
   InviteMemberModal,
   MembersPagination
 } from "@/modules/organizations"
-import { redirect } from "next/navigation"
-import { routes } from "@/lib/routes"
+import { MembersTableWithState } from "@/modules/organizations/components/members-table"
 
 export default function MembersPage() {
   const t = useTranslations("org.members");
-  
+
   const {
     // State
     searchQuery,
@@ -30,37 +28,24 @@ export default function MembersPage() {
     setInviteEmail,
     inviteRole,
     setInviteRole,
-    
+
     // Data
-    org,
-    paginatedMembers,
     canManageMembersRole,
-    isLoading,
     error,
-    
+
     // Computed values
     totalPages,
     startIndex,
-    isAllSelected,
     totalFilteredMembers,
-    
+
     // Actions
-    handleRoleChange,
-    handleDeleteMember,
-    handleSelectAll,
-    handleSelectMember,
     handleInviteMember,
     handleBulkDelete,
-    
+
     // Mutations
-    updateRoleMutation,
     removeMemberMutation,
     inviteMemberMutation,
   } = useMembersPage();
-
-  if (!org && !isLoading) {
-    redirect(routes.protected.dashboard.organizations.root);
-  }
 
   if (error) {
     return (
@@ -78,7 +63,7 @@ export default function MembersPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col space-y-6">
-        <MembersHeader 
+        <MembersHeader
           canManageMembers={canManageMembersRole}
           onInviteClick={() => setIsInviteModalOpen(true)}
         />
@@ -92,20 +77,7 @@ export default function MembersPage() {
           onBulkDelete={handleBulkDelete}
         />
 
-        <MembersTable
-          members={paginatedMembers}
-          isLoading={isLoading}
-          canManageMembers={canManageMembersRole}
-          selectedMembers={selectedMembers}
-          isAllSelected={isAllSelected}
-          isUpdatingRole={updateRoleMutation.isPending}
-          isRemovingMember={removeMemberMutation.isPending}
-          onSelectAll={handleSelectAll}
-          onSelectMember={handleSelectMember}
-          onRoleChange={handleRoleChange}
-          onDeleteMember={handleDeleteMember}
-          searchQuery={searchQuery}
-        />
+        <MembersTableWithState />
 
         <MembersPagination
           totalPages={totalPages}

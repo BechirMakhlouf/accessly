@@ -9,11 +9,11 @@ interface OrganizationsEmptyStateProps {
   onCreateOrganization: () => void
 }
 
-export function OrganizationsEmptyState({ 
-  hasSearchQuery, 
-  searchQuery, 
-  onClearSearch, 
-  onCreateOrganization 
+export function OrganizationsEmptyState({
+  hasSearchQuery,
+  searchQuery,
+  onClearSearch,
+  onCreateOrganization
 }: OrganizationsEmptyStateProps) {
   const t = useTranslations('organizations')
 

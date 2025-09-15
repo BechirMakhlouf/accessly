@@ -8,14 +8,14 @@ import { Input } from "@/components/ui/input"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { useActiveOrganization } from "../hooks/use-active-organization"
+import { useActiveOrg } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { createOrgNameSchema, type OrgNameFormData } from "../schemas"
 import { isAdminRole } from "../utils"
 
 export function OrgNameSettings() {
-  const { activeOrganization: org, updateOrganization, isUpdating, currentUserRole } = useActiveOrganization();
+  const { activeOrganization: org, updateOrganization, isUpdating, currentUserRole } = useActiveOrg();
   const t = useTranslations();
   
   const canEditName = currentUserRole && isAdminRole(currentUserRole);

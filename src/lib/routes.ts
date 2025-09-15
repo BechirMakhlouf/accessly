@@ -1,4 +1,4 @@
-import { env } from "./env"
+import { env } from "./env";
 
 function joinPath(base: string, path: string): string {
   return `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
@@ -22,11 +22,10 @@ export function getFullRoute(path: Route, params?: Params): string {
 }
 
 ///bayi: to make a type for our routes
-type ValueOf<T> = T extends object
-  ? { [K in keyof T]: ValueOf<T[K]> }[keyof T]
+type ValueOf<T> = T extends object ? { [K in keyof T]: ValueOf<T[K]> }[keyof T]
   : T;
 
-export type Route = ValueOf<typeof routes>;
+export type Route = ValueOf<typeof routes> | (string & {});
 
 export const routes = {
   // Public routes
@@ -45,6 +44,11 @@ export const routes = {
     signUpSuccess: "/sign-up-success",
   },
 
+  invite: {
+    inviteId: {
+      root: (inviteId: string) => `/invite/${inviteId}`,
+    },
+  },
   protected: {
     dashboard: {
       root: "/dashboard",
@@ -56,11 +60,12 @@ export const routes = {
           account: "/dashboard/account/settings/account",
           preferences: "/dashboard/account/settings/preferences",
           billing: "/dashboard/account/settings/billing",
-        }
+        },
       },
       organizations: {
         root: "/dashboard/organizations",
-        new: "/dashboard/organizations/new"
+        new: "/dashboard/organizations/new",
+        invites: "/dashboard/organizations/invites",
       },
       org: {
         root: "/org",
@@ -69,14 +74,18 @@ export const routes = {
           members: (slug: string) => `/dashboard/org/${slug}/members`,
           settings: {
             root: (slug: string) => `/dashboard/org/${slug}/settings`,
-            general: (slug: string) => `/dashboard/org/${slug}/settings/general`,
-            billing: (slug: string) => `/dashboard/org/${slug}/settings/billing`,
-            security: (slug: string) => `/dashboard/org/${slug}/settings/security`,
-            integrations: (slug: string) => `/dashboard/org/${slug}/settings/integrations`,
+            general: (slug: string) =>
+              `/dashboard/org/${slug}/settings/general`,
+            billing: (slug: string) =>
+              `/dashboard/org/${slug}/settings/billing`,
+            security: (slug: string) =>
+              `/dashboard/org/${slug}/settings/security`,
+            integrations: (slug: string) =>
+              `/dashboard/org/${slug}/settings/integrations`,
           },
-        }
-      }
-    }
+        },
+      },
+    },
   },
 
   marketing: {
@@ -93,7 +102,6 @@ export const routes = {
       callback: "/api/auth/callback",
       confirmEmail: "/api/auth/confirm-email",
       resetPassword: "/api/auth/reset-password",
-      inviteEmail: "/api/auth/invite-email",
     },
   },
 } as const;

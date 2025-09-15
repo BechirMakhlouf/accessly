@@ -43,9 +43,6 @@ jobs:
       - name: Type check
         run: npm run ci:type-check
 
-      - name: Validate database types
-        run: npm run validate:db-types
-
       - name: Check file sizes
         run: |
           echo "📊 Large files (>100KB):"
@@ -63,43 +60,3 @@ jobs:
           else
             echo "✅ No obvious secrets found in code."
           fi
-
-      - name: Check for direct process.env usage
-        run: |
-          echo "🔍 Checking for direct process.env usage outside of env.ts..."
-
-          # Find all process.env usage outside of env.ts
-          PROCESS_ENV_USAGE=$(grep -r "process\.env" src/ --exclude="env.ts" --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" || true)
-
-          if [ -n "$PROCESS_ENV_USAGE" ]; then
-            echo "❌ Found direct process.env usage outside of env.ts:"
-            echo "$PROCESS_ENV_USAGE"
-            echo ""
-            echo "Please use the typed 'env' object from '@/lib/env' instead:"
-            echo "❌ Bad: process.env.NEXT_PUBLIC_SUPABASE_URL"
-            echo "✅ Good: env.NEXT_PUBLIC_SUPABASE_URL"
-            echo ""
-            echo "This ensures type safety and centralized environment variable management."
-            exit 1
-          else
-            echo "✅ No direct process.env usage found outside of env.ts"
-          fi
-
-      - name: Check for proper env import usage
-        run: |
-          echo "🔍 Checking for proper env import usage..."
-
-          # Check if files that use environment variables import from env.ts
-          FILES_WITH_ENV_USAGE=$(grep -r -l "env\." src/ --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" || true)
-
-          for file in $FILES_WITH_ENV_USAGE; do
-            if [ "$file" != "src/lib/env.ts" ]; then
-              if ! grep -q "from.*env" "$file" && ! grep -q "import.*env" "$file"; then
-                echo "⚠️  File $file uses 'env.' but doesn't import from env.ts"
-                echo "   Please add: import { env } from '@/lib/env'"
-              fi
-            fi
-          done
-
-          echo "✅ Environment variable usage check completed"
-

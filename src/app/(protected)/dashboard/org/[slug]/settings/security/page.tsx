@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { useActiveOrganization } from "@/modules/organizations"
+import { useActiveOrg } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { isAdminRole } from "@/modules/organizations/utils"
 
 export default function SecuritySettingsPage() {
-  const { activeOrganization: org, currentUserRole } = useActiveOrganization();
+  const { activeOrganization: org, currentUserRole } = useActiveOrg();
   const t = useTranslations("org.settings.security");
   const [enforce2FA, setEnforce2FA] = useState(false);
 
