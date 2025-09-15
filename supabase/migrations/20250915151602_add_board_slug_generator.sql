@@ -8,46 +8,29 @@ alter table "public"."boards" add constraint "boards_organization_id_slug_key" U
 
 set check_function_bodies = off;
 
-CREATE OR REPLACE FUNCTION public.generate_board_slug(p_title text, p_id uuid)
+CREATE OR REPLACE FUNCTION public.generate_board_slug(p_title text)
  RETURNS text
  LANGUAGE plpgsql
- STABLE SECURITY DEFINER
- SET search_path TO 'public', 'extensions'
 AS $function$
 DECLARE
   base_slug text;
   short_id  text;
-  candidate text;
-  suffix    int := 0;
 BEGIN
--- Check if a board with the same title slug exists in the same org
-base_slug := lower(trim(coalesce(p_title, 'board')));
-base_slug := regexp_replace(base_slug, '[^a-z0-9]+', '-', 'g');
-base_slug := regexp_replace(base_slug, '(^-+)|(-+$)', '', 'g');
-
-IF NOT EXISTS (
-  SELECT 1 FROM public.boards
-  WHERE slug = base_slug AND org_id = (SELECT org_id FROM public.boards WHERE id = p_id)
-) THEN
-  RETURN base_slug;
-END IF;
-  -- slugify title
+  -- slugify the title
   base_slug := lower(trim(coalesce(p_title, 'board')));
   base_slug := regexp_replace(base_slug, '[^a-z0-9]+', '-', 'g');
   base_slug := regexp_replace(base_slug, '(^-+)|(-+$)', '', 'g');
 
-  -- take the first segment of UUID (before '-')
-  short_id := split_part(p_id::text, '-', 1);
+  -- if slug is free → return it
+  IF NOT EXISTS (
+    SELECT 1 FROM public.boards WHERE slug = base_slug
+  ) THEN
+    RETURN base_slug;
+  END IF;
 
-  candidate := base_slug || '-' || short_id;
-
-  -- ensure uniqueness if someone manually sets same title and colliding id segment (rare)
-  WHILE EXISTS (SELECT 1 FROM public.boards WHERE slug = candidate) LOOP
-    suffix := suffix + 1;
-    candidate := base_slug || '-' || short_id || '-' || suffix;
-  END LOOP;
-
-  RETURN candidate;
+  -- otherwise append first segment of random UUID and return
+  short_id := split_part(gen_random_uuid()::text, '-', 1);
+  RETURN base_slug || '-' || short_id;
 END;
 $function$
 ;
@@ -55,12 +38,10 @@ $function$
 CREATE OR REPLACE FUNCTION public.set_board_slug()
  RETURNS trigger
  LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO 'public', 'extensions'
 AS $function$
 BEGIN
   IF NEW.slug IS NULL OR length(trim(NEW.slug)) = 0 THEN
-    NEW.slug := public.generate_board_slug(NEW.title, NEW.id);
+    NEW.slug := public.generate_board_slug(NEW.title);
   END IF;
   RETURN NEW;
 END;
@@ -86,6 +67,8 @@ with check (((created_by = ( SELECT auth.uid() AS uid)) AND (EXISTS ( SELECT 1
    FROM organization_members om
   WHERE ((om.organization_id = boards.organization_id) AND (om.role = 'admin'::organization_role) AND (om.user_id = ( SELECT auth.uid() AS uid)))))));
 
+
+CREATE TRIGGER set_board_slug_trigger BEFORE INSERT ON public.boards FOR EACH ROW EXECUTE FUNCTION set_board_slug();
 
 CREATE TRIGGER trg_set_board_slug BEFORE INSERT ON public.boards FOR EACH ROW EXECUTE FUNCTION set_board_slug();
 

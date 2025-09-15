@@ -1036,7 +1036,7 @@ export type Database = {
     }
     Functions: {
       generate_board_slug: {
-        Args: { p_id: string; p_title: string }
+        Args: { p_title: string }
         Returns: string
       }
       generate_unique_organization_slug: {

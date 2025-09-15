@@ -9,62 +9,53 @@ BEGIN
 END;
 $$;
 
--- Generate a unique board slug from title and the first UUID segment of the board id
-CREATE OR REPLACE FUNCTION public.generate_board_slug(p_title text, p_id uuid)
+-- ensure gen_random_uuid() is available
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- simple slug generator: only takes the title
+CREATE OR REPLACE FUNCTION public.generate_board_slug(p_title text)
 RETURNS text
 LANGUAGE plpgsql
-STABLE
-SECURITY DEFINER
-SET search_path = public, extensions
 AS $$
 DECLARE
   base_slug text;
   short_id  text;
-  candidate text;
-  suffix    int := 0;
 BEGIN
--- Check if a board with the same title slug exists in the same org
-base_slug := lower(trim(coalesce(p_title, 'board')));
-base_slug := regexp_replace(base_slug, '[^a-z0-9]+', '-', 'g');
-base_slug := regexp_replace(base_slug, '(^-+)|(-+$)', '', 'g');
-
-IF NOT EXISTS (
-  SELECT 1 FROM public.boards
-  WHERE slug = base_slug AND org_id = (SELECT org_id FROM public.boards WHERE id = p_id)
-) THEN
-  RETURN base_slug;
-END IF;
-  -- slugify title
+  -- slugify the title
   base_slug := lower(trim(coalesce(p_title, 'board')));
   base_slug := regexp_replace(base_slug, '[^a-z0-9]+', '-', 'g');
   base_slug := regexp_replace(base_slug, '(^-+)|(-+$)', '', 'g');
 
-  -- take the first segment of UUID (before '-')
-  short_id := split_part(p_id::text, '-', 1);
+  -- if slug is free → return it
+  IF NOT EXISTS (
+    SELECT 1 FROM public.boards WHERE slug = base_slug
+  ) THEN
+    RETURN base_slug;
+  END IF;
 
-  candidate := base_slug || '-' || short_id;
-
-  -- ensure uniqueness if someone manually sets same title and colliding id segment (rare)
-  WHILE EXISTS (SELECT 1 FROM public.boards WHERE slug = candidate) LOOP
-    suffix := suffix + 1;
-    candidate := base_slug || '-' || short_id || '-' || suffix;
-  END LOOP;
-
-  RETURN candidate;
+  -- otherwise append first segment of random UUID and return
+  short_id := split_part(gen_random_uuid()::text, '-', 1);
+  RETURN base_slug || '-' || short_id;
 END;
 $$;
 
--- Trigger function to set slug before insert
+-- trigger function: sets NEW.slug when empty/null before insert
 CREATE OR REPLACE FUNCTION public.set_board_slug()
 RETURNS trigger
 LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, extensions
 AS $$
 BEGIN
   IF NEW.slug IS NULL OR length(trim(NEW.slug)) = 0 THEN
-    NEW.slug := public.generate_board_slug(NEW.title, NEW.id);
+    NEW.slug := public.generate_board_slug(NEW.title);
   END IF;
   RETURN NEW;
 END;
 $$;
+
+-- create trigger (drop if exists to avoid duplicates)
+DROP TRIGGER IF EXISTS set_board_slug_trigger ON public.boards;
+CREATE TRIGGER set_board_slug_trigger
+BEFORE INSERT ON public.boards
+FOR EACH ROW
+EXECUTE FUNCTION public.set_board_slug();
+
