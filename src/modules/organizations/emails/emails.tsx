@@ -1,7 +1,8 @@
-import { sendReactEmail } from '@/lib/mail';
+import { EmailService } from '@/lib/mail';
 import { InviteMemberEmail } from './invite-member-email';
 
 export interface SendInviteEmailParams {
+  emailService: EmailService;
   inviterName: string;
   organizationName: string;
   inviteUrl: string;
@@ -11,6 +12,7 @@ export interface SendInviteEmailParams {
 }
 
 export async function sendInviteMemberEmail({
+  emailService,
   inviterName,
   organizationName,
   inviteUrl,
@@ -18,7 +20,7 @@ export async function sendInviteMemberEmail({
   role,
   fromEmail,
 }: SendInviteEmailParams) {
-  return sendReactEmail({
+  return emailService.send({
     to: recipientEmail,
     subject: `You're invited to join ${organizationName}`,
     react: (

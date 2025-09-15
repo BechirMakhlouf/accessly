@@ -480,6 +480,7 @@ export class OrganizationService {
 
       // Send the invite email
       const emailResult = await sendInviteMemberEmail({
+        emailService: this.emailService,
         inviterName,
         organizationName: organization.name,
         inviteUrl,
@@ -487,7 +488,7 @@ export class OrganizationService {
         role,
       });
 
-      if (!emailResult.success) {
+      if (emailResult.error) {
         console.error("Failed to send invite email:", emailResult.error);
         // Don't fail the entire operation if email fails, but log it
         console.warn("Invite created but email failed to send");
