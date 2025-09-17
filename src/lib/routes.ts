@@ -83,6 +83,19 @@ export const routes = {
             integrations: (slug: string) =>
               `/dashboard/org/${slug}/settings/integrations`,
           },
+          boards: {
+            root: (slug: string) => `/dashboard/org/${slug}/boards`,
+          },
+          board: {
+            root: (orgSlug: string, boardSlug: string) =>
+              `/dashboard/org/${orgSlug}/board/${boardSlug}`,
+            accessables: (orgSlug: string, boardSlug: string) =>
+              `/dashboard/org/${orgSlug}/board/${boardSlug}/accessable`,
+            settings: (orgSlug: string, boardSlug: string) =>
+              `/dashboard/org/${orgSlug}/board/${boardSlug}/settings`,
+            members: (orgSlug: string, boardSlug: string) =>
+              `/dashboard/org/${orgSlug}/board/${boardSlug}/members`,
+          },
         },
       },
     },

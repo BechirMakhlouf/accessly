@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Accessly",
-  description: "Accessly Starter",
+  description: "Accessly Access Management For Agile Teams",
 };
 
 export default async function RootLayout({
