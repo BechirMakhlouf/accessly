@@ -767,7 +767,6 @@ export type Database = {
           board_id: string
           created_at: string
           joined_at: string
-          last_active_at: string | null
           role: Database["public"]["Enums"]["boards_role"]
           updated_at: string
           user_id: string
@@ -776,7 +775,6 @@ export type Database = {
           board_id: string
           created_at?: string
           joined_at?: string
-          last_active_at?: string | null
           role?: Database["public"]["Enums"]["boards_role"]
           updated_at?: string
           user_id: string
@@ -785,7 +783,6 @@ export type Database = {
           board_id?: string
           created_at?: string
           joined_at?: string
-          last_active_at?: string | null
           role?: Database["public"]["Enums"]["boards_role"]
           updated_at?: string
           user_id?: string
@@ -1042,6 +1039,13 @@ export type Database = {
       generate_unique_organization_slug: {
         Args: { p_name: string }
         Returns: string
+      }
+      get_board_membership: {
+        Args: { p_board_id: string; p_user_id: string }
+        Returns: {
+          board_role: Database["public"]["Enums"]["boards_role"]
+          user_id: string
+        }[]
       }
       get_user_by_email: {
         Args: { p_email: string }
