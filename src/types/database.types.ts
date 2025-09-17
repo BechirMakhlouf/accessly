@@ -1040,6 +1040,14 @@ export type Database = {
         Args: { p_name: string }
         Returns: string
       }
+      get_board_members: {
+        Args: { p_board_id: string }
+        Returns: {
+          role: Database["public"]["Enums"]["boards_role"]
+          source: string
+          user_id: string
+        }[]
+      }
       get_board_membership: {
         Args: { p_board_id: string; p_user_id: string }
         Returns: {
