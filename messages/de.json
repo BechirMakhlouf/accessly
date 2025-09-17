@@ -474,15 +474,5 @@
     "invalidCode": "Ungültiger Bestätigungscode. Bitte versuchen Sie es erneut.",
     "verificationSuccess": "E-Mail erfolgreich bestätigt!",
     "verificationError": "Code konnte nicht überprüft werden. Bitte versuchen Sie es erneut."
-  },
-  "invitePage": {
-    "emailMismatch": {
-      "title": "E-Mail-Adresse stimmt nicht überein",
-      "description": "Diese Einladung wurde an eine andere E-Mail-Adresse gesendet. Bitte melden Sie sich mit der korrekten E-Mail-Adresse an, um diese Einladung anzunehmen.",
-      "invitedEmail": "Eingeladene E-Mail: {invitedEmail}",
-      "currentEmail": "Ihre E-Mail: {currentEmail}",
-      "loginWithCorrectEmail": "Mit korrekter E-Mail anmelden",
-      "signOutAndLogin": "Abmelden und mit korrekter E-Mail anmelden"
-    }
   }
 }

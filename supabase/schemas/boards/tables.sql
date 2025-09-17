@@ -9,10 +9,12 @@ CREATE TABLE IF NOT EXISTS boards (
     id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     title TEXT NOT NULL CHECK (length(title) BETWEEN 2 AND 100),
+    slug TEXT NOT NULL,
+    UNIQUE (organization_id, slug),
     description TEXT,
     icon_url TEXT,
     visibility boards_visibility NOT NULL DEFAULT 'public',
-    created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE SET NULL,
+    created_by UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

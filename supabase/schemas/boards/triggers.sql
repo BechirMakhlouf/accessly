@@ -18,3 +18,11 @@ FOR EACH ROW
 EXECUTE FUNCTION public.add_creator_to_board();
 
 REVOKE EXECUTE ON FUNCTION public.add_creator_to_board() FROM anon, authenticated;
+
+-- 4. Trigger to set slug before insert
+CREATE TRIGGER trg_set_board_slug
+BEFORE INSERT ON public.boards
+FOR EACH ROW
+EXECUTE FUNCTION public.set_board_slug();
+
+REVOKE EXECUTE ON FUNCTION public.set_board_slug() FROM anon, authenticated;

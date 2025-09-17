@@ -397,6 +397,9 @@
       "cookies": "Cookies"
     }
   },
+  "board": {
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action sur ce board"
+  },
   "Header": {
     "logoText": "Accessly Starter",
     "nav": {
