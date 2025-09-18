@@ -20,7 +20,21 @@ import {
   Workflow,
 } from "lucide-react"
 import Link from "next/link"
+import type { Metadata } from "next";
+import { baseMetadata } from "@/lib/seo";
+import { getLocale } from "@/lib/i18n";
 import { routes } from "@/lib/routes"
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const locale = await getLocale((await params).locale);
+  return baseMetadata({
+    title: "Accessly – Access Management for Agile Teams",
+    description: "Centralize discovery, governance, provisioning and audit of every digital resource your organization uses.",
+    pathname: locale === "en" ? "/" : `/${locale}`,
+    locale: locale as any,
+    images: ["/globe.svg"]
+  });
+}
 
 export default function LandingPage() {
   const features = [

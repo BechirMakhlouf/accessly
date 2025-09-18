@@ -2,6 +2,14 @@ import { isAuthenticated } from "@/lib/auth/server";
 import { redirect } from "@/lib/i18n";
 import { routes } from "@/lib/routes";
 import { getLocale } from "next-intl/server";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function RootLayout({
   children,
