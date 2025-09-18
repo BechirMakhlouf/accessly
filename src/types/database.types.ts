@@ -1043,8 +1043,8 @@ export type Database = {
       get_board_members: {
         Args: { p_board_id: string }
         Returns: {
+          membership_origin: string
           role: Database["public"]["Enums"]["boards_role"]
-          source: string
           user_id: string
         }[]
       }
