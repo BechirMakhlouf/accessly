@@ -52,6 +52,103 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION public.get_board_membership(p_user_id uuid, p_board_id uuid)
+RETURNS TABLE(user_id uuid, board_role public.boards_role)
+LANGUAGE sql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+SELECT
+  p_user_id AS user_id,
+  -- check if user is an admin of the organization that owns the board then 'admin'
+  CASE
+    WHEN EXISTS (
+      SELECT 1
+      FROM public.boards b
+      JOIN public.organization_members om ON om.organization_id = b.organization_id
+      WHERE b.id = p_board_id
+        AND om.user_id = p_user_id
+        AND om.role = 'admin'
+    ) THEN 'admin'::public.boards_role
+-- Check if the user is a board member; if so, return their actual role ('admin' or 'member')
+
+    WHEN EXISTS (
+      SELECT 1
+      FROM public.board_members bm
+      WHERE bm.board_id = p_board_id
+        AND bm.user_id = p_user_id
+     ) THEN (
+      SELECT bm.role
+      FROM public.board_members bm
+      WHERE bm.board_id = p_board_id
+        AND bm.user_id = p_user_id
+      LIMIT 1
+     )
+
+    WHEN EXISTS ( 
+      SELECT 1
+      FROM public.boards b
+      WHERE b.id = p_board_id
+        AND b.visibility = 'public'
+    ) THEN 'member'::public.boards_role
+
+    ELSE NULL
+  END AS board_role;
+$$;
+-- get  getBoardMembers
+CREATE OR REPLACE FUNCTION public.get_board_members(
+  p_board_id UUID
+)
+RETURNS TABLE(user_id UUID, role public.boards_role, membership_origin text)
+LANGUAGE sql
+SECURITY INVOKER
+AS $$
+WITH board AS (
+  SELECT id, organization_id, visibility
+  FROM public.boards
+  WHERE id = p_board_id
+),
+base AS (
+  -- 1) organization admins (highest precedence)
+  SELECT om.user_id,
+    'admin'::public.boards_role AS role,
+    1 AS priority,
+    'org_admin' AS membership_origin
+  FROM public.organization_members om
+  JOIN board b ON b.organization_id = om.organization_id
+  WHERE om.role::text = 'admin'
+
+  UNION ALL
+
+  -- 2) explicit board members (only admin or member)
+  SELECT bm.user_id,
+    CASE bm.role::text
+      WHEN 'admin'  THEN 'admin'::public.boards_role
+      ELSE 'member'::public.boards_role
+    END AS role,
+    2 AS priority,
+    'board_member' AS membership_origin
+  FROM public.board_members bm
+  JOIN board b ON b.id = bm.board_id
+
+  UNION ALL
+
+  -- 3) org members if board is public (lowest precedence)
+  SELECT om.user_id,
+    'member'::public.boards_role AS role,
+    3 AS priority,
+    'org_member' AS membership_origin
+  FROM public.organization_members om
+  JOIN board b ON b.organization_id = om.organization_id
+  WHERE b.visibility = 'public'
+)
+SELECT DISTINCT ON (user_id) user_id, role, membership_origin
+FROM base
+WHERE EXISTS (SELECT 1 FROM board) -- return empty if board not found
+ORDER BY user_id, priority;
+$$;
+
+
 -- create trigger (drop if exists to avoid duplicates)
 DROP TRIGGER IF EXISTS set_board_slug_trigger ON public.boards;
 CREATE TRIGGER set_board_slug_trigger
