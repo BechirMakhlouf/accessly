@@ -78,3 +78,8 @@ export function canRevokeInvite(invite: Invite): boolean {
   const status = getInviteStatus(invite);
   return status === "pending" || status === "expired";
 }
+
+export function isInviteResolved(invite: Invite): boolean {
+  return invite.status === "accepted" || invite.status === "rejected" ||
+    invite.status === "revoked";
+}

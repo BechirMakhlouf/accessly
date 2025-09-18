@@ -31,7 +31,7 @@ import { OrgRole, useMembersPage } from "@/modules/organizations";
 import { useFormatRelativeDate } from "@/lib/utils/date-utils";
 import { InviteWithInviter, OrgMemberWithProfile, InviteStatus } from "../types";
 import { useOrgInvite } from "../hooks/use-org-invite";
-import { isInviteExpired, getInviteStatus, canRevokeInvite } from "../utils";
+import { isInviteExpired, getInviteStatus, canRevokeInvite, isInviteResolved } from "../utils";
 
 interface MembersTableProps {
   members: OrgMemberWithProfile[];
@@ -63,7 +63,6 @@ export const MembersTable = ({
   isUpdatingRole,
   isRemovingMember,
   isRevokingInvite,
-  showExpiredInvites,
   onSelectAll,
   onSelectMember,
   onRoleChange,
@@ -73,11 +72,9 @@ export const MembersTable = ({
 }: MembersTableProps) => {
   const t = useTranslations("org.members");
 
-  // Filter invites based on expired status
+  // Filter invites based on resolved status
   const filteredInvitedMembers = invitedMembers.filter((invite) => {
-    const isExpired = isInviteExpired(invite);
-    const isAccepted = invite.status === "accepted";
-    return (showExpiredInvites || !isExpired) && !isAccepted;
+    return !isInviteResolved(invite);
   });
 
   if (isLoading) {
@@ -297,22 +294,6 @@ const InviteRow = ({ invite, canManageMembers, isRevokingInvite, onRevokeInvite 
     }
   };
 
-  const getStatusBadgeClass = (status: InviteStatus | "expired") => {
-    switch (status) {
-      case "pending":
-        return "text-blue-600";
-      case "accepted":
-        return "text-green-600";
-      case "rejected":
-        return "text-destructive";
-      case "revoked":
-        return "text-destructive";
-      case "expired":
-        return "text-orange-600";
-      default:
-        return "";
-    }
-  };
 
   return (
     <TableRow key={invite.id} className={isExpired ? "opacity-60" : ""}>
@@ -335,7 +316,6 @@ const InviteRow = ({ invite, canManageMembers, isRevokingInvite, onRevokeInvite 
               </span>
               <Badge
                 variant={getStatusBadgeVariant(inviteStatus)}
-                className={getStatusBadgeClass(inviteStatus)}
               >
                 {t(`status.${inviteStatus}`)}
               </Badge>

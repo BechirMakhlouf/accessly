@@ -8,6 +8,7 @@ import {
   Users,
   Building2,
   Home,
+  Layout,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,6 +49,12 @@ export function AppSidebar() {
           label: t("overview"),
           icon: Home,
           match: (p) => p === routes.protected.dashboard.org.slug.root(org.slug),
+        },
+        {
+          href: routes.protected.dashboard.org.slug.boards.root(org.slug),
+          label: t("boards"),
+          icon: Layout,
+          match: (p) => p.includes(routes.protected.dashboard.org.slug.boards.root(org.slug)),
         },
         {
           href: routes.protected.dashboard.org.slug.members(org.slug),

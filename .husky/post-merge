@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+# Post-merge hook (runs after git pull)
+echo "🔄 Post-pull hook triggered..."
+
+# Check if this was a merge from a pull (not a local merge)
+if [ "$1" != "0" ]; then
+  echo "ℹ️  This was a local merge, skipping post-pull actions"
+  exit 0
+fi
+
+# Install dependencies
+echo "📦 Installing dependencies..."
+npm install
+
+# Run Supabase migrations
+echo "🗄️  Running Supabase migrations..."
+npx supabase migration up
+
+echo "✅ Post-pull setup completed!"

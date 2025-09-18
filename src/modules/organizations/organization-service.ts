@@ -832,6 +832,6 @@ export class OrganizationService {
       return { error: "org.invite.failedToLoadUserInvites" };
     }
 
-    return { data: data || [] as InviteWithOrgAndInviter[] };
+    return { data: data };
   }
 }
