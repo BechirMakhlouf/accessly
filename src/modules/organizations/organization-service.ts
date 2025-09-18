@@ -15,21 +15,16 @@ import {
 import { isNullOrUndefined, validateEmail } from "@/lib/utils";
 import { isDuplicateKeyError, isRlsError } from "@/lib/supabase/utils";
 
-import { I18nMessageKey } from "@/lib/i18n";
 import { IMailService } from "@/lib/mail";
 import { sendInviteMemberEmail } from "./emails";
 import { getFullRoute, routes } from "@/lib/routes";
+import { ServiceResult } from "@/lib/types";
 
 export interface OrganizationServiceOptions {
   supabase: TypedSupabaseClient;
   adminSupabase: TypedSupabaseClient;
   emailService: IMailService;
   userId: string;
-}
-
-export interface ServiceResult<T> {
-  data?: T;
-  error?: I18nMessageKey;
 }
 
 /**
@@ -714,15 +709,8 @@ export class OrganizationService {
       })
       .eq("id", inviteId)
       .select()
-      .maybeSingle();
+      .single();
 
-    console.debug(
-      "reulst: ",
-      updateInviteData,
-      updateInviteError,
-      inviteId,
-      status,
-    );
     if (updateInviteError) {
       console.error("Failed to update user invite:", updateInviteError);
       const rlsInfo = isRlsError(updateInviteError);
@@ -753,12 +741,11 @@ export class OrganizationService {
           })
           .eq("id", inviteId);
 
-        console.debug("addMemberResultError: ", addMemberResult.error);
         return { error: "org.member.failedToAdd" };
       }
     }
 
-    return { data: updateInviteData || undefined };
+    return { data: updateInviteData };
   }
 
   /**

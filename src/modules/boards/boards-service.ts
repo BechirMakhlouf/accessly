@@ -1,9 +1,13 @@
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { Board, BoardInput, BoardInsert, BoardRole, BoardUpdate } from "./types";
-import { I18nMessageKey } from "@/lib/i18n";
-
-
-export interface ServiceResult<T> { data?: T; error?: I18nMessageKey }
+import {
+    Board,
+    BoardInput,
+    BoardInsert,
+    BoardRole,
+    BoardUpdate,
+    BoardWithMembers,
+} from "./types";
+import type { ServiceResult } from "@/lib/types";
 
 // BoardsService: encapsulates board data access & mutations (no UI concerns)
 export class BoardsService {
@@ -14,7 +18,7 @@ export class BoardsService {
     constructor(
         supabase: TypedSupabaseClient,
         supabaseAdmin: TypedSupabaseClient,
-        userId?: string
+        userId?: string,
     ) {
         this.supabase = supabase;
         this.supabaseAdmin = supabaseAdmin;
@@ -22,20 +26,23 @@ export class BoardsService {
     }
 
     // Retrieval
-    async getBoardBySlug(slug: string): Promise<ServiceResult<Board>>     {
+    async getBoardBySlug(
+        slug: string,
+    ): Promise<ServiceResult<BoardWithMembers>> {
         const { data, error } = await this.supabase
             .from("boards")
-            .select("*")
+            .select("*, members:board_members(*)")
             .eq("slug", slug)
             .single();
-   if (error) {
-      console.error("Failed to get board by slug:", error);
-      return { error: "board.failedToLoad" };
-    }
+        if (error) {
+            console.error("Failed to get board by slug:", error);
+            return { error: "board.failedToLoad" };
+        }
 
-    if (!data) {
-      return { error: "board.notFound" };
-    }        return {data};
+        if (!data) {
+            return { error: "board.notFound" };
+        }
+        return { data };
     }
 
     async getBoardById(boardId: string): Promise<ServiceResult<Board>> {
@@ -54,20 +61,36 @@ export class BoardsService {
         return { data };
     }
 
+    async getBoardsByOrganizationId(
+        orgId: string,
+    ): Promise<ServiceResult<Board[]>> {
+        const { data, error } = await this.supabase
+            .from("boards")
+            .select("*")
+            .eq("organization_id", orgId)
+            .order("created_at", { ascending: false });
+        if (error) {
+            console.error("Failed to get boards by organization id:", error);
+            return { error: "board.failedToLoad" };
+        }
+        return { data: data || [] };
+    }
+
     // Mutations
     async createBoard(input: BoardInput): Promise<ServiceResult<Board>> {
-        
-
         const { data, error } = await this.supabase
             .from("boards")
             .insert(input as BoardInsert)
-            .select("*")    
+            .select("*")
             .single();
         if (error || !data) return { error: "board.failedToCreate" };
         return { data };
     }
 
-    async updateBoard(boardId: string, updates: BoardUpdate): Promise<ServiceResult<Board>> {
+    async updateBoard(
+        boardId: string,
+        updates: BoardUpdate,
+    ): Promise<ServiceResult<Board>> {
         const { data, error: dbError } = await this.supabase
             .from("boards")
             .update(updates)
@@ -90,18 +113,22 @@ export class BoardsService {
     async updateMemberRole(
         boardId: string,
         memberId: string,
-        newRole: BoardRole
+        newRole: BoardRole,
     ): Promise<ServiceResult<{ role: BoardRole }>> {
-        if (!this.userId) return { error: "board.unauthorized"  };
+        if (!this.userId) return { error: "board.unauthorized" };
 
-        const { data: currentUserMembership, error: membershipError } = await this.supabase
-            .from("board_members")
-            .select("role")
-            .eq("board_id", boardId)
-            .eq("user_id", this.userId)
-            .single();
+        const { data: currentUserMembership, error: membershipError } =
+            await this.supabase
+                .from("board_members")
+                .select("role")
+                .eq("board_id", boardId)
+                .eq("user_id", this.userId)
+                .single();
 
-        if (membershipError || !currentUserMembership || currentUserMembership.role !== "admin") {
+        if (
+            membershipError || !currentUserMembership ||
+            currentUserMembership.role !== "admin"
+        ) {
             return { error: "board.insufficientPermissions" };
         }
 
@@ -118,7 +145,7 @@ export class BoardsService {
 
     // Hard delete (admin service role required)
     async delete(boardId: string): Promise<ServiceResult<null>> {
-        if (!this.supabaseAdmin) return { error: "board.unauthorized"  };
+        if (!this.supabaseAdmin) return { error: "board.unauthorized" };
         const { error: dbError } = await this.supabase
             .from("boards")
             .delete()
@@ -127,5 +154,3 @@ export class BoardsService {
         return { data: null };
     }
 }
-
-
