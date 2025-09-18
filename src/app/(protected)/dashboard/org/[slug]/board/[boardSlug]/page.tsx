@@ -1,4 +1,5 @@
-export default function BoardPage() {
+
+export default async function BoardPage() {
     return (
         <div className="container mx-auto py-6">
             <div className="mb-6">

@@ -84,7 +84,7 @@ export const routes = {
               `/dashboard/org/${slug}/settings/integrations`,
           },
           boards: {
-            root: (slug: string) => `/dashboard/org/${slug}/boards`,
+            root: (orgSlug: string) => `/dashboard/org/${orgSlug}/boards`,
           },
           board: {
             root: (orgSlug: string, boardSlug: string) =>

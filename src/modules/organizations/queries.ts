@@ -224,16 +224,20 @@ export const inviteMemberMutationOptions = (queryClient: QueryClient) => ({
     orgId: string;
     email: string;
     role: OrgRole;
-  }) => await inviteMember(orgId, email, role),
+  }) => {
+    const result = await inviteMember(orgId, email, role);
+    if (result.error) {
+      throw new Error(result.error);
+    }
+    return result.data;
+  },
   onSuccess: (
-    data: { data?: unknown; error?: string } | null,
+    data: { success: true; invite: Invite },
     { orgId }: { orgId: string },
   ) => {
-    if (!data?.error) {
-      queryClient.invalidateQueries({
-        queryKey: ORGANIZATION_INVITES_KEY(orgId),
-      });
-    }
+    queryClient.invalidateQueries({
+      queryKey: ORGANIZATION_INVITES_KEY(orgId),
+    });
   },
 });
 
@@ -281,30 +285,37 @@ export const updateInviteStatusMutationOptions = (
   }: {
     inviteId: string;
     status: InviteStatus;
-  }) => await updateInviteStatus(inviteId, status),
-  onSuccess: (data: { data?: Invite; error?: string } | null) => {
-    if (!data?.error && data?.data) {
-      // Invalidate invites for the organization
-      const orgId = data.data.organization_id;
-      queryClient.invalidateQueries({
-        queryKey: ORGANIZATION_INVITES_KEY(orgId),
-      });
+  }) => {
+    const result = await updateInviteStatus(inviteId, status);
+    if (result.error) {
+      throw new Error(result.error);
     }
+    return result.data;
+  },
+  onSuccess: (data: Invite) => {
+    // Invalidate invites for the organization
+    const orgId = data.organization_id;
+    queryClient.invalidateQueries({
+      queryKey: ORGANIZATION_INVITES_KEY(orgId),
+    });
   },
 });
 
 // Revoke invite mutation (convenience wrapper for updateInviteStatus with "revoked" status)
 export const revokeInviteMutationOptions = (queryClient: QueryClient) => ({
-  mutationFn: async ({ inviteId }: { inviteId: string }) =>
-    await updateInviteStatus(inviteId, "revoked"),
-  onSuccess: (data: { data?: Invite; error?: string } | null) => {
-    if (!data?.error && data?.data) {
-      // Invalidate invites for the organization
-      const orgId = data.data.organization_id;
-      queryClient.invalidateQueries({
-        queryKey: ORGANIZATION_INVITES_KEY(orgId),
-      });
+  mutationFn: async ({ inviteId }: { inviteId: string }) => {
+    const result = await updateInviteStatus(inviteId, "revoked");
+    if (result.error) {
+      throw new Error(result.error);
     }
+    return result.data;
+  },
+  onSuccess: (data: Invite) => {
+    // Invalidate invites for the organization
+    const orgId = data.organization_id;
+    queryClient.invalidateQueries({
+      queryKey: ORGANIZATION_INVITES_KEY(orgId),
+    });
   },
 });
 

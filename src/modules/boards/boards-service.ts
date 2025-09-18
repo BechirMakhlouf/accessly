@@ -33,7 +33,7 @@ export class BoardsService {
             .from("boards")
             .select("*, members:board_members(*)")
             .eq("slug", slug)
-            .single();
+            .maybeSingle();
         if (error) {
             console.error("Failed to get board by slug:", error);
             return { error: "board.failedToLoad" };
@@ -141,6 +141,44 @@ export class BoardsService {
             .single();
         if (dbError) return { error: "board.failedToUpdate" };
         return { data };
+    }
+
+    // Check if user has access to a board by slug and organization
+    async checkUserBoardAccess(
+        boardSlug: string,
+        orgSlug: string,
+    ): Promise<ServiceResult<boolean>> {
+        if (!this.userId) return { error: "board.unauthorized" };
+
+        const { data, error } = await this.supabase
+            .from("boards")
+            .select(`
+                id,
+                slug,
+                organization_id,
+                organization:organizations!inner(slug)
+            `)
+            .eq("slug", boardSlug)
+            .eq("organizations.slug", orgSlug)
+            .single();
+
+        if (error || !data) {
+            return { data: false };
+        }
+
+        // Check if user is a member of this board
+        const { data: membership, error: membershipError } = await this.supabase
+            .from("board_members")
+            .select("id")
+            .eq("board_id", data.id)
+            .eq("user_id", this.userId)
+            .single();
+
+        if (membershipError || !membership) {
+            return { data: false };
+        }
+
+        return { data: true };
     }
 
     // Hard delete (admin service role required)

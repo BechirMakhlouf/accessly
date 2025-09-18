@@ -1,7 +1,15 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { createBoardService } from "./board-factory";
+import {
+    createBoard as createBoardAction,
+    deleteBoard as deleteBoardAction,
+    getBoardById as getBoardByIdAction,
+    getBoardBySlug as getBoardBySlugAction,
+    getBoardsByOrganizationId as getBoardsByOrganizationIdAction,
+    updateBoard as updateBoardAction,
+    updateBoardMemberRole as updateBoardMemberRoleAction,
+} from "./actions";
 import { Board, BoardInput, BoardRole, BoardUpdate } from "./types";
 
 // Query Keys
@@ -18,8 +26,7 @@ export function getBoardBySlugQueryOptions(slug: string) {
     return {
         queryKey: BOARD_BY_SLUG_KEY(slug),
         queryFn: async (): Promise<Board> => {
-            const service = await createBoardService();
-            const result = await service.getBoardBySlug(slug);
+            const result = await getBoardBySlugAction(slug);
             if (result.error) {
                 throw new Error(result.error);
             }
@@ -36,8 +43,7 @@ export function getBoardByIdQueryOptions(id: string) {
     return {
         queryKey: BOARD_BY_ID_KEY(id),
         queryFn: async (): Promise<Board> => {
-            const service = await createBoardService();
-            const result = await service.getBoardById(id);
+            const result = await getBoardByIdAction(id);
             if (result.error) {
                 throw new Error(result.error);
             }
@@ -54,8 +60,7 @@ export function getOrgBoardsQueryOptions(orgId: string) {
     return {
         queryKey: ORG_BOARDS_KEY(orgId),
         queryFn: async (): Promise<Board[]> => {
-            const service = await createBoardService();
-            const result = await service.getBoardsByOrganizationId(orgId);
+            const result = await getBoardsByOrganizationIdAction(orgId);
             if (result.error) {
                 throw new Error(result.error);
             }
@@ -71,8 +76,7 @@ export function createBoardMutationOptions(
 ) {
     return {
         mutationFn: async (input: BoardInput): Promise<Board> => {
-            const service = await createBoardService();
-            const result = await service.createBoard(input);
+            const result = await createBoardAction(input);
             if (result.error) {
                 throw new Error(result.error);
             }
@@ -97,8 +101,7 @@ export function updateBoardMutationOptions(
         mutationFn: async (
             { boardId, updates }: { boardId: string; updates: BoardUpdate },
         ): Promise<Board> => {
-            const service = await createBoardService();
-            const result = await service.updateBoard(boardId, updates);
+            const result = await updateBoardAction(boardId, updates);
             if (result.error) {
                 throw new Error(result.error);
             }
@@ -128,8 +131,7 @@ export function deleteBoardMutationOptions(
 ) {
     return {
         mutationFn: async (boardId: string): Promise<void> => {
-            const service = await createBoardService();
-            const result = await service.deleteBoard(boardId);
+            const result = await deleteBoardAction(boardId);
             if (result.error) {
                 throw new Error(result.error);
             }
@@ -159,8 +161,7 @@ export function updateMemberRoleMutationOptions(
             memberId: string;
             newRole: BoardRole;
         }): Promise<{ role: BoardRole }> => {
-            const service = await createBoardService();
-            const result = await service.updateMemberRole(
+            const result = await updateBoardMemberRoleAction(
                 boardId,
                 memberId,
                 newRole,

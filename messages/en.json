@@ -444,6 +444,75 @@
       }
     }
   },
+  "boards": {
+    "title": "Boards",
+    "description": "Manage your boards and collaborate with your team.",
+    "selectBoard": "Select Board",
+    "search": {
+      "placeholder": "Search boards...",
+      "noResults": {
+        "title": "No boards found",
+        "description": "No boards match your search query \"{query}\"."
+      },
+      "clear": "Clear search"
+    },
+    "empty": {
+      "title": "No boards yet",
+      "description": "Create a new board to get started."
+    },
+    "actions": {
+      "create": "New Board",
+      "viewAll": "View all boards",
+      "updated": "Board updated successfully",
+      "updateError": "Failed to update board"
+    },
+    "errors": {
+      "failedToLoad": "Failed to load boards"
+    },
+    "form": {
+      "title": "Create New Board",
+      "subtitle": "Set up a new board to organize your work.",
+      "name": {
+        "label": "Board Name",
+        "placeholder": "Enter board name",
+        "required": "Board name is required",
+        "helpText": "This will be displayed to your team members and used to generate a unique URL."
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe what this board is for",
+        "helpText": "Optional: Help your team understand the purpose of this board."
+      },
+      "visibility": {
+        "label": "Visibility",
+        "private": "Private",
+        "public": "Public",
+        "helpText": "Choose who can see this board."
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "creating": "Creating...",
+        "create": "Create Board"
+      },
+      "success": "Board created successfully!",
+      "errors": {
+        "createFailed": "Failed to create board. Please try again.",
+        "nameRequired": "Board name is required",
+        "nameTooShort": "Board name must be at least 3 characters",
+        "nameTooLong": "Board name must be less than 100 characters",
+        "descriptionTooLong": "Description must be less than 500 characters"
+      }
+    },
+    "roles": {
+      "admin": "Admin",
+      "member": "Member",
+      "viewer": "Viewer"
+    },
+    "visibility": {
+      "private": "Private",
+      "public": "Public"
+    }
+  },
   "sidebar": {
     "overview": "Overview",
     "boards": "Boards",
@@ -710,16 +779,15 @@
     "verificationSuccess": "Email verified successfully!",
     "verificationError": "Could not verify code. Please try again."
   },
-
   "board": {
-  "unauthorized": "You are not authorized to perform this board action",
-  "notFound": "Board not found",
-  "failedToLoad": "Failed to load board",
-  "failedToCreate": "Failed to create board",
-  "failedToUpdate": "Failed to update board",
-  "failedToDelete": "Failed to delete board",
-  "insufficientPermissions": "You do not have sufficient permissions to perform this action"
-
+    "unauthorized": "You are not authorized to perform this board action",
+    "notFound": "Board not found",
+    "failedToLoad": "Failed to load board",
+    "failedToCreate": "Failed to create board",
+    "failedToUpdate": "Failed to update board",
+    "failedToDelete": "Failed to delete board",
+    "insufficientPermissions": "You do not have sufficient permissions to perform this action",
+    "accessDenied": "You don't have access to this board. Redirecting to organization boards..."
   },
   "invitePage": {
     "title": "Organization Invitation",
@@ -776,6 +844,5 @@
         "generic": "An error occurred. Please try again."
       }
     }
-
   }
 }

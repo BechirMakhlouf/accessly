@@ -10,3 +10,6 @@ export * from "./actions";
 
 // Queries
 export * from "./queries";
+
+// Components
+export { BoardsDropdown } from "./components/boards-dropdown";

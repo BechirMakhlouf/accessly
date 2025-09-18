@@ -1,7 +1,7 @@
 "use server";
 
-import { createBoardService } from './board-factory';
-import { BoardInput, BoardUpdate, BoardRole } from './types';
+import { createBoardService } from "./board-factory";
+import { BoardInput, BoardRole, BoardUpdate } from "./types";
 
 export async function getBoardBySlug(slug: string) {
   const service = await createBoardService();
@@ -11,6 +11,11 @@ export async function getBoardBySlug(slug: string) {
 export async function getBoardById(boardId: string) {
   const service = await createBoardService();
   return service.getBoardById(boardId);
+}
+
+export async function getBoardsByOrganizationId(orgId: string) {
+  const service = await createBoardService();
+  return service.getBoardsByOrganizationId(orgId);
 }
 
 export async function createBoard(input: BoardInput) {
@@ -28,7 +33,11 @@ export async function deleteBoard(boardId: string) {
   return service.deleteBoard(boardId);
 }
 
-export async function updateBoardMemberRole(boardId: string, memberId: string, newRole: BoardRole) {
+export async function updateBoardMemberRole(
+  boardId: string,
+  memberId: string,
+  newRole: BoardRole,
+) {
   const service = await createBoardService();
   return service.updateMemberRole(boardId, memberId, newRole);
 }

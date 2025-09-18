@@ -8,7 +8,7 @@ import {
   updateInviteStatusMutationOptions,
 } from "../queries";
 import { Invite, InviteStatus, OrgRole } from "../types";
-import { ServiceResult } from "../organization-service";
+import { ServiceResult } from "@/lib/types";
 
 interface UseOrgInviteOptions {
   organization: { id: string; name: string } | null | undefined;
@@ -73,10 +73,7 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
         email,
         role,
       });
-      if (result.error) {
-        return { error: result.error };
-      }
-      return { data: { success: true, invite: result.data?.invite } };
+      return { data: { success: true, invite: result.invite } };
     } catch {
       return { error: "org.invite.failedToSend" };
     }
