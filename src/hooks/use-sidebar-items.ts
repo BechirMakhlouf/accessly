@@ -103,11 +103,12 @@ export function useSidebarItems() {
                         ),
                         label: t("overview"),
                         icon: Home,
-                        match: (p: string) =>
-                            p ===
-                                routes.protected.dashboard.org.slug.root(
-                                    org.slug,
-                                ),
+                        match: (p: string) => {
+                            const orgRoot = routes.protected.dashboard.org.slug
+                                .root(org.slug);
+                            return p === orgRoot ||
+                                p === orgRoot.slice(0, -1);
+                        },
                     },
                     {
                         href: routes.protected.dashboard.org.slug.boards.root(
