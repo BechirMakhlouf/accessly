@@ -16,7 +16,7 @@ import { CreateBoardModal } from "./create-board-modal"
 export function BoardsDropdown({ trigger }: { trigger?: ReactNode } = {}) {
     const router = useRouter()
     const { activeOrganization } = useActiveOrg()
-    const { activeBoard, isUnderBoardContext } = useActiveBoard()
+    const { activeBoard } = useActiveBoard()
     const { boards, isLoading } = useActiveOrgBoards()
     const t = useTranslations("boards")
     const [open, setOpen] = useState(false)
@@ -72,8 +72,8 @@ export function BoardsDropdown({ trigger }: { trigger?: ReactNode } = {}) {
         return visibility === "public" ? t("visibility.public") : t("visibility.private")
     }
 
-    if (!isUnderBoardContext) {
-        return null // Don't show dropdown if no active organization or not in board context
+    if (!activeOrganization) {
+        return null // Don't show dropdown if no active organization
     }
 
     // Default trigger with board name
@@ -81,7 +81,7 @@ export function BoardsDropdown({ trigger }: { trigger?: ReactNode } = {}) {
         <Button
             variant="ghost"
             className="h-8 px-2 gap-2 shrink-0 data-[state=open]:bg-accent max-w-[50vw] sm:max-w-[320px]"
-            aria-label="Switch board"
+            aria-label={activeBoard ? "Switch board" : "Select board"}
         >
             <span className="truncate text-sm leading-none text-muted-foreground">
                 {activeBoard ? activeBoard.title : t("selectBoard")}

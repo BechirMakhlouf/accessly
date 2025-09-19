@@ -9,11 +9,11 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { routes } from "@/lib/routes"
-import { OrganizationsDropdown } from "@/modules/organizations"
-import { BoardsDropdown, useActiveBoard } from "@/modules/boards"
+import { OrganizationsDropdown, useActiveOrg } from "@/modules/organizations"
+import { BoardsDropdown } from "@/modules/boards"
 
 export function ContextNavigation() {
-    const { isUnderBoardContext } = useActiveBoard()
+    const { isOrgContext } = useActiveOrg()
     return (
         <Breadcrumb>
             <BreadcrumbList className="flex items-center gap-1 min-w-0">
@@ -35,7 +35,7 @@ export function ContextNavigation() {
                     <OrganizationsDropdown />
                 </BreadcrumbItem>
 
-                {isUnderBoardContext && (
+                {isOrgContext && (
                     <>
                         <BreadcrumbSeparator className="hidden sm:block" />
                         <BreadcrumbItem className="min-w-0">
