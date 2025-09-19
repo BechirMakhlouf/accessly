@@ -37,7 +37,20 @@ export class BoardsService {
       return { error: "board.notFound" };
     }        return {data};
     }
-
+  async getBoardsByOrganizationId(
+        orgId: string,
+    ): Promise<ServiceResult<Board[]>> {
+        const { data, error } = await this.supabase
+            .from("boards")
+            .select("*")
+            .eq("organization_id", orgId)
+            .order("created_at", { ascending: false });
+        if (error) {
+            console.error("Failed to get boards by organization id:", error);
+            return { error: "board.failedToLoad" };
+        }
+        return { data: data || [] };
+    }
     async getBoardById(boardId: string): Promise<ServiceResult<Board>> {
         const { data, error } = await this.supabase
             .from("boards")
