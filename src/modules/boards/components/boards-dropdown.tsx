@@ -11,6 +11,7 @@ import { routes } from "@/lib/routes"
 import { useActiveBoard, useActiveOrgBoards, Board } from "@/modules/boards"
 import { useActiveOrg } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
+import { CreateBoardModal } from "./create-board-modal"
 
 export function BoardsDropdown({ trigger }: { trigger?: ReactNode } = {}) {
     const router = useRouter()
@@ -50,13 +51,6 @@ export function BoardsDropdown({ trigger }: { trigger?: ReactNode } = {}) {
         }
     }
 
-    const handleAddBoard = () => {
-        setOpen(false)
-        setSearchQuery("")
-        if (activeOrganization?.slug) {
-            router.push(routes.protected.dashboard.org.slug.boards.root(activeOrganization.slug))
-        }
-    }
 
     const handleViewAllBoards = () => {
         setOpen(false)
@@ -182,13 +176,17 @@ export function BoardsDropdown({ trigger }: { trigger?: ReactNode } = {}) {
                     <Separator />
 
                     <div className="p-1 space-y-1">
-                        <div
-                            className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
-                            onClick={handleAddBoard}
-                        >
-                            <Plus className="h-4 w-4" />
-                            <span>{t("actions.create")}</span>
-                        </div>
+                        <CreateBoardModal
+                            trigger={
+                                <div className="flex items-center gap-2 rounded-sm px-2 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground">
+                                    <Plus className="h-4 w-4" />
+                                    <span>{t("actions.create")}</span>
+                                </div>
+                            }
+                            onSuccess={() => {
+                                // The modal will handle closing and the hook will refetch data
+                            }}
+                        />
 
                         {boards && boards.length > 0 && (
                             <div

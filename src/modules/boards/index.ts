@@ -13,3 +13,4 @@ export * from "./queries";
 
 // Components
 export { BoardsDropdown } from "./components/boards-dropdown";
+export { CreateBoardModal } from "./components/create-board-modal";

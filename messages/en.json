@@ -500,7 +500,8 @@
         "nameRequired": "Board name is required",
         "nameTooShort": "Board name must be at least 3 characters",
         "nameTooLong": "Board name must be less than 100 characters",
-        "descriptionTooLong": "Description must be less than 500 characters"
+        "descriptionTooLong": "Description must be less than 500 characters",
+        "visibilityRequired": "Please select a visibility option"
       }
     },
     "roles": {

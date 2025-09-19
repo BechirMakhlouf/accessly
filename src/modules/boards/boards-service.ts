@@ -2,7 +2,6 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import {
     Board,
     BoardInput,
-    BoardInsert,
     BoardRole,
     BoardUpdate,
     BoardWithMembers,
@@ -80,7 +79,7 @@ export class BoardsService {
     async createBoard(input: BoardInput): Promise<ServiceResult<Board>> {
         const { data, error } = await this.supabase
             .from("boards")
-            .insert(input as BoardInsert)
+            .insert(input)
             .select("*")
             .single();
         if (error || !data) return { error: "board.failedToCreate" };

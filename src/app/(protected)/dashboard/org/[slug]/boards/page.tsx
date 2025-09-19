@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, Eye, EyeOff, Calendar } from 'lucide-react';
-import { useActiveOrgBoards } from '@/modules/boards/hooks/useOrgBoards';
+import { useActiveOrgBoards, CreateBoardModal } from '@/modules/boards';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { routes } from '@/lib/routes';
@@ -24,9 +24,9 @@ export default function BoardsPage() {
         }
     };
 
-    const handleCreateBoard = () => {
-        // TODO: Implement create board functionality
-        console.log('Create board clicked');
+    const handleCreateBoardSuccess = () => {
+        // The modal will handle closing and the hook will refetch data
+        // Optionally navigate to the newly created board
     };
 
     const getVisibilityIcon = (visibility: BoardVisibility) => {
@@ -66,10 +66,15 @@ export default function BoardsPage() {
                         {t("description")}
                     </p>
                 </div>
-                <Button onClick={handleCreateBoard}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t("actions.create")}
-                </Button>
+                <CreateBoardModal
+                    trigger={
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            {t("actions.create")}
+                        </Button>
+                    }
+                    onSuccess={handleCreateBoardSuccess}
+                />
             </div>
 
             {isLoading ? (
@@ -92,10 +97,15 @@ export default function BoardsPage() {
                     <div className="text-center">
                         <h3 className="text-lg font-semibold mb-2">{t("empty.title")}</h3>
                         <p className="text-muted-foreground mb-6">{t("empty.description")}</p>
-                        <Button onClick={handleCreateBoard}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            {t("actions.create")}
-                        </Button>
+                        <CreateBoardModal
+                            trigger={
+                                <Button>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    {t("actions.create")}
+                                </Button>
+                            }
+                            onSuccess={handleCreateBoardSuccess}
+                        />
                     </div>
                 </div>
             ) : (
@@ -138,22 +148,27 @@ export default function BoardsPage() {
                     ))}
 
                     {/* Create new board card */}
-                    <Card className="border-dashed cursor-pointer hover:shadow-md transition-shadow" onClick={handleCreateBoard}>
-                        <CardHeader>
-                            <CardTitle className="text-muted-foreground">
-                                {t("actions.create")}
-                            </CardTitle>
-                            <CardDescription>
-                                Start a new board for your team
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Button variant="outline" className="w-full">
-                                <Plus className="mr-2 h-4 w-4" />
-                                {t("actions.create")}
-                            </Button>
-                        </CardContent>
-                    </Card>
+                    <CreateBoardModal
+                        trigger={
+                            <Card className="border-dashed cursor-pointer hover:shadow-md transition-shadow">
+                                <CardHeader>
+                                    <CardTitle className="text-muted-foreground">
+                                        {t("actions.create")}
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Start a new board for your team
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Button variant="outline" className="w-full">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        {t("actions.create")}
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        }
+                        onSuccess={handleCreateBoardSuccess}
+                    />
                 </div>
             )}
         </div>
