@@ -136,6 +136,7 @@ export function useActiveOrg() {
     members,
     currentUserRole,
     currentUserMembership,
+    isOrgContext: !!organization,
 
     // State
     isLoading,

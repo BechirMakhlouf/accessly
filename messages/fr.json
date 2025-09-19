@@ -212,11 +212,13 @@
   },
   "sidebar": {
     "overview": "Aperçu",
+    "boards": "Tableaux",
     "members": "Membres",
     "settings": "Paramètres",
     "billing": "Facturation",
     "dashboard": "Tableau de bord",
-    "organizations": "Organisations"
+    "organizations": "Organisations",
+    "accessables": "Accessibles"
   },
   "auth": {
     "orContinueWith": "Ou continuer avec",

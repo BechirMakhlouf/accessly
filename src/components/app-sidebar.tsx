@@ -2,114 +2,21 @@
 
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Receipt,
-  Settings,
-  Users,
-  Building2,
-  Home,
-  Layout,
-} from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "motion/react";
-import { useActiveOrg } from "@/modules/organizations";
-import { routes } from "@/lib/routes";
-import { useTranslations } from "next-intl";
+import { useSidebarItems, type NavItem } from "@/hooks/use-sidebar-items";
 
 const COLLAPSED_W = "3.05rem";
 const OPEN_W = "15rem";
 
-type NavItem = {
-  href: string;
-  label: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  match: (path: string) => boolean;
-  external?: boolean;
-};
-
 export function AppSidebar() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { activeOrganization: org } = useActiveOrg();
-  const t = useTranslations("sidebar");
+  const { primaryItems, secondaryItems, isActive, shouldRender } = useSidebarItems();
 
-  // Check if we're in an organization context
-  const isOrgContext = pathname?.includes("/dashboard/org/");
-
-  // Primary navigation items
-  const primaryItems: NavItem[] = useMemo(() => {
-    if (isOrgContext && org) {
-      // Organization-specific navigation
-      return [
-        {
-          href: routes.protected.dashboard.org.slug.root(org.slug),
-          label: t("overview"),
-          icon: Home,
-          match: (p) => p === routes.protected.dashboard.org.slug.root(org.slug),
-        },
-        {
-          href: routes.protected.dashboard.org.slug.boards.root(org.slug),
-          label: t("boards"),
-          icon: Layout,
-          match: (p) => p.includes(routes.protected.dashboard.org.slug.boards.root(org.slug)),
-        },
-        {
-          href: routes.protected.dashboard.org.slug.members(org.slug),
-          label: t("members"),
-          icon: Users,
-          match: (p) => p.includes(routes.protected.dashboard.org.slug.members(org.slug)),
-        },
-        {
-          href: routes.protected.dashboard.org.slug.settings.root(org.slug),
-          label: t("settings"),
-          icon: Settings,
-          match: (p) => p.includes(routes.protected.dashboard.org.slug.settings.root(org.slug)),
-        },
-      ];
-    } else {
-      // Dashboard navigation
-      return [
-        {
-          href: routes.protected.dashboard.root,
-          label: t("dashboard"),
-          icon: Home,
-          match: (p) => p === routes.protected.dashboard.root,
-        },
-        {
-          href: routes.protected.dashboard.organizations.root,
-          label: t("organizations"),
-          icon: Building2,
-          match: (p) => p.includes(routes.protected.dashboard.organizations.root),
-        },
-      ];
-    }
-  }, [isOrgContext, org, t]);
-
-  // Secondary navigation items (only show in org context)
-  const secondaryItems: NavItem[] = useMemo(() => {
-    if (isOrgContext && org) {
-      return [
-        {
-          href: routes.protected.dashboard.org.slug.settings.billing(org.slug),
-          label: t("billing"),
-          icon: Receipt,
-          match: (p) => p === routes.protected.dashboard.org.slug.settings.billing(org.slug),
-        },
-      ];
-    }
-    return [];
-  }, [isOrgContext, org, t]);
-
-  // Active map for quick lookup
-  const isActive = useMemo(() => {
-    return (item: NavItem) => item.match(pathname || "");
-  }, [pathname]);
-
-  // Don't render sidebar if no org in org context
-  if (isOrgContext && !org) {
+  // Don't render sidebar if context requirements not met
+  if (!shouldRender) {
     return null;
   }
 

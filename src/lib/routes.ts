@@ -90,7 +90,7 @@ export const routes = {
             root: (orgSlug: string, boardSlug: string) =>
               `/dashboard/org/${orgSlug}/board/${boardSlug}`,
             accessables: (orgSlug: string, boardSlug: string) =>
-              `/dashboard/org/${orgSlug}/board/${boardSlug}/accessable`,
+              `/dashboard/org/${orgSlug}/board/${boardSlug}/accessables`,
             settings: (orgSlug: string, boardSlug: string) =>
               `/dashboard/org/${orgSlug}/board/${boardSlug}/settings`,
             members: (orgSlug: string, boardSlug: string) =>

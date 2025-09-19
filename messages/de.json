@@ -213,11 +213,13 @@
   },
   "sidebar": {
     "overview": "Übersicht",
+    "boards": "Boards",
     "members": "Mitglieder",
     "settings": "Einstellungen",
     "billing": "Abrechnung",
     "dashboard": "Dashboard",
-    "organizations": "Organisationen"
+    "organizations": "Organisationen",
+    "accessables": "Zugängliche"
   },
   "auth": {
     "orContinueWith": "Oder fortfahren mit",

@@ -521,7 +521,8 @@
     "settings": "Settings",
     "billing": "Billing",
     "dashboard": "Dashboard",
-    "organizations": "Organizations"
+    "organizations": "Organizations",
+    "accessables": "Accessables"
   },
   "auth": {
     "orContinueWith": "Or continue with",
