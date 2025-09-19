@@ -789,7 +789,10 @@
     "failedToUpdate": "Failed to update board",
     "failedToDelete": "Failed to delete board",
     "insufficientPermissions": "You do not have sufficient permissions to perform this action",
-    "accessDenied": "You don't have access to this board. Redirecting to organization boards..."
+    "accessDenied": "You don't have access to this board. Redirecting to organization boards...",
+    "failedToLoadMembership": "Failed to load board memberships",
+    "membershipNotFound": "Board membership not found",
+    "failedToLoadMembers": "Failed to load board members"
   },
   "invitePage": {
     "title": "Organization Invitation",
