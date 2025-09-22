@@ -24,3 +24,9 @@ export interface BoardWithMembers extends Board {
 export interface BoardMemberWithProfile extends BoardMember {
   profile?: Profile;
 }
+export interface BoardMembership {
+  user_id: string;
+  role: BoardRole;
+  membership_origin: string ;
+
+}
