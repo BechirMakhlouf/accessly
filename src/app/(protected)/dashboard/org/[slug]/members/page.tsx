@@ -10,8 +10,7 @@ import {
   InviteMemberModal,
   MembersPagination
 } from "@/modules/organizations"
-import { MembersTableWithState } from "@/modules/organizations/components/members-table"
-
+import { MembersTable } from "@/modules/organizations/components/members-table"
 export default function MembersPage() {
   const t = useTranslations("org.members");
 
@@ -30,21 +29,32 @@ export default function MembersPage() {
     setInviteRole,
 
     // Data
+    paginatedMembers,
     canManageMembersRole,
+    isLoading,
     error,
+    filteredInvites,
+    revokeInvite,
+    isRevoking,
 
     // Computed values
     totalPages,
     startIndex,
     totalFilteredMembers,
+    isAllSelected,
 
     // Actions
     handleInviteMember,
     handleBulkDelete,
+    handleRoleChange,
+    handleDeleteMember,
+    handleSelectAll,
+    handleSelectMember,
 
     // Mutations
     removeMemberMutation,
     inviteMemberMutation,
+    updateRoleMutation,
   } = useMembersPage();
 
   if (error) {
@@ -77,8 +87,25 @@ export default function MembersPage() {
           onBulkDelete={handleBulkDelete}
         />
 
-        <MembersTableWithState />
-
+        <MembersTable
+          members={paginatedMembers}
+          invitedMembers={filteredInvites}
+          isLoading={isLoading}
+          canManageMembers={canManageMembersRole}
+          selectedMembers={selectedMembers}
+          isAllSelected={isAllSelected}
+          isUpdatingRole={updateRoleMutation.isPending}
+          isRemovingMember={removeMemberMutation.isPending}
+          isRevokingInvite={isRevoking}
+          showExpiredInvites={false}
+          onSelectAll={handleSelectAll}
+          onSelectMember={handleSelectMember}
+          onRoleChange={handleRoleChange}
+          onDeleteMember={handleDeleteMember}
+          onRevokeInvite={(inviteId) => revokeInvite(inviteId)}
+          onToggleExpiredInvites={() => { }}
+          searchQuery={searchQuery}
+        />
         <MembersPagination
           totalPages={totalPages}
           currentPage={currentPage}
