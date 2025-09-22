@@ -2,7 +2,6 @@ import { createBrowserClient } from "@supabase/ssr";
 import { env } from "@/lib/env";
 import { Database } from "@/types/database.types";
 
-
 function createCSRClient() {
   return createBrowserClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
@@ -10,6 +9,4 @@ function createCSRClient() {
   );
 }
 
-
 export const SupabaseCSRClient = createCSRClient();
-

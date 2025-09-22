@@ -29,4 +29,3 @@ CREATE TABLE IF NOT EXISTS board_members (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, board_id)
 );
-

@@ -1,7 +1,9 @@
-import { SupabaseClient } from "@supabase/supabase-js";
 import type { User } from "@supabase/supabase-js";
+import { TypedSupabaseClient } from "../supabase/type";
 
-export async function getUserId(supabase: SupabaseClient) {
+export async function getUserId(
+  supabase: TypedSupabaseClient,
+) {
   // Prefer JWT claims (fast) then fall back to getUser(). Always return null on failure.
   try {
     const { data: claimsData, error: claimsError } = await supabase.auth
@@ -104,4 +106,3 @@ export function extractUserImageFromOAuth(user: User): string | null {
 
   return null;
 }
-

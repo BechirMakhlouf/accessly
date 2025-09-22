@@ -1614,13 +1614,24 @@ export type Database = {
         }[]
       }
       search_v2: {
-        Args: {
-          bucket_name: string
-          levels?: number
-          limits?: number
-          prefix: string
-          start_after?: string
-        }
+        Args:
+          | {
+              bucket_name: string
+              levels?: number
+              limits?: number
+              prefix: string
+              sort_column?: string
+              sort_column_after?: string
+              sort_order?: string
+              start_after?: string
+            }
+          | {
+              bucket_name: string
+              levels?: number
+              limits?: number
+              prefix: string
+              start_after?: string
+            }
         Returns: {
           created_at: string
           id: string

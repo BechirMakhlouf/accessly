@@ -12,7 +12,7 @@ export const PROFILE_KEY = ["profile"] as const;
 
 export const getProfileQueryOptions = () => ({
   queryKey: PROFILE_KEY,
-  queryFn: async () => {
+  queryFn: async (): Promise<Profile | null> => {
     const result = await getProfile();
 
     if (result?.error) {

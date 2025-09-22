@@ -1,5 +1,6 @@
 import { Database } from "@/types/database.types";
 import { Profile } from "@/modules/profiles/types";
+import { WithOptional } from "@/lib/types";
 
 export type Board = Database["public"]["Tables"]["boards"]["Row"];
 export type BoardInsert = Database["public"]["Tables"]["boards"]["Insert"];
@@ -14,12 +15,10 @@ export type BoardVisibility = Database["public"]["Enums"]["boards_visibility"];
 export type BoardAdminRole = Extract<BoardRole, "admin">;
 
 // Input used by service/UI when creating a board (created_by may be injected from session)
-export type BoardInput = Omit<BoardInsert, "slug"> & {
-  slug?: string;
-};
+export type BoardInput = WithOptional<BoardInsert, "slug">;
 
 export interface BoardWithMembers extends Board {
-  members: Database["public"]["Tables"]["board_members"]["Row"][];
+  members: BoardMember[];
 }
 
 export interface BoardMemberWithProfile extends BoardMember {

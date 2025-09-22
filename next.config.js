@@ -1,6 +1,7 @@
 import { createJiti } from "jiti";
 import createNextIntlPlugin from "next-intl/plugin";
 import { withBotId } from "botid/next/config";
+import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const jiti = createJiti(import.meta.url);
 
@@ -19,9 +20,11 @@ const nextConfig = {
   },
 };
 
-export default withBotId(
+export default withBundleAnalyzer(
+  { enabled: process.env.ANALYZE === "true", }
+)(withBotId(
   createNextIntlPlugin({
     requestConfig: "./src/lib/i18n/request.ts",
     experimental: {}
   })(nextConfig),
-);
+));
