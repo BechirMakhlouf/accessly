@@ -14,63 +14,12 @@ import {
 import { useOrgInvite } from "./use-org-invite";
 import { routes } from "@/lib/routes";
 
+
 const ITEMS_PER_PAGE = 10;
 
-export interface UseMembersPageReturn {
-  // State
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  selectedMembers: string[];
-  setSelectedMembers: (members: string[]) => void;
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
-  isInviteModalOpen: boolean;
-  setIsInviteModalOpen: (open: boolean) => void;
-  inviteEmail: string;
-  setInviteEmail: (email: string) => void;
-  inviteRole: OrgRole;
-  setInviteRole: (role: OrgRole) => void;
 
-  // Data
-  org: Organization | null;
-  members: OrgMember[];
-  filteredMembers: OrgMember[];
-  paginatedMembers: OrgMember[];
-  currentUserRole: { role: OrgRole } | null;
-  canManageMembersRole: boolean;
-  isLoading: boolean;
-  error: Error | null;
 
-  // Computed values
-  totalPages: number;
-  startIndex: number;
-  isAllSelected: boolean;
-  totalFilteredMembers: number;
-
-  // Actions
-  handleRoleChange: (memberId: string, newRole: OrgRole) => Promise<void>;
-  handleDeleteMember: (memberId: string) => Promise<void>;
-  handleSelectAll: (checked: boolean) => void;
-  handleSelectMember: (memberId: string, checked: boolean) => void;
-  handleInviteMember: () => Promise<void>;
-  handleBulkDelete: () => Promise<void>;
-
-  // Mutations
-  updateRoleMutation: {
-    isPending: boolean;
-    error: Error | null;
-  };
-  removeMemberMutation: {
-    isPending: boolean;
-    error: Error | null;
-  };
-  inviteMemberMutation: {
-    isPending: boolean;
-    error: Error | null;
-  };
-}
-
-export const useMembersPage = (): UseMembersPageReturn => {
+export const useMembersPage = () => {
   const {
     organization: org,
     members,
@@ -82,8 +31,11 @@ export const useMembersPage = (): UseMembersPageReturn => {
     isRemovingMember,
     currentUserRole: userRole,
   } = useActiveOrg();
-
+  
   const {
+    invites,
+    revokeInvite,
+    isRevoking,
     inviteMember,
     isInviting: isInvitingMember,
   } = useOrgInvite({
@@ -96,13 +48,12 @@ export const useMembersPage = (): UseMembersPageReturn => {
   const router = useRouter();
 
   // State
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("bechir");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<OrgRole>("member");
-
   const currentUserRole = useMemo(() => {
     return userRole ? { role: userRole } : null;
   }, [userRole]);
@@ -119,12 +70,27 @@ export const useMembersPage = (): UseMembersPageReturn => {
     ? canManageMembers(currentUserRole.role)
     : false;
 
+
   const filteredMembers = useMemo(() => {
     if (!members) return [];
-    return members.filter((member: OrgMember) =>
-      member.user_id.toLowerCase().includes(searchQuery.toLowerCase())
+    if (searchQuery.trim() === "") return members;
+
+    const filteredMembers = members.filter((member) =>
+      member.profile?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.profile?.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    return filteredMembers;
   }, [members, searchQuery]);
+
+  const filteredInvites = useMemo(() => { 
+    if (!invites) return [];
+    if (searchQuery.trim() === "") return invites;
+    
+    const filteredInvites = invites.filter((invite) =>
+      invite.email.toLowerCase().includes(searchQuery.toLowerCase()));
+    return filteredInvites;
+  }, [invites, searchQuery])
 
   const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -254,6 +220,11 @@ export const useMembersPage = (): UseMembersPageReturn => {
     canManageMembersRole,
     isLoading,
     error,
+
+    filteredInvites,
+    invites: invites || [],
+    revokeInvite,
+    isRevoking,
 
     // Computed values
     totalPages,

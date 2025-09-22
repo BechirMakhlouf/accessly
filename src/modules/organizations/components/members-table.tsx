@@ -391,11 +391,11 @@ export const MembersTableWithState = () => {
     removeMemberMutation,
   } = useMembersPage();
 
-  const {
-    invites,
-    revokeInvite,
-    isRevoking
-  } = useOrgInvite({ organization: org, members: paginatedMembers });
+    const {
+      invites,
+      revokeInvite,
+      isRevoking
+    } = useOrgInvite({ organization: org, members: paginatedMembers });
 
   const invitedMembers = invites || [];
   const [showExpiredInvites, setShowExpiredInvites] = useState(false);
@@ -411,7 +411,6 @@ export const MembersTableWithState = () => {
   const handleToggleExpiredInvites = () => {
     setShowExpiredInvites(!showExpiredInvites);
   };
-
   return (
     <MembersTable
       members={paginatedMembers}

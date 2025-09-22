@@ -30,7 +30,10 @@ export const MembersSearchBar = ({
         <Input
           placeholder={t('searchPlaceholder')}
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e) => { 
+            console.log("target value: ", e.target.value);
+            return onSearchChange(e.target.value)
+          }}
           className="pl-10"
         />
       </div>

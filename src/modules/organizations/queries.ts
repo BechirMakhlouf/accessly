@@ -5,7 +5,7 @@ import {
   InviteWithInviter,
   InviteWithOrgAndInviter,
   Organization,
-  OrgMember,
+  OrgMemberWithProfile,
   OrgRole,
   OrgUpdate,
   OrgWithMembers,
@@ -103,7 +103,7 @@ export const getOrganizationBySlugQueryOptions = (
 // Get organization members query
 export const getOrganizationMembersQueryOptions = (
   orgId: string,
-): UndefinedInitialDataOptions<OrgMember[] | null> => ({
+): UndefinedInitialDataOptions<OrgMemberWithProfile[] | null> => ({
   queryKey: ORGANIZATION_MEMBERS_KEY(orgId),
   queryFn: async () => {
     const result = await getOrganizationMembers(orgId);
