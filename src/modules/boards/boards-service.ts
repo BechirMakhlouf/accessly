@@ -2,6 +2,7 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import {
   Board,
   BoardInput,
+  BoardMembership,
   BoardRole,
   BoardUpdate,
   BoardWithMembers,
@@ -156,14 +157,42 @@ export class BoardsService {
     return { data: true };
   }
 
-  // Hard delete (admin service role required)
-  async delete(boardId: string): Promise<ServiceResult<null>> {
-    if (!this.supabaseAdmin) return { error: "board.unauthorized" };
-    const { error: dbError } = await this.supabase
-      .from("boards")
-      .delete()
-      .eq("id", boardId);
-    if (dbError) return { error: "board.failedToDelete" };
-    return { data: null };
-  }
-}
+    // Hard delete (admin service role required)
+    async delete(boardId: string): Promise<ServiceResult<null>> {
+        if (!this.supabaseAdmin) return { error: "board.unauthorized" };
+        const { error: dbError } = await this.supabase
+            .from("boards")
+            .delete()
+            .eq("id", boardId);
+        if (dbError) return { error: "board.failedToDelete" };
+        return { data: null };
+    }
+        async getMyBoardMembership(user_id :string,boardId: string): Promise<ServiceResult<{ user_id: string; board_role: BoardRole }>> {
+        if (!this.userId) return { error: "board.unauthorized" };
+
+        const { data, error } = await this.supabase.rpc('get_board_membership', { p_user_id: user_id, p_board_id: boardId }).maybeSingle();
+            
+
+        if (error) {
+            console.error("Failed to get  board membership:", error);
+            return { error: "board.failedToLoadMembership" };
+        }
+
+        if (!data) {
+            return { error: "board.membershipNotFound" };
+        }
+        return { data: data };
+    }
+  // ...existing code...
+    async getBoardMembers(boardId: string): Promise<ServiceResult<BoardMembership[]>> {
+        if (!this.userId) return { error: "board.unauthorized" };
+
+        const { data, error } = await this.supabase.rpc('get_board_members', { p_board_id: boardId });
+
+        if (error) {
+            console.error("Failed to get board members:", error);
+            return { error: "board.failedToLoadMembers" };
+        }
+
+        return { data: (data ?? []) };
+    }}

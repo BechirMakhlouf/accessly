@@ -47,3 +47,12 @@ export async function hardDeleteBoard(boardId: string) {
   const service = await createBoardService();
   return service.delete(boardId);
 }
+
+export async function getBoardMembership(userId: string, boardId: string) {
+  const service = await createBoardService();
+  return service.getMyBoardMembership(userId, boardId);
+}
+export async function getBoardMembers(boardId: string) {
+  const service = await createBoardService();
+  return service.getBoardMembers(boardId);
+}
