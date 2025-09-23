@@ -17,6 +17,7 @@ const nextConfig = {
     "localhost:3000",
   ],
   experimental: {
+    ppr: true,
   },
 };
 
