@@ -54,7 +54,7 @@ export const useMembersPage = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (searchQuery) {
+    if (searchQuery.trim() !== "") {
       params.set("search", searchQuery);
     } else {
       params.delete("search");
