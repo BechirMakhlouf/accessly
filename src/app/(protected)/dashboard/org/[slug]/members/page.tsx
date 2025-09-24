@@ -120,7 +120,7 @@ export default function MembersPage() {
           itemsPerPage={10}
           totalItems={totalFilteredMembers}
           onPageChange={setCurrentPage}
-        />setDeleteConfirmState
+        />
 
         <InviteMemberModal
           isOpen={isInviteModalOpen}
