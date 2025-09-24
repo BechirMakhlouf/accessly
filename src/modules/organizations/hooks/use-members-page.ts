@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   canManageMembers,
   Organization,
@@ -46,9 +46,22 @@ export const useMembersPage = () => {
   const t = useTranslations("org.members");
   const rootT = useTranslations();
   const router = useRouter();
+  const searchParams = useSearchParams(); 
 
-  // State
-  const [searchQuery, setSearchQuery] = useState("bechir");
+  
+  const initialQuery = searchParams.get("search") ?? "";
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    } else {
+      params.delete("search");
+    }
+    router.replace(`?${params.toString()}`);
+  }, [searchQuery, router, searchParams]);
+  
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -71,26 +84,28 @@ export const useMembersPage = () => {
     : false;
 
 
+   // ✅ filtrage basé sur searchQuery (full_name ou email)
   const filteredMembers = useMemo(() => {
     if (!members) return [];
-    if (searchQuery.trim() === "") return members;
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return members;
 
-    const filteredMembers = members.filter((member) =>
-      member.profile?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.profile?.email.toLowerCase().includes(searchQuery.toLowerCase())
+    return members.filter(
+      (member) =>
+        member.profile?.full_name?.toLowerCase().includes(query) ||
+        member.profile?.email.toLowerCase().includes(query)
     );
-
-    return filteredMembers;
   }, [members, searchQuery]);
 
-  const filteredInvites = useMemo(() => { 
+  const filteredInvites = useMemo(() => {
     if (!invites) return [];
-    if (searchQuery.trim() === "") return invites;
-    
-    const filteredInvites = invites.filter((invite) =>
-      invite.email.toLowerCase().includes(searchQuery.toLowerCase()));
-    return filteredInvites;
-  }, [invites, searchQuery])
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return invites;
+
+    return invites.filter((invite) =>
+      invite.email.toLowerCase().includes(query)
+    );
+  }, [invites, searchQuery]);
 
   const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;

@@ -7,6 +7,7 @@ import { OrganizationsEmptyState } from '@/modules/organizations/components/orga
 import { OrganizationsLoadingState } from '@/modules/organizations/components/organizations-loading-state'
 import { useOrganizationsPage } from '@/modules/organizations'
 
+
 export default function OrganizationsPage() {
   const [isHydrated, setIsHydrated] = useState(false)
   const {
