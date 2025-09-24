@@ -147,7 +147,6 @@ export const useMembersPage = () => {
 
  const handleDeleteMember = (memberId: string) => {
     if (!org?.id) return;
-    // Open the dialog; page renders ConfirmDialog and binds to these values
     setDeleteConfirmState({ open: true, memberId });
   };
 
