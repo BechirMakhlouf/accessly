@@ -39,11 +39,11 @@ export function OrgMembers() {
 
   const t = useTranslations('organizations');
 
-  // Initialiser searchQuery depuis l’URL
+  
   const initialQuery = searchParams.get("search") ?? "";
   const [searchQuery, setSearchQuery] = useState(initialQuery);
 
-  // Mettre à jour l’URL quand searchQuery change
+  
   useEffect(() => {
   const params = new URLSearchParams(searchParams.toString());
   if (searchQuery) params.set("search", searchQuery);
@@ -51,7 +51,7 @@ export function OrgMembers() {
   router.replace(`${pathname}?${params.toString()}`);
 }, [searchQuery, pathname, router, searchParams]);
 
-  // Filtrer les membres selon la query
+  
   const filteredMembers = useMemo(() => {
     if (!members || !searchQuery.trim()) return members || [];
     return members.filter((m) =>

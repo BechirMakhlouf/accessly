@@ -12,11 +12,11 @@ export function useOrganizationsPage() {
 
   const { organizations, isLoading, error, createOrganization } = useUserOrgs();
 
-  // Lire la query param initiale
+  
   const initialQuery = searchParams.get("search") ?? "";
   const [searchQuery, setSearchQuery] = useState(initialQuery);
 
-  // ✅ Mettre à jour l'URL en gardant les autres query params
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 

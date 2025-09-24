@@ -84,7 +84,7 @@ export const useMembersPage = () => {
     : false;
 
 
-   // ✅ filtrage basé sur searchQuery (full_name ou email)
+   
   const filteredMembers = useMemo(() => {
     if (!members) return [];
     const query = searchQuery.trim().toLowerCase();
