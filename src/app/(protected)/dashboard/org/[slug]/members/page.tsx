@@ -1,16 +1,19 @@
-"use client"
+"use client";
 
-import { AlertCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useTranslations } from "next-intl"
+import * as React from "react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslations } from "next-intl";
 import {
-  useMembersPage,
   MembersHeader,
   MembersSearchBar,
   InviteMemberModal,
-  MembersPagination
-} from "@/modules/organizations"
-import { MembersTable } from "@/modules/organizations/components/members-table"
+  MembersPagination,
+} from "@/modules/organizations";
+import { useMembersPage } from "@/modules/organizations/hooks/use-members-page";
+import { MembersTable } from "@/modules/organizations/components/members-table";
+import { ConfirmDialog } from "@/components/ui/confirmDeleteDialog";
+
 export default function MembersPage() {
   const t = useTranslations("org.members");
 
@@ -51,6 +54,11 @@ export default function MembersPage() {
     handleSelectAll,
     handleSelectMember,
 
+    // Hook-provided confirm dialog bindings
+    deleteConfirm,
+    cancelDelete,
+    confirmDelete,
+
     // Mutations
     removeMemberMutation,
     inviteMemberMutation,
@@ -62,9 +70,7 @@ export default function MembersPage() {
       <div className="container mx-auto py-8 px-4">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {t('errors.loadError')}
-          </AlertDescription>
+          <AlertDescription>{t("errors.loadError")}</AlertDescription>
         </Alert>
       </div>
     );
@@ -106,6 +112,7 @@ export default function MembersPage() {
           onToggleExpiredInvites={() => { }}
           searchQuery={searchQuery}
         />
+
         <MembersPagination
           totalPages={totalPages}
           currentPage={currentPage}
@@ -125,7 +132,16 @@ export default function MembersPage() {
           isInviting={inviteMemberMutation.isPending}
           onInvite={handleInviteMember}
         />
+
+        {/* Hook-driven confirmation modal */}
+        <ConfirmDialog
+          isOpen={deleteConfirm.open}
+          title={t("actions.confirmDeleteTitle")}
+          description={deleteConfirm.message}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
       </div>
     </div>
-  )
+  );
 }

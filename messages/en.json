@@ -223,7 +223,10 @@
         "leftOrganization": "Left organization successfully",
         "leaveOrganizationError": "Failed to leave organization",
         "invitationSent": "Invitation sent successfully",
-        "invitationError": "Failed to send invitation"
+        "invitationError": "Failed to send invitation",
+        "confirmDelete": "Are you sure you want to remove from the organization? This action cannot be undone.",
+        "confirmDeleteTitle": "Confirm Member Removal",
+        "confirmDeleteDescription": "This will remove the member from the organization and revoke their access to all resources."
       },
       "roles": {
         "admin": "Admin",
@@ -849,5 +852,7 @@
         "generic": "An error occurred. Please try again."
       }
     }
-  }
+  },
+  "confirmdeleteTitle": "confirmDeleteTitle"
 }
+  

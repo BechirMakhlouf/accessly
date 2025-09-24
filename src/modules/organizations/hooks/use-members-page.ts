@@ -48,15 +48,31 @@ export const useMembersPage = () => {
   const router = useRouter();
 
   // State
-  const [searchQuery, setSearchQuery] = useState("bechir");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<OrgRole>("member");
+  // Delete confirmation (shadcn) state managed by the hook
+  const [deleteConfirmState, setDeleteConfirmState] = useState<{ open: boolean; memberId?: string }>({ open: false });
+
   const currentUserRole = useMemo(() => {
     return userRole ? { role: userRole } : null;
   }, [userRole]);
+
+  const pendingDeletionMember = useMemo(() => {
+    if (!deleteConfirmState.memberId) return null;
+    return (members || []).find((m) => m.user_id === deleteConfirmState.memberId) || null;
+  }, [deleteConfirmState.memberId, members]);
+
+  const confirmDeleteMessage = useMemo(() => {
+    const name =
+      pendingDeletionMember?.profile?.full_name || pendingDeletionMember?.profile?.email || "";
+    return name
+      ? t("actions.confirmDeleteDescription", { name })
+      : t("actions.confirmDeleteDescription");
+  }, [pendingDeletionMember, t]);
 
   // Handle redirect if no organization and not loading
   useEffect(() => {
@@ -129,17 +145,29 @@ export const useMembersPage = () => {
     }
   };
 
-  const handleDeleteMember = async (memberId: string) => {
+ const handleDeleteMember = (memberId: string) => {
     if (!org?.id) return;
+    // Open the dialog; page renders ConfirmDialog and binds to these values
+    setDeleteConfirmState({ open: true, memberId });
+  };
 
+  const cancelDelete = () => {
+    setDeleteConfirmState({ open: false, memberId: undefined });
+  };
+
+  const confirmDelete = async () => {
+    if (!org?.id || !deleteConfirmState.memberId) return;
     try {
-      await removeMember(memberId);
+      await removeMember(deleteConfirmState.memberId);
       toast.success(t("actions.memberRemoved"));
     } catch (error) {
       console.error("Failed to remove member:", error);
       toast.error(t("actions.memberRemoveError"));
+    } finally {
+      setDeleteConfirmState({ open: false, memberId: undefined });
     }
   };
+  
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -239,6 +267,14 @@ export const useMembersPage = () => {
     handleSelectMember,
     handleInviteMember,
     handleBulkDelete,
+
+    // Delete confirmation (for page-level ConfirmDialog)
+    deleteConfirm: {
+      open: deleteConfirmState.open,
+      message: confirmDeleteMessage,
+    },
+    cancelDelete,
+    confirmDelete,
 
     // Mutations
     updateRoleMutation: {
