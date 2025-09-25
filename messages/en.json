@@ -852,6 +852,13 @@
         "generic": "An error occurred. Please try again."
       }
     }
-  }
+
+  },
+  "common":{
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDeleteDescription": "Are you sure you want to delete this item?",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "usetranslations": "useTranslations"
 }
-  

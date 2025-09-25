@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface ConfirmDialogProps {
     isOpen: boolean;
@@ -14,24 +15,29 @@ interface ConfirmDialogProps {
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     isOpen,
-    title = "Are you sure?",
-    description = "This action cannot be undone.",
+    title,
+    description,
     onConfirm,
     onCancel,
 }) => {
+    const t = useTranslations("common");
+
+    const dialogTitle = title ?? t("confirmDeleteTitle");
+    const dialogDescription = description ?? t("confirmDeleteDescription");
+
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
+                    <DialogTitle>{dialogTitle}</DialogTitle>
                 </DialogHeader>
-                <p className="py-2">{description}</p>
+                <p className="py-2">{dialogDescription}</p>
                 <DialogFooter className="flex justify-end gap-2">
                     <Button variant="outline" onClick={onCancel}>
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button variant="destructive" onClick={onConfirm}>
-                        Confirm
+                        {t("confirm")}
                     </Button>
                 </DialogFooter>
             </DialogContent>
