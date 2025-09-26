@@ -1,8 +1,8 @@
--- Boards RLS Tests with pgTAP
+-- Boards RLS Tests with pgTAP using Basejump supabase-test-helpers
 -- Covers: insert (org admin), select visibility/member access, update/delete (board admin), board_members CRUD
 
 -- Plan number of tests (adjust if adding more)
-SELECT plan(14);
+SELECT plan(12);
 
 BEGIN;
 
@@ -14,42 +14,33 @@ SELECT tests.create_supabase_user('alice', 'alice@example.com');
 SELECT tests.create_supabase_user('bob', 'bob@example.com');
 SELECT tests.create_supabase_user('charlie', 'charlie@example.com');
 
--- Create organization owned/admin by alice
-SELECT tests.authenticate_as('alice');
-SELECT ok(true, 'Authenticated as alice');
-SELECT tests.clear_authentication();
-
-SELECT tests.authenticate_as('alice');
-SELECT ok(true, 'Authenticate helper re-check');
-SELECT tests.clear_authentication();
-
-SELECT tests.authenticate_as('alice');
-SELECT ok(true, 'Authenticate before create_org');
-SELECT tests.clear_authentication();
-
--- Use helper to create org (alice admin)
-SELECT tests.clear_authentication();
-SELECT tests.create_supabase_user('owner', 'owner@example.com'); -- extra user if needed later
-
--- Actually create org and capture id
-WITH org AS (
-  SELECT tests.create_org('alice') AS id
-)
-SELECT ok((SELECT id IS NOT NULL FROM org), 'Organization created');
-
--- Store org_id for subsequent steps
-DO $$ BEGIN END $$;
-
--- Fetch org_id into a variable via pgtap's set (workaround using temp table)
+-- Prepare temp context to store org/board ids
 DROP TABLE IF EXISTS tmp_ctx;
 CREATE TEMP TABLE tmp_ctx (org_id uuid, board_id uuid);
-INSERT INTO tmp_ctx (org_id) SELECT tests.create_org('alice', 'org_ctx_' || substr(gen_random_uuid()::text,1,6));
 
--- Make bob a member (admin) and charlie a member (non-admin)
-SELECT tests.add_org_member('bob', (SELECT org_id FROM tmp_ctx), 'admin');
-SELECT tests.add_org_member('charlie', (SELECT org_id FROM tmp_ctx), 'member');
+-- Create organization and membership using service role, then add members
+-- If supabase-test-helpers exposes service role auth, prefer it; otherwise direct inserts should run under privileged test role
+SELECT tests.authenticate_as('alice');
+INSERT INTO public.organizations (id, slug, name, created_by)
+VALUES (gen_random_uuid(), 'org_' || substr(gen_random_uuid()::text,1,6), 'Test Org', tests.get_supabase_uid('alice'))
+RETURNING id INTO STRICT (SELECT org_id FROM tmp_ctx);
+-- Capture generated id
+WITH ins AS (
+  INSERT INTO public.organizations (id, slug, name, created_by)
+  VALUES (gen_random_uuid(), 'org_' || substr(gen_random_uuid()::text,1,6), 'Test Org', tests.get_supabase_uid('alice'))
+  RETURNING id
+)
+UPDATE tmp_ctx SET org_id = (SELECT id FROM ins);
 
--- Insert board as alice (org admin) - should succeed
+-- Make alice admin of org, add bob admin and charlie member
+INSERT INTO public.organization_members (user_id, organization_id, role)
+VALUES
+  (tests.get_supabase_uid('alice'), (SELECT org_id FROM tmp_ctx), 'admin'),
+  (tests.get_supabase_uid('bob'),   (SELECT org_id FROM tmp_ctx), 'admin'),
+  (tests.get_supabase_uid('charlie'), (SELECT org_id FROM tmp_ctx), 'member')
+ON CONFLICT (user_id, organization_id) DO NOTHING;
+SELECT tests.clear_authentication();
+
 SELECT tests.authenticate_as('alice');
 INSERT INTO public.boards (organization_id, title, visibility)
 VALUES ((SELECT org_id FROM tmp_ctx), 'Alpha Board', 'public')
@@ -61,6 +52,8 @@ WITH ins AS (
   RETURNING id
 )
 UPDATE tmp_ctx SET board_id = (SELECT id FROM ins);
+-- Make the board private for visibility tests
+UPDATE public.boards SET visibility = 'private' WHERE id = (SELECT board_id FROM tmp_ctx);
 SELECT tests.clear_authentication();
 
 -- Verify board exists
@@ -77,7 +70,6 @@ SELECT ok(EXISTS(
 -- Select rules: member view public or membership
 -- Anonymous cannot see private boards
 SELECT tests.clear_authentication();
-UPDATE public.boards SET visibility = 'private' WHERE id = (SELECT board_id FROM tmp_ctx);
 SELECT is(
   (SELECT count(*) FROM public.boards WHERE id = (SELECT board_id FROM tmp_ctx)),
   0::bigint,
@@ -93,7 +85,7 @@ SELECT is(
 );
 SELECT tests.clear_authentication();
 
--- Non-member cannot see private board (bob not yet a board member)
+-- Non-board-member (charlie) cannot see private board
 SELECT tests.authenticate_as('charlie');
 SELECT is(
   (SELECT count(*) FROM public.boards WHERE id = (SELECT board_id FROM tmp_ctx)),
@@ -127,7 +119,6 @@ SELECT throws_ok(
 );
 SELECT tests.clear_authentication();
 
--- Board admin can delete board
 SELECT tests.authenticate_as('alice');
 DELETE FROM public.boards WHERE id = (SELECT board_id FROM tmp_ctx);
 SELECT ok(NOT EXISTS(SELECT 1 FROM public.boards WHERE id = (SELECT board_id FROM tmp_ctx)), 'Admin deleted board');
