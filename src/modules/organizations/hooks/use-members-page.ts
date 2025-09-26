@@ -13,6 +13,7 @@ import {
 } from "@/modules/organizations";
 import { useOrgInvite } from "./use-org-invite";
 import { routes } from "@/lib/routes";
+import { set } from "zod";
 
 
 const ITEMS_PER_PAGE = 10;
@@ -56,6 +57,7 @@ export const useMembersPage = () => {
   const [inviteRole, setInviteRole] = useState<OrgRole>("member");
   // Delete confirmation (shadcn) state managed by the hook
   const [deleteConfirmState, setDeleteConfirmState] = useState<{ open: boolean; memberId?: string }>({ open: false });
+  const [roleChangeConfirmState, setRoleChangeConfirmState] = useState<{ open: boolean; memberId?: string }>({ open: false });
 
   const currentUserRole = useMemo(() => {
     return userRole ? { role: userRole } : null;
@@ -70,10 +72,22 @@ export const useMembersPage = () => {
     const name =
       pendingDeletionMember?.profile?.full_name || pendingDeletionMember?.profile?.email || "";
     return name
-      ? t("actions.confirmDeleteDescription", { name })
-      : t("actions.confirmDeleteDescription");
+      ? t("actions.confirmDeleteMessage", { name })
+      : t("actions.confirmDeleteMessage");
   }, [pendingDeletionMember, t]);
 
+  const pendingRoleChangeConfirmState = useMemo(() => {
+    if (!roleChangeConfirmState.memberId) return null;
+    return (members || []).find((m) => m.user_id === roleChangeConfirmState.memberId) || null;
+  }, [roleChangeConfirmState.memberId, members]);
+
+  const confirmRoleChangeMessage = useMemo(() => {
+    const name =
+      pendingRoleChangeConfirmState?.profile?.full_name || pendingRoleChangeConfirmState?.profile?.email || "";
+    return name
+      ? t("actions.confirmRoleChangeMessage", { name })
+      : t("actions.confirmRoleChangeMessage");
+  }, [pendingRoleChangeConfirmState, t]);
   // Handle redirect if no organization and not loading
   useEffect(() => {
     if (!org && !isLoading) {
@@ -122,27 +136,10 @@ export const useMembersPage = () => {
   const handleRoleChange = async (memberId: string, newRole: OrgRole) => {
     if (!org?.id) return;
     const memberList = members || [];
+            setRoleChangeConfirmState({ open: true, memberId });
 
-    if (newRole === "member") {
-      const target = memberList.find((m) => m.user_id === memberId);
-      if (target?.role === "admin") {
-        const otherAdmins = memberList.filter((m) =>
-          m.role === "admin" && m.user_id !== memberId
-        );
-        if (otherAdmins.length === 0) {
-          toast.error(t("actions.cannotDemoteLastAdmin"));
-          return;
-        }
-      }
-    }
-
-    try {
-      await updateMemberRole(memberId, newRole);
-      toast.success(t("actions.roleUpdated"));
-    } catch (error) {
-      console.error("Failed to update role:", error);
-      toast.error(t("actions.roleUpdateError"));
-    }
+    setInviteRole(newRole);
+    setRoleChangeConfirmState({ open: true, memberId });
   };
 
  const handleDeleteMember = (memberId: string) => {
@@ -166,7 +163,31 @@ export const useMembersPage = () => {
       setDeleteConfirmState({ open: false, memberId: undefined });
     }
   };
-  
+  const confirmRoleChange = async () => {
+    if (!org?.id || !roleChangeConfirmState.memberId) return;
+    const isLastAdmin =
+      inviteRole === "member" &&
+      pendingRoleChangeConfirmState?.role === "admin" &&
+      (members?.filter((m) => m.role === "admin").length === 1);
+
+    if (isLastAdmin) {
+      toast.error(t("actions.cannotDemoteLastAdmin"));
+      return;
+    }
+
+    try {
+      await updateMemberRole(roleChangeConfirmState.memberId, inviteRole);
+      toast.success(t("actions.roleUpdated"));
+    } catch (error) {
+      console.error("Failed to update member role:", error);
+      toast.error(t("actions.roleUpdateError"));
+    } finally {
+      setRoleChangeConfirmState({ open: false, memberId: undefined });
+    }
+  };
+   const cancelUpdateRole = () => {
+    setRoleChangeConfirmState({ open: false, memberId: undefined });
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -223,6 +244,7 @@ export const useMembersPage = () => {
     }
   };
 
+
   return {
     // State
     searchQuery,
@@ -274,6 +296,13 @@ export const useMembersPage = () => {
     },
     cancelDelete,
     confirmDelete,
+    // Role change confirmation (for page-level ConfirmDialog)
+    updateRoleConfirm: {
+      open: roleChangeConfirmState.open,
+      message: confirmRoleChangeMessage,
+    },
+    cancelUpdateRole,
+    confirmRoleChange,
 
     // Mutations
     updateRoleMutation: {

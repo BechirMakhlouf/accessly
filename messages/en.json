@@ -226,7 +226,9 @@
         "invitationError": "Failed to send invitation",
         "confirmDelete": "Are you sure you want to remove from the organization? This action cannot be undone.",
         "confirmDeleteTitle": "Confirm Member Removal",
-        "confirmDeleteDescription": "This will remove the member from the organization and revoke their access to all resources."
+        "confirmDeleteMessage": "This will remove the member from the organization and revoke their access to all resources.",
+        "confirmRoleChangeMessage" : "Are you sure you want to change this member's role? This action cannot be undone.",
+        "confirmRoleChangeTitle": "Confirm Role Change"
       },
       "roles": {
         "admin": "Admin",

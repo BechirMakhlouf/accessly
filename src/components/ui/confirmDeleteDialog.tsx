@@ -22,8 +22,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
     const t = useTranslations("common");
 
-    const dialogTitle = title ?? t("confirmDeleteTitle");
-    const dialogDescription = description ?? t("confirmDeleteDescription");
+    const dialogTitle = title
+    const dialogDescription = description;
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>

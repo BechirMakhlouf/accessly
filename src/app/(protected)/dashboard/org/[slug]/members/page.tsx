@@ -58,7 +58,9 @@ export default function MembersPage() {
     deleteConfirm,
     cancelDelete,
     confirmDelete,
-
+    updateRoleConfirm,
+    cancelUpdateRole,
+    confirmRoleChange,
     // Mutations
     removeMemberMutation,
     inviteMemberMutation,
@@ -133,14 +135,25 @@ export default function MembersPage() {
           onInvite={handleInviteMember}
         />
 
-        {/* Hook-driven confirmation modal */}
-        <ConfirmDialog
-          isOpen={deleteConfirm.open}
-          title={t("actions.confirmDeleteTitle")}
-          description={deleteConfirm.message}
-          onConfirm={confirmDelete}
-          onCancel={cancelDelete}
-        />
+        {/* Conditionally render confirmation modals */}
+        {deleteConfirm.open && (
+          <ConfirmDialog
+            isOpen={deleteConfirm.open}
+            title={t("actions.confirmDeleteTitle")}
+            description={deleteConfirm.message}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
+        {updateRoleConfirm.open && (
+          <ConfirmDialog
+            isOpen={updateRoleConfirm.open}
+            title={t("actions.confirmRoleChangeTitle")}
+            description={updateRoleConfirm.message}
+            onConfirm={confirmRoleChange}
+            onCancel={cancelUpdateRole}
+          />
+        )}
       </div>
     </div>
   );
