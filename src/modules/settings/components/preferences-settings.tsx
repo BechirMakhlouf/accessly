@@ -1,4 +1,3 @@
-// components/preferences-settings.tsx
 "use client"
 
 import { useEffect, useState } from "react"
@@ -8,11 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { localesInfo } from "@/lib/i18n/config"
+import { localesInfo } from "@/lib/i18n"
 import { useUserSettings, useThemeManager } from "../hooks"
 import { Spinner } from "@/components/spinner"
 
 export function PreferencesSettings() {
+  // Get the settings
   const {
     settings: { data: settings, isLoading: isSettingsLoading },
     setUserLocale: { isPending: isLocaleUpdating, mutateAsync: setUserLocale }
@@ -20,6 +20,7 @@ export function PreferencesSettings() {
 
   const { currentTheme, switchTheme, isUpdating: isThemeUpdating } = useThemeManager();
 
+  // Hydrate local state on settings fetch
   const [localTheme, setLocalTheme] = useState<string>("system")
   const [language, setLanguage] = useState("en")
   const [mounted, setMounted] = useState(false);
@@ -33,6 +34,7 @@ export function PreferencesSettings() {
     }
   }, [settings])
 
+  // Sync local theme with current theme from next-themes
   useEffect(() => {
     if (currentTheme && currentTheme !== localTheme) {
       setLocalTheme(currentTheme);
@@ -41,7 +43,8 @@ export function PreferencesSettings() {
 
   const updating = isThemeUpdating || isLocaleUpdating;
 
-  if (!mounted) return null;
+  if (!mounted)
+    return <></>
 
   const handleThemeChange = (newTheme: string) => {
     setLocalTheme(newTheme);
@@ -50,11 +53,12 @@ export function PreferencesSettings() {
 
   const handleLanguageChange = async (newLanguage: string) => {
     setLanguage(newLanguage);
-
+    
     try {
       await setUserLocale(newLanguage);
       toast.success("Language updated successfully!");
     } catch {
+      // Revert on error
       setLanguage(language);
       toast.error("Failed to update language. Please try again.");
     }
@@ -62,11 +66,10 @@ export function PreferencesSettings() {
 
   return (
     <div className="space-y-6">
-      {/* Theme */}
       <Card>
         <CardHeader>
           <CardTitle>Theme</CardTitle>
-          <CardDescription>Choose your preferred theme.</CardDescription>
+          <CardDescription>Choose your preferred theme for the application.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <RadioGroup value={localTheme} onValueChange={handleThemeChange}>
@@ -79,37 +82,34 @@ export function PreferencesSettings() {
               <Label htmlFor="dark">Dark</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="system" id="system" />
+              <RadioGroupItem className="" value="system" id="system" />
               <Label htmlFor="system">System</Label>
             </div>
           </RadioGroup>
         </CardContent>
       </Card>
 
-      {/* Language */}
       <Card>
         <CardHeader>
           <CardTitle>Language</CardTitle>
-          <CardDescription>Select your preferred language.</CardDescription>
+          <CardDescription>Select your preferred language for the interface.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Label htmlFor="language">Language</Label>
-          <Select value={language} onValueChange={handleLanguageChange}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {localesInfo.map(loc =>
-                <SelectItem key={loc.code} value={loc.code}>
-                  {loc.name}
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="language">Language</Label>
+            <Select value={language} onValueChange={handleLanguageChange} >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {localesInfo.map(loc =>
+                  <SelectItem key={loc.code} value={loc.code}>{loc.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Status */}
       <div className="flex justify-end">
         <Button disabled={updating || isSettingsLoading}>
           {updating && <Spinner />}

@@ -9,8 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 
 export function SettingsProvider() {
-   const { settings } = useUserSettings();
-  const lastLanguage = useRef<string | null>(null);
+  const { settings } = useUserSettings();
   const { setTheme } = useTheme();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -36,13 +35,11 @@ export function SettingsProvider() {
   }, [settings.data?.theme, setTheme]);
 
   // Sync language changes
-   useEffect(() => {
-    if (settings.data?.language && settings.data.language !== lastLanguage.current) {
-      lastLanguage.current = settings.data.language;
-      setAppLocale(settings.data.language as Locale); // <-- change l'UI
+  useEffect(() => {
+    if (settings.data?.language) {
+      setAppLocale(settings.data?.language as Locale);
     }
   }, [settings.data?.language]);
-
 
   return null;
 }
