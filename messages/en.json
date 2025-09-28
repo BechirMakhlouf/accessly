@@ -70,10 +70,7 @@
         "label": "Description",
         "placeholder": "Describe your organization"
       },
-      "buttons": {
-        "saving": "Saving...",
-        "saveChanges": "Save changes"
-      },
+      
       "notFound": "Organization not found"
     },
     "card": {
@@ -346,7 +343,11 @@
             "minLength": "Organization name must be at least 2 characters long",
             "maxLength": "Organization name must be less than 100 characters"
           }
-        },
+        },"buttons": {
+        "saving": "Saving...",
+        "saveChanges": "Save changes"
+      },
+
         "orgDescription": {
           "title": "Organization Description",
           "description": "Update your organization's description. This helps others understand the purpose of your organization.",
