@@ -18,6 +18,7 @@ import * as z from "zod";
 import { OAuthButtons } from "./oauth-buttons";
 import { routes } from "@/lib/routes";
 import { useTranslations } from "next-intl";
+import type { AuthError } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth"; // <-- useAuth hook
 import { useState } from "react";
@@ -33,6 +34,7 @@ export function SignInForm(
 ) {
   const router = useRouter();
   const t = useTranslations("auth");
+  const tAuthErrors = useTranslations("authErrors");
   const auth = useAuth();
 
   const {
@@ -59,11 +61,26 @@ export function SignInForm(
         password: data.password,
       });
       // handle Supabase error shape
-      const error = auth.error;
+      const error = auth.error as AuthError | null;
       if (error) {
+        const mapAuthErrorCode = (code?: string | null) => {
+          switch (code) {
+            case "invalid_credentials":
+            case "user_already_exists":
+            case "user_not_found":
+            case "email_not_confirmed":
+            case "rate_limit_exceeded":
+            case "otp_expired":
+            case "provider_token_error":
+              return code;
+            default:
+              return "unknown_error";
+          }
+        };
+        const codeKey = mapAuthErrorCode(error.code);
         setError("root", {
           type: "server",
-          message: error.message ?? String(error),
+          message: tAuthErrors(codeKey),
         });
         return;
       }
@@ -71,8 +88,8 @@ export function SignInForm(
       reset();
       router.push(routes.protected.dashboard.root);
     } catch (err: unknown) {
-      console.error("error while signing in with oauth", err);
-      setError("root", { type: "server", message: "error while singing in." });
+      console.error("error while signing in", err);
+      setError("root", { type: "server", message: t("genericError") });
     } finally {
       setIsSubmitting(false);
     }

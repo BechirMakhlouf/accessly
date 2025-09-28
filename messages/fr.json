@@ -225,6 +225,7 @@
     "emailLabel": "E-mail",
     "emailPlaceholder": "m@example.com",
     "passwordLabel": "Mot de passe",
+    "genericError": "Une erreur s'est produite.",
     "errors": {
       "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
       "pwShort": "Le mot de passe doit contenir au moins 6 caractères."
@@ -444,6 +445,16 @@
     "title": "Désolé, quelque chose s'est mal passé.",
     "codeErrorPrefix": "Erreur de code :",
     "unspecifiedError": "Une erreur non spécifiée s'est produite."
+  },
+  "authErrors": {
+    "invalid_credentials": "E-mail ou mot de passe invalide.",
+    "user_already_exists": "Un compte avec cet e-mail existe déjà.",
+    "user_not_found": "Aucun compte trouvé avec cet e-mail.",
+    "email_not_confirmed": "Veuillez vérifier votre e-mail pour continuer.",
+    "rate_limit_exceeded": "Trop de tentatives. Réessayez plus tard.",
+    "otp_expired": "Votre code de vérification a expiré.",
+    "provider_token_error": "Impossible de s'authentifier avec le fournisseur.",
+    "unknown_error": "Une erreur est survenue. Veuillez réessayer."
   },
   "forgotPasswordForm": {
     "checkYourEmail": "Vérifiez votre e-mail",

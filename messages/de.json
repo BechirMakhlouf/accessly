@@ -226,6 +226,7 @@
     "emailLabel": "E-Mail",
     "emailPlaceholder": "m@example.com",
     "passwordLabel": "Passwort",
+    "genericError": "Ein Fehler ist aufgetreten.",
     "errors": {
       "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
       "pwShort": "Das Passwort muss mindestens 6 Zeichen lang sein."
@@ -442,6 +443,16 @@
     "title": "Entschuldigung, etwas ist schiefgelaufen.",
     "codeErrorPrefix": "Code-Fehler:",
     "unspecifiedError": "Ein nicht näher bezeichneter Fehler ist aufgetreten."
+  },
+  "authErrors": {
+    "invalid_credentials": "Ungültige E-Mail oder Passwort.",
+    "user_already_exists": "Ein Konto mit dieser E-Mail existiert bereits.",
+    "user_not_found": "Kein Konto mit dieser E-Mail gefunden.",
+    "email_not_confirmed": "Bitte bestätigen Sie Ihre E-Mail, um fortzufahren.",
+    "rate_limit_exceeded": "Zu viele Versuche. Bitte versuchen Sie es später erneut.",
+    "otp_expired": "Ihr Bestätigungscode ist abgelaufen.",
+    "provider_token_error": "Anmeldung beim Anbieter nicht möglich.",
+    "unknown_error": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
   },
   "forgotPasswordForm": {
     "checkYourEmail": "Überprüfen Sie Ihre E-Mail",

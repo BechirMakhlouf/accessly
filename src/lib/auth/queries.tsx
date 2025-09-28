@@ -1,6 +1,5 @@
 import type { Provider } from "@supabase/supabase-js";
 import { TypedSupabaseClient } from "@/lib/supabase/type";
-import { translateErrorCode } from "supabase-error-translator-js";
 import { QueryClient } from "@tanstack/react-query";
 import { Locale } from "../i18n";
 import { getFullRoute, routes } from "../routes";
@@ -19,7 +18,7 @@ export async function signInWithPassword(
     password,
   });
   if (error) {
-    error.message = translateErrorCode(error.code, "auth", messageLocale);
+    // Pass through raw error; UI will localize/auth-specific map
     throw error;
   }
   return data.user;
@@ -32,7 +31,7 @@ export async function signUp(
 ) {
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) {
-    error.message = translateErrorCode(error.code, "auth", messageLocale);
+    // Pass through raw error; UI will localize/auth-specific map
     throw error;
   }
   return data.user ?? null;
@@ -44,7 +43,7 @@ export async function signOut(
 ) {
   const { error } = await supabase.auth.signOut();
   if (error) {
-    error.message = translateErrorCode(error.code, "auth", messageLocale);
+    // Pass through raw error; UI will localize/auth-specific map
     throw error;
   }
   return null;
@@ -60,11 +59,6 @@ export async function signInWithOAuth(
   const result = await signInWithOAuthAction(provider);
 
   if (result?.error) {
-    result.error.message = translateErrorCode(
-      result.error.code,
-      "auth",
-      messageLocale,
-    );
     throw result.error;
   }
   return result?.data;
@@ -84,7 +78,7 @@ export async function signUpWithOAuth(
   const { data, error } = await signInWithOAuthAction(provider);
 
   if (error) {
-    error.message = translateErrorCode(error.code, "auth", messageLocale);
+    // Pass through raw error; UI will localize/auth-specific map
     throw error;
   }
   return data;

@@ -64,9 +64,23 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
 
   const [showPassword, setShowPassword] = useState(false)
   const loading = auth.isSigningUp;
-  const errorMessage =
-    (auth.error as AuthError)?.message ??
-    (auth.error as AuthError)?.message;
+  const tAuthErrors = useTranslations('authErrors');
+  const mapAuthErrorCode = (code?: string | null) => {
+    switch (code) {
+      case 'invalid_credentials':
+      case 'user_already_exists':
+      case 'user_not_found':
+      case 'email_not_confirmed':
+      case 'rate_limit_exceeded':
+      case 'otp_expired':
+      case 'provider_token_error':
+        return code;
+      default:
+        return 'unknown_error';
+    }
+  };
+  const errorCode = (auth.error as AuthError | null)?.code;
+  const errorMessage = errorCode ? tAuthErrors(mapAuthErrorCode(errorCode)) : undefined;
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

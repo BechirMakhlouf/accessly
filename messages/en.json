@@ -529,6 +529,7 @@
     "emailLabel": "Email",
     "emailPlaceholder": "m@example.com",
     "passwordLabel": "Password",
+    "genericError": "An error occurred.",
     "errors": {
       "invalidEmail": "Please enter a valid email address.",
       "pwShort": "Password must be at least 6 characters."
@@ -745,6 +746,16 @@
     "title": "Sorry, something went wrong.",
     "codeErrorPrefix": "Code error:",
     "unspecifiedError": "An unspecified error occurred."
+  },
+  "authErrors": {
+    "invalid_credentials": "Invalid email or password.",
+    "user_already_exists": "An account with this email already exists.",
+    "user_not_found": "No account found with this email.",
+    "email_not_confirmed": "Please verify your email to continue.",
+    "rate_limit_exceeded": "Too many attempts. Please try again later.",
+    "otp_expired": "Your verification code has expired.",
+    "provider_token_error": "Could not authenticate with the provider.",
+    "unknown_error": "Something went wrong. Please try again."
   },
   "forgotPasswordForm": {
     "checkYourEmail": "Check Your Email",
