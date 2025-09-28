@@ -335,12 +335,25 @@
     "settings": {
       "title": "Organization Settings",
       "general": {
-        "title": "General",
+        "title": "Organization Details",
         "orgName": {
           "title": "Organization Name",
           "description": "Update your organization's display name.",
           "label": "Organization Name",
           "saveChanges": "Save Changes",
+          "errors": {
+            "required": "Organization name is required",
+            "minLength": "Organization name must be at least 2 characters long",
+            "maxLength": "Organization name must be less than 100 characters"
+          }
+        },
+        "orgDescription": {
+          "title": "Organization Description",
+          "description": "Update your organization's description. This helps others understand the purpose of your organization.",
+          "label": "Organization Description",
+          "saveChanges": "Save Changes",
+          "tooShort": "Description must be at least 3 characters long.",
+          "tooLong": "Description must be less than 200 characters.",
           "errors": {
             "required": "Organization name is required",
             "minLength": "Organization name must be at least 2 characters long",
