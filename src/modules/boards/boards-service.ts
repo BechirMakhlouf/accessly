@@ -2,6 +2,7 @@ import { TypedSupabaseClient } from "@/lib/supabase/type";
 import {
   Board,
   BoardInput,
+  BoardMember,
   BoardMembership,
   BoardRole,
   BoardUpdate,
@@ -85,7 +86,13 @@ export class BoardsService {
       .insert({ ...input, slug: "" })
       .select("*")
       .single();
-    if (error || !data) return { error: "board.failedToCreate" };
+    if (error || !data)
+{
+      console.log("Failed to create board:", error);
+      return { error: "board.failedToCreate" };
+    }
+
+    
     return { data };
   }
 
@@ -144,15 +151,40 @@ export class BoardsService {
     if (dbError) return { error: "board.failedToUpdate" };
     return { data };
   }
+  async addMember(
+    boardId: string,
+    memberId: string,
+  ): Promise<ServiceResult<BoardMember>> {
+    let role: BoardRole = "member";    
 
+    if (!this.userId) return { error: "board.unauthorized" };
+  
+
+    const userMembership = this.getMyBoardMembership(memberId, boardId);
+    if ((await userMembership).data?.board_role === "admin") {
+      role = "admin";
+    }
+
+    const { data, error: dbError } = await this.supabase
+      .from("board_members")
+      .insert({ board_id: boardId, user_id: memberId, role: role })
+      .select("*")
+      .single();
+    if (dbError) {
+      console.error("Failed to add member to board:", dbError);
+      return { error: "board.failedToLoad" };
+    }
+    return { data };
+  }
+  
   // Check if user has access to a board by slug and organization
   async getBoardMembership(
-    orgId: string,
+    user_id: string,
     boardId: string,
   ): Promise<ServiceResult<boolean>> {
     this.supabase.rpc("get_board_membership", {
       p_board_id: boardId,
-      p_user_id: this.userId,
+      p_user_id: user_id,
     });
     return { data: true };
   }
