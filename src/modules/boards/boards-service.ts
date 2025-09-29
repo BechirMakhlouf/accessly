@@ -88,7 +88,6 @@ export class BoardsService {
       .single();
     if (error || !data)
 {
-      console.log("Failed to create board:", error);
       return { error: "board.failedToCreate" };
     }
 
@@ -151,7 +150,7 @@ export class BoardsService {
     if (dbError) return { error: "board.failedToUpdate" };
     return { data };
   }
-  async addMember(
+  async addBoardMember(
     boardId: string,
     memberId: string,
   ): Promise<ServiceResult<BoardMember>> {
