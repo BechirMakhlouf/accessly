@@ -5,45 +5,41 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useActiveOrg } from "@/modules/organizations"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
-
+import { createOrgNameSchema, type OrgNameFormData } from "../schemas"
 import { isAdminRole } from "../utils"
-import { createOrgDetailsSchema, OrgDetailsFormData } from "@/lib/schemas/orgSchemas" // ajuste ton chemin
 
-export function OrgDetailsSettings() {
+export function OrgNameSettings() {
   const { activeOrganization: org, updateOrganization, isUpdating, currentUserRole } = useActiveOrg();
   const t = useTranslations();
-
-  const canEdit = currentUserRole && isAdminRole(currentUserRole);
-
-  const form = useForm<OrgDetailsFormData>({
-    resolver: zodResolver(createOrgDetailsSchema(t)),
+  
+  const canEditName = currentUserRole && isAdminRole(currentUserRole);
+  
+  const orgNameSchema = createOrgNameSchema(t);
+  
+  const form = useForm<OrgNameFormData>({
+    resolver: zodResolver(orgNameSchema),
     defaultValues: {
       name: org?.name || "",
-      description: org?.description || "",
     },
   });
 
-  // Sync values si org change
+  // Update form when org changes
   useEffect(() => {
-    if (org) {
-      form.reset({
-        name: org.name,
-        description: org.description || "",
-      });
+    if (org?.name) {
+      form.setValue("name", org.name);
     }
-  }, [org, form]);
+  }, [org?.name, form]);
 
-  const onSubmit = async (data: OrgDetailsFormData) => {
-    if (!org || !canEdit) return;
+  const onSubmit = async (data: OrgNameFormData) => {
+    if (!org || !canEditName) return;
 
-    if (data.name === org.name && data.description === (org.description || "")) {
+    if (data.name === org.name) {
       toast.info("No changes to save");
       return;
     }
@@ -51,31 +47,31 @@ export function OrgDetailsSettings() {
     try {
       await updateOrganization({
         name: data.name,
-        description: data.description || null,
       });
-
-      toast.success("Organization details updated successfully");
+      
+      toast.success("Organization name updated successfully");
     } catch (error) {
-      console.error("Failed to update organization details:", error);
-      toast.error("Failed to update organization details");
+      console.error("Failed to update organization name:", error);
+      toast.error("Failed to update organization name");
     }
   };
 
-  if (!org) return null;
+  if (!org) {
+    return null;
+  }
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{t("org.settings.general.orgDetails.title")}</CardTitle>
+              <CardHeader>
+        <CardTitle>{t("org.settings.general.orgName.title")}</CardTitle>
         <CardDescription>
-          {t("org.settings.general.orgDetails.description")}
-          {!canEdit && " Only organization admins can change details."}
+          {t("org.settings.general.orgName.description")}
+          {!canEditName && " Only organization admins can change the name."}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* --- Name --- */}
             <FormField
               control={form.control}
               name="name"
@@ -83,32 +79,15 @@ export function OrgDetailsSettings() {
                 <FormItem>
                   <FormLabel>{t("org.settings.general.orgName.label")}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input 
                       placeholder="Enter organization name"
-                      disabled={!canEdit}
+                      disabled={!canEditName}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* --- Description --- */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("org.settings.general.orgDescription.label")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter description (optional)"
-                      disabled={!canEdit}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <FormMessage>
+                    {form.formState.errors.name && form.formState.errors.name.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -116,16 +95,11 @@ export function OrgDetailsSettings() {
         </Form>
       </CardContent>
       <CardFooter className="border-t px-6 py-4">
-        <Button
+        <Button 
           onClick={form.handleSubmit(onSubmit)}
-          disabled={
-            !canEdit ||
-            isUpdating ||
-            !form.formState.isValid ||
-            (form.watch("name") === org.name && form.watch("description") === (org.description || ""))
-          }
+          disabled={!canEditName || isUpdating || !form.formState.isValid || form.watch("name") === org.name}
         >
-          {isUpdating ? "Saving..." : t("org.settings.general.orgDetails.saveChanges")}
+          {isUpdating ? "Saving..." : t("org.settings.general.orgName.saveChanges")}
         </Button>
       </CardFooter>
     </Card>
