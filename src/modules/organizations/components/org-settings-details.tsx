@@ -106,7 +106,7 @@ export function OrgDetailsSettings() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("orgName.label")}</FormLabel>
+                  <FormLabel>{t("org.label")}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter organization name"
@@ -149,7 +149,7 @@ export function OrgDetailsSettings() {
               onClick={form.handleSubmit(onSubmit)}
               disabled={!isAdmin || isUpdating || !form.formState.isValid || !hasChanges}
             >
-              {isUpdating ? "Saving..." : t("orgName.saveChanges")}
+              {isUpdating ? t("org.saving") : t("org.saveChanges")}
             </Button>
           </TooltipTrigger>
           {!isAdmin && (

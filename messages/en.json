@@ -70,10 +70,6 @@
         "label": "Description",
         "placeholder": "Describe your organization"
       },
-      "buttons": {
-        "saving": "Saving...",
-        "saveChanges": "Save changes"
-      },
       "notFound": "Organization not found"
     },
     "card": {
@@ -336,11 +332,12 @@
       "title": "Organization Settings",
       "general": {
         "title": "Organization Details",
-        "orgName": {
+        "org": {
           "title": "Organization Name",
           "description": "Update your organization's display name.",
           "label": "Organization Name",
           "saveChanges": "Save Changes",
+          "saving": "Saving...",
           "errors": {
             "required": "Organization name is required",
             "minLength": "Organization name must be at least 2 characters long",
@@ -862,5 +859,8 @@
         "generic": "An error occurred. Please try again."
       }
     }
+  },
+  "orgName": {
+    "label": "orgname"
   }
 }

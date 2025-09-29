@@ -22,8 +22,8 @@ export const createOrgDetailsSchema = (t: TranslationFunction) =>
   z.object({
     name: z
       .string()
-      .min(2, t("org.settings.general.orgName.errors.minLength"))
-      .max(100, t("org.settings.general.orgName.errors.maxLength"))
+      .min(2, t("org.settings.general.org.errors.minLength"))
+      .max(100, t("org.settings.general.org.errors.maxLength"))
       .trim(),
 
     description: z
