@@ -1,10 +1,11 @@
 "use client"
 
 import { useActiveOrg } from "@/modules/organizations"
-import { OrgNameSettings } from "./org-name-settings"
 import { OrgSlugSettings } from "./org-slug-settings"
+import { OrgDetailsSettings } from "./org-settings-details"
 import { DeleteOrgDangerZone } from "./delete-org-danger-zone"
 import { Skeleton } from "@/components/ui/skeleton"
+
 
 export function OrgSettings() {
   const { activeOrganization: org, isLoading } = useActiveOrg();
@@ -37,8 +38,8 @@ export function OrgSettings() {
 
   return (
     <div className="space-y-6">
-      <OrgNameSettings />
-      <OrgSlugSettings />
+     <OrgDetailsSettings />
+     <OrgSlugSettings />
       <DeleteOrgDangerZone />
     </div>
   )
