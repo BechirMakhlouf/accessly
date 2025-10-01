@@ -464,10 +464,13 @@
       "create": "New Board",
       "viewAll": "View all boards",
       "updated": "Board updated successfully",
-      "updateError": "Failed to update board"
+      "updateError": "Failed to update board",
+      "failedToAddMember": "Failed to add member to board",
+      "failedToRemoveMember": "Failed to remove member from board"
     },
     "errors": {
       "failedToLoad": "Failed to load boards"
+
     },
     "form": {
       "title": "Create New Board",

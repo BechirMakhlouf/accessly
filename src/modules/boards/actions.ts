@@ -56,3 +56,17 @@ export async function getBoardMembers(boardId: string) {
   const service = await createBoardService();
   return service.getBoardMembers(boardId);
 }
+export async function addBoardMember(
+  boardId: string,
+  userId: string,
+) {
+  const service = await createBoardService();
+  return service.addBoardMember(boardId, userId);
+}
+export async function removeBoardMember(
+  boardId: string,
+  memberId: string,
+) {
+  const service = await createBoardService();
+  return service.removeBoardMember(boardId, memberId);
+}

@@ -175,8 +175,68 @@ export class BoardsService {
     }
     return { data };
   }
-  
-  // Check if user has access to a board by slug and organization
+  async removeBoardMember(
+    boardId: string,
+    memberId: string,
+  ): Promise<ServiceResult<null>> {
+    if (!this.userId) return { error: "board.unauthorized" };
+
+    const { data: currentUserMembership, error: membershipError } = await this
+      .supabase
+      .from("board_members")
+      .select("role")
+      .eq("board_id", boardId)
+      .eq("user_id", this.userId)
+      .single();
+
+    if (
+      membershipError || !currentUserMembership ||
+      currentUserMembership.role !== "admin"
+    ) {
+      return { error: "board.insufficientPermissions" };
+    }
+    
+    const { error: dbError } = await this.supabase
+      .from("board_members")
+      .delete()
+      .eq("board_id", boardId)
+      .eq("user_id", memberId);
+    if (dbError) return { error: "board.failedToLoadMembership" };
+    return { data: null };
+  }
+  //update board member
+  async updateBoardMember(
+    boardId: string,
+    memberId: string,
+    newRole: BoardRole,
+  ): Promise<ServiceResult<BoardMember>> {
+    if (!this.userId) return { error: "board.unauthorized" };
+
+    const { data: currentUserMembership, error: membershipError } = await this
+      .supabase
+      .from("board_members")
+      .select("role")
+      .eq("board_id", boardId)
+      .eq("user_id", this.userId)
+      .single();
+
+    if (
+      membershipError || !currentUserMembership ||
+      currentUserMembership.role !== "admin"
+    ) {
+      return { error: "board.insufficientPermissions" };
+    }
+
+    const { data, error: dbError } = await this.supabase
+      .from("board_members")
+      .update({ role: newRole })
+      .eq("board_id", boardId)
+      .eq("user_id", memberId)
+      .single();
+    if (dbError) return { error: "board.failedToUpdate" };
+    return { data };
+  }
+
   async getBoardMembership(
     user_id: string,
     boardId: string,
