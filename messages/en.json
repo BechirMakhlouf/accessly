@@ -454,10 +454,30 @@
       }
     }
   },
-  "boards": {
+   "boards": {
     "title": "Boards",
     "description": "Manage your boards and collaborate with your team.",
     "selectBoard": "Select Board",
+    "settings": {
+      "general": {
+        "title": "Board Details",
+        "board": {
+          "label": "Board Name"
+        },
+        "boardDescription": {
+          "label": "Description"
+        },
+        "saving": "Saving...",
+        "saveChanges": "Save changes",
+        "adminTooltip": "Only admins can edit board details."
+      }
+    },
+      "visibility": {
+        "label": "Visibility",
+        "private": "Private",
+        "public": "Public",
+        "helpText": "Choose who can see this board."
+      },
     "search": {
       "placeholder": "Search boards...",
       "noResults": {
@@ -474,11 +494,13 @@
       "create": "New Board",
       "viewAll": "View all boards",
       "updated": "Board updated successfully",
+      "deleted": "Board deleted successfully",
       "updateError": "Failed to update board"
     },
     "errors": {
       "failedToLoad": "Failed to load boards"
     },
+    
     "form": {
       "title": "Create New Board",
       "subtitle": "Set up a new board to organize your work.",
@@ -493,12 +515,7 @@
         "placeholder": "Describe what this board is for",
         "helpText": "Optional: Help your team understand the purpose of this board."
       },
-      "visibility": {
-        "label": "Visibility",
-        "private": "Private",
-        "public": "Public",
-        "helpText": "Choose who can see this board."
-      },
+    
       "buttons": {
         "cancel": "Cancel",
         "creating": "Creating...",
@@ -514,14 +531,9 @@
         "visibilityRequired": "Please select a visibility option"
       }
     },
-    "roles": {
-      "admin": "Admin",
-      "member": "Member",
-      "viewer": "Viewer"
-    },
-    "visibility": {
-      "private": "Private",
-      "public": "Public"
+    "validation": {
+      "minLength": "Must be at least 2 characters",
+      "maxLength": "Must be at most 100 characters"
     }
   },
   "sidebar": {

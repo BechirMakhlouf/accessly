@@ -69,8 +69,11 @@ export function BoardsDropdown({ trigger }: { trigger?: ReactNode } = {}) {
     }
 
     const getVisibilityLabel = (visibility: string) => {
-        return visibility === "public" ? t("visibility.public") : t("visibility.private")
-    }
+  return visibility === "public"
+    ? t("visibility.public")
+    : t("visibility.private")
+}
+
 
     if (!activeOrganization) {
         return null // Don't show dropdown if no active organization

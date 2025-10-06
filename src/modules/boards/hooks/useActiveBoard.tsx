@@ -20,12 +20,14 @@ export function useActiveBoard() {
 
     // Extract and validate orgSlug from params (expecting string)
     const orgSlug = getStringFromParamValue(orgSlugParam);
+    
 
     // Extract boardSlug from params (expecting string)
     const boardSlug = getStringFromParamValue(boardSlugParam);
 
     // Check if we're under a board context - if both slugs exist and are strings
     const isUnderBoardContext = !!boardSlug && !!orgSlug;
+    
 
     // Only fetch board data if we're under board context
     const {

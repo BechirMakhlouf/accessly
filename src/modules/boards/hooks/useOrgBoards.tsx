@@ -10,6 +10,7 @@ import {
 } from "../queries";
 import { BoardInput, BoardUpdate } from "../types";
 
+
 /**
  * Hook that provides access to boards for the current active organization.
  * 
@@ -41,7 +42,6 @@ export function useActiveOrgBoards() {
     const createBoardMutation = useMutation({
         ...createBoardMutationOptions(queryClient),
         onSuccess: () => {
-            // Refetch boards after successful creation
             refetch();
         },
     });
@@ -50,7 +50,6 @@ export function useActiveOrgBoards() {
     const updateBoardMutation = useMutation({
         ...updateBoardMutationOptions(queryClient),
         onSuccess: () => {
-            // Refetch boards after successful update
             refetch();
         },
     });
@@ -59,8 +58,7 @@ export function useActiveOrgBoards() {
     const deleteBoardMutation = useMutation({
         ...deleteBoardMutationOptions(queryClient),
         onSuccess: () => {
-            // Refetch boards after successful deletion
-            refetch();
+           refetch();
         },
     });
 

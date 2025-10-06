@@ -99,17 +99,19 @@ export function updateBoardMutationOptions(
 ) {
     return {
         mutationFn: async (
-            { boardId, updates }: { boardId: string; updates: BoardUpdate },
-        ): Promise<Board> => {
-            const result = await updateBoardAction(boardId, updates);
-            if (result.error) {
-                throw new Error(result.error);
-            }
-            if (!result.data) {
-                throw new Error("Failed to update board");
-            }
-            return result.data;
-        },
+  { boardId, updates }: { boardId: string, updates: BoardUpdate },
+): Promise<Board> => {
+  console.log('boardId:', boardId, 'updates:', updates);
+    const result = await updateBoardAction(updates, boardId);
+    console.log('updateBoardAction result in queries:', result);
+
+    if (result.error) throw new Error(result.error);
+    if (!result.data) {
+        throw new Error("Failed to update board");
+    }
+    return result.data;
+},
+
         onSuccess: (updatedBoard: Board) => {
             // Invalidate specific board queries
             queryClient.invalidateQueries({

@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Plus } from "lucide-react";
-import { TranslationFunction } from "@/lib/i18n/types";
 
 import {
   Dialog,
@@ -36,22 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useActiveOrgBoards } from "../hooks/useOrgBoards";
-
-// Validation schema factory
-const createBoardSchema = (t: TranslationFunction) =>
-  z.object({
-    title: z
-      .string()
-      .min(3, t("boards.form.errors.nameTooShort"))
-      .max(100, t("boards.form.errors.nameTooLong")),
-    description: z
-      .string()
-      .max(500, t("boards.form.errors.descriptionTooLong"))
-      .optional(),
-    visibility: z.enum(["public", "private"] as const, {
-      error: t("boards.form.errors.visibilityRequired"),
-    }),
-  });
+import { createBoardSchema } from "../schemas";
 
 type CreateBoardFormData = z.infer<ReturnType<typeof createBoardSchema>>;
 
@@ -170,7 +154,7 @@ export function CreateBoardModal(
               name="visibility"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("boards.form.visibility.label")}</FormLabel>
+                  <FormLabel>{t("boards.visibility.label")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -178,21 +162,21 @@ export function CreateBoardModal(
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
-                          placeholder={t("boards.form.visibility.label")}
+                          placeholder={t("boards.visibility.label")}
                         />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="private">
-                        {t("boards.form.visibility.private")}
+                        {t("boards.visibility.private")}
                       </SelectItem>
                       <SelectItem value="public">
-                        {t("boards.form.visibility.public")}
+                        {t("boards.visibility.public")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    {t("boards.form.visibility.helpText")}
+                    {t("boards.visibility.helpText")}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

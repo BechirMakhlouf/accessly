@@ -23,10 +23,14 @@ export async function createBoard(input: BoardInput) {
   return service.createBoard(input);
 }
 
-export async function updateBoard(boardId: string, updates: BoardUpdate) {
+export async function updateBoard(update: BoardUpdate , id: string ) {
   const service = await createBoardService();
-  return service.updateBoard(boardId, updates);
+  const res = await service.updateBoard(id, update);
+  console.log("updateBoard action result:", res);
+  return res;
 }
+
+
 
 export async function deleteBoard(boardId: string) {
   const service = await createBoardService();

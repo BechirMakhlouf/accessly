@@ -22,6 +22,7 @@ export function useActiveOrg() {
 
   // Get the current organization slug from URL params
   const slug = params.slug as string;
+  
 
   // Get organization data by slug
   const {

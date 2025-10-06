@@ -93,12 +93,29 @@ export class BoardsService {
     boardId: string,
     updates: BoardUpdate,
   ): Promise<ServiceResult<Board>> {
+    // Debug: log inputs
+    console.log("BoardsService.updateBoard called with:", { boardId, updates });
+
     const { data, error: dbError } = await this.supabase
       .from("boards")
       .update(updates)
       .eq("id", boardId)
+      .select("*")
       .single();
-    if (dbError) return { error: "board.failedToUpdate" };
+
+    // Debug: log raw supabase response
+    console.log("BoardsService.updateBoard result:", { data, dbError });
+
+    if (dbError) {
+      console.error("Supabase error updating board:", dbError);
+      return { error: "board.failedToUpdate" };
+    }
+
+    if (!data) {
+      console.warn("Update affected no rows (data is null). Possible causes: wrong id, RLS policy or lack of permissions.");
+      return { error: "board.failedToUpdate" };
+    }
+
     return { data };
   }
 
