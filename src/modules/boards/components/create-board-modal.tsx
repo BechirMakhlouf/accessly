@@ -36,6 +36,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useActiveOrgBoards } from "../hooks/useOrgBoards";
 import { createBoardSchema } from "../schemas";
+import { toast } from "sonner";
 
 type CreateBoardFormData = z.infer<ReturnType<typeof createBoardSchema>>;
 
@@ -60,30 +61,31 @@ export function CreateBoardModal(
     },
   });
 
-  const onSubmit = async (data: CreateBoardFormData) => {
-    if (!activeOrganization?.id) {
-      console.error("No active organization");
-      return;
-    }
+ const onSubmit = async (data: CreateBoardFormData) => {
+  if (!activeOrganization?.id) {
+    console.error("No active organization");
+    return;
+  }
 
-    try {
-      await createBoard({
-        title: data.title,
-        description: data.description || null,
-        visibility: data.visibility,
-        slug: "",
-        organization_id: activeOrganization.id,
-        // organization_id and created_by will be set by the hook
-      });
+  try {
+    await createBoard({
+      title: data.title,
+      description: data.description || null,
+      visibility: data.visibility,
+      slug: "",
+      organization_id: activeOrganization.id,
+    });
 
-      form.reset();
-      setOpen(false);
-      onSuccess?.();
-    } catch (error) {
-      console.error("Failed to create board:", error);
-      // Error handling is done by the hook
-    }
-  };
+    toast.success(t("boards.actions.created")); 
+
+    form.reset();
+    setOpen(false);
+    onSuccess?.();
+  } catch (error) {
+    console.error("Failed to create board:", error);
+    toast.error(t("boards.errors.failedToLoad"));
+  }
+};
 
   const defaultTrigger = (
     <Button variant="ghost" size="sm" className="gap-2">
