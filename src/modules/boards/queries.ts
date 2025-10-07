@@ -101,9 +101,9 @@ export function updateBoardMutationOptions(
         mutationFn: async (
   { boardId, updates }: { boardId: string, updates: BoardUpdate },
 ): Promise<Board> => {
-  console.log('boardId:', boardId, 'updates:', updates);
+  
     const result = await updateBoardAction(updates, boardId);
-    console.log('updateBoardAction result in queries:', result);
+    
 
     if (result.error) throw new Error(result.error);
     if (!result.data) {

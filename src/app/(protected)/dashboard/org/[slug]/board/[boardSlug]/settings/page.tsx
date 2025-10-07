@@ -104,8 +104,8 @@ export default function BoardSettingsPage() {
     }
   };
 
-  if (isLoading) return <p>Loading...</p>;
-  if (!board) return <p>No board found.</p>;
+  if (isLoading) return <p>{t("boards.loading")}</p>;
+  if (!board) return <p>{t("boards.errors.notFound")}</p>;
 
   const hasChanges =
     form.watch("name") !== board.title ||

@@ -103,8 +103,7 @@ export class BoardsService {
       .select("*")
       .single();
 
-    // Debug: log raw supabase response
-    console.log("BoardsService.updateBoard result:", { data, dbError });
+    
 
     if (dbError) {
       console.error("Supabase error updating board:", dbError);
