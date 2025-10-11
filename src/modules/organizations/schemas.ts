@@ -6,10 +6,10 @@ export const createOrgNameSchema = (t: TranslationFunction) => {
   return z.object({
     name: z
       .string()
-      .min(2, t("org.settings.general.orgName.errors.minLength"))
-      .max(100, t("org.settings.general.orgName.errors.maxLength"))
+      .min(2, t("org.settings.general.org.errors.minLength"))
+      .max(100, t("org.settings.general.org.errors.maxLength"))
       .trim()
-      .refine((val) => val.length > 0, t("org.settings.general.orgName.errors.required")),
+      .refine((val) => val.length > 0, t("org.settings.general.org.errors.required")),
   });
 };
 
@@ -41,7 +41,7 @@ export const createOrgDetailsSchema = (t: TranslationFunction) =>
     description: z
       .string()
   });
-};
+
 
 // Type exports
 export type OrgNameFormData = {
