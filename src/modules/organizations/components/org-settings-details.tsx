@@ -149,7 +149,7 @@ export function OrgDetailsSettings() {
               onClick={form.handleSubmit(onSubmit)}
               disabled={!isAdmin || isUpdating || !form.formState.isValid || !hasChanges}
             >
-              {isUpdating ? t("org.saving") : t("org.saveChanges")}
+              {isUpdating ? t("saving") : t("org.saveChanges")}
             </Button>
           </TooltipTrigger>
           {!isAdmin && (

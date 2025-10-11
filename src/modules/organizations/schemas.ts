@@ -1,9 +1,21 @@
 import { z } from "zod";
 import type { TranslationFunction } from "@/lib/i18n";
 
-// --- SLUG ---
-export const createOrgSlugSchema = (t: TranslationFunction) =>
-  z.object({
+// Function to create localized organization name schema
+export const createOrgNameSchema = (t: TranslationFunction) => {
+  return z.object({
+    name: z
+      .string()
+      .min(2, t("org.settings.general.orgName.errors.minLength"))
+      .max(100, t("org.settings.general.orgName.errors.maxLength"))
+      .trim()
+      .refine((val) => val.length > 0, t("org.settings.general.orgName.errors.required")),
+  });
+};
+
+// Function to create localized organization slug schema
+export const createOrgSlugSchema = (t: TranslationFunction) => {
+  return z.object({
     slug: z
       .string()
       .min(2, t("org.settings.general.orgSlug.errors.minLength"))
@@ -16,7 +28,7 @@ export const createOrgSlugSchema = (t: TranslationFunction) =>
         message: t("org.settings.general.orgSlug.errors.noHyphensAtEnds"),
       }),
   });
-
+};
 
 export const createOrgDetailsSchema = (t: TranslationFunction) =>
   z.object({
@@ -28,23 +40,18 @@ export const createOrgDetailsSchema = (t: TranslationFunction) =>
 
     description: z
       .string()
-      .max(500, t("org.settings.general.orgDescription.errors.maxLength"))
-      .optional()
-      .or(z.literal("")), 
   });
+};
 
+// Type exports
+export type OrgNameFormData = {
+  name: string;
+};
 
-// --- DELETE ---
-export const createDeleteOrgConfirmationSchema = () =>
-  z.object({
-    confirmName: z.string(),
-  });
+export type OrgSlugFormData = {
+  slug: string;
+};
 
-// --- TYPES ---
-export type OrgSlugFormData = z.infer<ReturnType<typeof createOrgSlugSchema>>;
-export type OrgDetailsFormData = z.infer<
-  ReturnType<typeof createOrgDetailsSchema>
->;
-export type DeleteOrgConfirmationFormData = z.infer<
-  ReturnType<typeof createDeleteOrgConfirmationSchema>
->;
+export type DeleteOrgConfirmationFormData = {
+  confirmName: string;
+};

@@ -338,31 +338,32 @@
           "description": "Update your organization's display name.",
           "label": "Organization Name",
           "saveChanges": "Save Changes",
-          "saving": "Saving...",
           "errors": {
             "required": "Organization name is required",
             "minLength": "Organization name must be at least 2 characters long",
             "maxLength": "Organization name must be less than 100 characters"
           }
         },
+        "saving": "Saving...",
+        "saveChanges": "Save changes",
         "orgDescription": {
-          "title": "Organization Description",
-          "description": "Update your organization's description. This helps others understand the purpose of your organization.",
-          "label": "Organization Description",
-          "saveChanges": "Save Changes",
-          "tooShort": "Description must be at least 3 characters long.",
-          "tooLong": "Description must be less than 200 characters.",
-          "errors": {
-            "required": "Organization name is required",
-            "minLength": "Organization name must be at least 2 characters long",
-            "maxLength": "Organization name must be less than 100 characters"
-          }
-        },
-        "orgSlug": {
-          "title": "Organization Slug",
-          "description": "Your organization's unique URL identifier. Changing this will update your organization's URL.",
-          "label": "Organization Slug",
-          "saveChanges": "Save Changes",
+        "title": "Organization Description",
+        "description": "Update your organization's description",
+        "label": "Organization Description",
+        "saveChanges": "Save Changes",
+        "tooShort": "Description must be at least 3 characters long",
+        "tooLong": "Description must be less than 200 characters",
+        "errors": {
+          "required": "Organization name is required",
+          "minLength": "Organization name must be at least 2 characters long",
+          "maxLength": "Organization name must be less than 100 characters"
+        }
+      },
+      "orgSlug": {
+        "title": "Organization Slug",
+        "description": "Your organization's unique URL identifier. Changing this will update your organization's URL.",
+        "label": "Organization Slug",
+        "saveChanges": "Save Changes",
           "placeholder": "Enter custom slug",
           "changeSlug": "Change Slug",
           "cancel": "Cancel",
