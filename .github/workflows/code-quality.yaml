@@ -1,10 +1,20 @@
-name: Code Quality
+name: Web App Code Quality
 
 on:
   pull_request:
     branches: [main, develop]
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
   push:
     branches: [main, develop]
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
 
 env:
   NODE_VERSION: "20"
@@ -17,8 +27,8 @@ env:
   MAIL_FROM_DOMAIN: "mail.accessly.me"
 
 jobs:
-  code-quality:
-    name: Code Quality Checks
+  web-code-quality:
+    name: Web App Code Quality Checks
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -32,32 +42,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
 
       - name: Install dependencies
-        run: npm ci --force
+        run: pnpm install --frozen-lockfile
 
-      - name: Run ESLint
-        run: npm run ci:lint
+      - name: Run ESLint for web app
+        run: pnpm --filter @accessly/web run ci:lint
 
-      - name: Type check
-        run: npm run ci:type-check
-
-      - name: Check file sizes
-        run: |
-          echo "📊 Large files (>100KB):"
-          find src/ -type f -size +100k -not -path "*/node_modules/*" | head -5 || echo "No large files found"
+      - name: Type check for web app
+        run: pnpm --filter @accessly/web run ci:type-check
 
       - name: Check for unused imports
         run: |
+          cd apps/web
           npx ts-unused-exports tsconfig.json --excludePathsFromReport=node_modules || true
 
       - name: Check for secrets
         run: |
-          # Check for potential secrets in code
-          if grep -r -i "password\|secret\|key\|token" src/ --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" | grep -v "process.env" | grep -v "//" | grep -v "/*"; then
-            echo "⚠️  Potential secrets found. Please review and use environment variables instead."
+          # Check for potential secrets in web app code
+          if grep -r -i "password\|secret\|key\|token" apps/web/src/ --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.spec.*" | grep -v "process.env" | grep -v "//" | grep -v "/*"; then
+            echo "⚠️  Potential secrets found in web app. Please review and use environment variables instead."
           else
-            echo "✅ No obvious secrets found in code."
+            echo "✅ No obvious secrets found in web app code."
           fi
 

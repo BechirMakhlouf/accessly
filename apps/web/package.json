@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "init-local": "shx cp .env.example .env.local",
     "dev": "next dev --turbopack",
     "devs": "next dev --turbopack --experimental-https",
     "build": "next build",

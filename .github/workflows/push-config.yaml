@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'supabase/config.toml'
   workflow_dispatch:
 
 jobs:
