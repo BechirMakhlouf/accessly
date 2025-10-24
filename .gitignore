@@ -47,3 +47,5 @@ scripts/temp/
 
 # turbo
 .turbo/
+# Turborepo
+.turbo
