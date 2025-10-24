@@ -44,5 +44,6 @@ next-env.d.ts
 scripts/*.log
 scripts/temp/
 
-# intl declarations:
-messages/*.d.json.ts
+
+# turbo
+.turbo/

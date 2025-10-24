@@ -1,0 +1,12 @@
+{
+  "name": "@accessly/typescript-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "base.json",
+  "exports": {
+    ".": "./base.json",
+    "./next": "./next.json",
+    "./node": "./node.json"
+  }
+}
