@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "name": "accessly",
+  "devCommand": "pnpm web:dev",
   "git": {
     "deploymentEnabled": {
       "main": false
@@ -8,5 +9,9 @@
   },
   "ignoreCommand": "pnpm test",
   "installCommand": "pnpm web:install",
-  "buildCommand": "pnpm web:build"
+  "buildCommand": "pnpm web:build",
+  "github": {
+    "enabled": true,
+    "autoJobCancelation": true
+  }
 }
