@@ -11,7 +11,7 @@ fi
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install
+pnpm install
 
 # Run Supabase migrations
 echo "🗄️  Running Supabase migrations..."

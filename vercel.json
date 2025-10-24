@@ -7,6 +7,6 @@
     }
   },
   "ignoreCommand": "pnpm test",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm run build"
+  "installCommand": "pnpm web:install",
+  "buildCommand": "pnpm web:build"
 }
