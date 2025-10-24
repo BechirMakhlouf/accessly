@@ -1,0 +1,62 @@
+name: Build, Push Docker Image (DOCR)
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Generate tags/labels from Git refs
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: registry.digitalocean.com/accessly/accessly-service
+          flavor: |
+            latest=true
+          tags: |
+            type=sha,format=short
+            type=ref,event=tag
+            type=semver,pattern={{version}},event=tag
+            type=semver,pattern={{major}}.{{minor}},event=tag
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry (short-lived creds)
+        run: doctl registry login --expiry-seconds 2400
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
