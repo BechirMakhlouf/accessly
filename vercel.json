@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "accessly",
+  "git": {
+    "deploymentEnabled": {
+      "main": false
+    }
+  },
+  "ignoreCommand": "pnpm test",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build"
+}
