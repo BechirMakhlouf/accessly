@@ -1,4 +1,4 @@
-name: Deploy Web to Vercel
+name: "[Web] Deploy Web to Vercel"
 
 on:
   workflow_dispatch:
