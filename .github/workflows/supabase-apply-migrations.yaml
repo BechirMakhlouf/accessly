@@ -45,9 +45,10 @@ jobs:
   #       if: always()
   #       run: supabase stop
 
-  migrate:
+  apply-migrations:
     # needs: test-migrations
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF}}

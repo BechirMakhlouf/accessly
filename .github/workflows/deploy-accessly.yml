@@ -35,14 +35,14 @@ jobs:
 
   deploy_service:
     needs: [apply_migrations, push_config, deploy_edge_functions]
-    uses: ./.github/workflows/deploy-service-digitalocean.yaml
+    uses: ./.github/workflows/digitalocean-deploy-service.yaml
     with:
       environment: ${{ inputs.environment }}
     secrets: inherit
 
   deploy_web:
     needs: deploy_service
-    uses: ./.github/workflows/deploy-web-vercel.yaml
+    uses: ./.github/workflows/vercel-deploy-web.yaml
     with:
       environment: ${{ inputs.environment }}
     secrets: inherit
