@@ -71,9 +71,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@accessly/eslint-config": "workspace:*",
-    "@accessly/prettier-config": "workspace:*",
-    "@accessly/typescript-config": "workspace:*",
+    "@accessly/config": "workspace:*",
     "@next/bundle-analyzer": "16.0.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@testing-library/dom": "^10.4.1",

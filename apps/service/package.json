@@ -24,9 +24,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@accessly/eslint-config": "workspace:*",
-    "@accessly/prettier-config": "workspace:*",
-    "@accessly/typescript-config": "workspace:*",
+    "@accessly/config": "workspace:*",
     "@types/node": "^24.5.2",
     "eslint": "^9.36.0",
     "prettier": "^3.3.3",

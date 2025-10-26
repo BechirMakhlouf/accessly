@@ -1,3 +1,3 @@
-import config from '@accessly/eslint-config/next';
+import config from '@accessly/config/eslint/next';
 
 export default config;

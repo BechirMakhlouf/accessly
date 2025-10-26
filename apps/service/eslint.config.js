@@ -1,3 +1,3 @@
-import config from '@accessly/eslint-config/node';
+import config from '@accessly/config/eslint/node';
 
 export default config;

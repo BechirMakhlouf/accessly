@@ -1,39 +1,51 @@
 # syntax=docker/dockerfile:1.7
-# Build stage: install deps (cached) and build the app
-FROM oven/bun:1-slim AS build
-WORKDIR /usr/src/app
 
-# Copy only manifests first to maximize Docker layer cache
-# Support both new text lockfile (bun.lock) and older bun.lockb
-COPY package.json bun.lock* ./
+FROM node:20-slim AS base
 
-# Speed up installs on rebuilds with BuildKit cache; requires DOCKER_BUILDKIT=1
-# Use --frozen-lockfile for reproducible installs
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-  bun install --frozen-lockfile
+ENV PNPM_HOME=/pnpm
+ENV PNPM_STORE_PATH=/pnpm/store
+ENV PATH=$PNPM_HOME:$PATH
 
-# Copy the rest of the source and build to ./out via your script
-COPY . .
-ENV NODE_ENV=production
-RUN bun run build
+RUN corepack enable
 
-# Runtime stage: minimal image, non-root, only built artifacts
-FROM oven/bun:1-slim AS runtime
-WORKDIR /usr/src/app
+WORKDIR /repo
 
-# Keep runtime lean: only built output (and any runtime assets if needed)
-COPY --from=build --chown=bun:bun /usr/src/app/out ./out
-COPY --from=build --chown=bun:bun /usr/src/app/package.json ./package.json
+FROM base AS deps
 
-# App config
+WORKDIR /repo
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY apps/service/package.json apps/service/package.json
+COPY packages/types/package.json packages/types/package.json
+COPY packages/config/package.json packages/config/package.json
+
+RUN pnpm fetch --filter @accessly/service...
+
+FROM base AS builder
+
+WORKDIR /repo
+
+COPY --from=deps /pnpm/store /pnpm/store
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY tsconfig.json ./tsconfig.json
+COPY apps/service apps/service
+COPY packages packages
+
+RUN pnpm install --offline --frozen-lockfile --filter @accessly/service...
+RUN pnpm --filter @accessly/service... build
+RUN pnpm deploy --filter @accessly/service --prod /deploy/service
+
+FROM node:20-slim AS runtime
+
 ENV NODE_ENV=production
 ENV PORT=8080
-# Declare envs so they're discoverable; pass real values at runtime
-ENV SUPABASE_URL=""
-ENV SUPABASE_SECRET_KEY=""
 
-# Security: run as the least-privileged built-in 'bun' user
-USER bun
+WORKDIR /app
+
+COPY --from=builder --chown=node:node /deploy/service ./
+
+USER node
 
 EXPOSE 8080
-ENTRYPOINT ["bun", "run", "./out/index.js"]
+CMD ["node", "dist/index.js"]

@@ -1,11 +1,10 @@
 import { config } from "dotenv";
 import { z } from "zod";
 
-console.debug("current environement: ", process.env.NODE_ENV);
 if (process.env.NODE_ENV !== "production") {
   config({
     path: ".env.local",
-    debug: true,
+    quiet: true,
   });
 }
 
