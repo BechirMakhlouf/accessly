@@ -8,14 +8,6 @@ on:
       - "packages/**"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
-  push:
-    branches: [main]
-    paths:
-      - "apps/web/**"
-      - "packages/**"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-
 env:
   NODE_VERSION: "20"
   NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321

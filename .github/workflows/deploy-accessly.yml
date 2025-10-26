@@ -15,26 +15,14 @@ on:
         type: environment
 
 jobs:
-  apply_migrations:
-    uses: ./.github/workflows/supabase-apply-migrations.yaml
-    with:
-      environment: ${{ inputs.environment }}
-    secrets: inherit
-
-  push_config:
-    uses: ./.github/workflows/supabase-push-config.yaml
-    with:
-      environment: ${{ inputs.environment }}
-    secrets: inherit
-
-  deploy_edge_functions:
-    uses: ./.github/workflows/supabase-deploy-edge-functions.yaml
+  deploy_supabase:
+    uses: ./.github/workflows/supabase-deploy.yaml
     with:
       environment: ${{ inputs.environment }}
     secrets: inherit
 
   deploy_service:
-    needs: [apply_migrations, push_config, deploy_edge_functions]
+    needs: deploy_supabase
     uses: ./.github/workflows/digitalocean-deploy-service.yaml
     with:
       environment: ${{ inputs.environment }}
