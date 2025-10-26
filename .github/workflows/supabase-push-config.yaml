@@ -6,8 +6,8 @@ on:
       environment:
         required: true
         type: string
-    paths:
-      - "supabase/config.toml"
+    # paths:
+    #   - "supabase/config.toml"
   workflow_dispatch:
     inputs:
       environment:

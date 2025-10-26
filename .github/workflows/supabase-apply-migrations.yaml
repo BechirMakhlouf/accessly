@@ -6,10 +6,10 @@ on:
       environment:
         required: true
         type: string
-    paths:
-      - "supabase/migrations/**"
-      - "supabase/schemas/**"
-      - "supabase/tests/**"
+    # paths:
+    #   - "supabase/migrations/**"
+    #   - "supabase/schemas/**"
+    #   - "supabase/tests/**"
   workflow_dispatch:
     inputs:
       environment:

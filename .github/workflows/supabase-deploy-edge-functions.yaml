@@ -6,8 +6,8 @@ on:
       environment:
         required: true
         type: string
-    paths:
-      - "supabase/functions/**"
+    # paths:
+    #   - "supabase/functions/**"
   workflow_dispatch:
     inputs:
       environment:
