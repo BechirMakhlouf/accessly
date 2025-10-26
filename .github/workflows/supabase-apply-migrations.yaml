@@ -1,14 +1,21 @@
-name: Apply DB Migrations
-on:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - "supabase/migrations/**"
-  #     - "supabase/schemas/**"
-  #     - "supabase/tests/**"
-  # workflow_dispatch:
+name: "[Supabase] Apply DB Migrations"
 
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/schemas/**"
+      - "supabase/tests/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
 jobs:
   test-migrations:
     runs-on: ubuntu-latest

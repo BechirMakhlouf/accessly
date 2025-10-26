@@ -1,15 +1,23 @@
-name: Push Supabase Config
-# on:
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - 'supabase/config.toml'
-#   workflow_dispatch:
+name: "[Supabase] Push Config"
 
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    paths:
+      - "supabase/config.toml"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
 jobs:
   push-config:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}

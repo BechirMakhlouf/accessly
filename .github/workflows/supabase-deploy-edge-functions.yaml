@@ -1,11 +1,19 @@
-name: Deploy Supabase Edge Function
+name: "[Supabase] Deploy Edge Function"
 
-# on:
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - 'supabase/functions/**'
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    paths:
+      - "supabase/functions/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
 
 jobs:
   deploy:

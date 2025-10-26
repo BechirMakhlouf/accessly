@@ -1,20 +1,20 @@
-name: Web App Code Quality
+name: "[CI] Web App Code Quality"
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
+      - "apps/web/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
   push:
-    branches: [main, develop]
+    branches: [main]
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
+      - "apps/web/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
 
 env:
   NODE_VERSION: "20"
@@ -70,4 +70,3 @@ jobs:
           else
             echo "✅ No obvious secrets found in web app code."
           fi
-

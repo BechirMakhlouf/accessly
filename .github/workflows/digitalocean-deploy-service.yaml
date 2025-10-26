@@ -1,19 +1,7 @@
-name: Deploy Service Image
+name: "[Service] Deploy Service Image"
 
-# on:
-#   push:
-#     branches:
-#       - main
-#     tags:
-#       - "v*"
-#   workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  group: service-${{ github.ref }}
-  cancel-in-progress: false
+on:
+  workflow_dispatch:
 
 jobs:
   build-and-push:
