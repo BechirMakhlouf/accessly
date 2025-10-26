@@ -1,11 +1,11 @@
 name: Push Supabase Config
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'supabase/config.toml'
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - 'supabase/config.toml'
+#   workflow_dispatch:
 
 jobs:
   push-config:

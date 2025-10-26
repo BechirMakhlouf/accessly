@@ -1,0 +1,14 @@
+name: Production Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Accessly Production Release
+    uses: ./.github/workflows/deploy-accessly.yml
+    secrets: inherit
+    with:
+      environment: "production"
