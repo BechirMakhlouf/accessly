@@ -7,12 +7,18 @@ on:
         description: "Target environment name"
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
 
 jobs:
   apply_migrations:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    uses: ./.github/workflows/supabase/apply-migrations.yaml
+    uses: ./.github/workflows/supabase-apply-migrations.yaml
     secrets:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
@@ -22,7 +28,7 @@ jobs:
   push_config:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    uses: ./.github/workflows/production/push-config.yaml
+    uses: ./.github/workflows/supabase-push-config.yaml
     secrets:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
@@ -37,7 +43,7 @@ jobs:
   deploy_edge_functions:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    uses: ./.github/workflows/supabase/deploy-edge-functions.yaml
+    uses: ./.github/workflows/supabase-deploy-edge-functions.yaml
     secrets:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
@@ -46,12 +52,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [apply_migrations, push_config, deploy_edge_functions]
     environment: ${{ inputs.environment }}
-    uses: ./apps/service/.github/workflows/deploy-service-digitalocean.yaml
+    uses: ./.github/workflows/deploy-service-digitalocean.yaml
     secrets:
       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
   deploy_web:
-    runs-on: ubuntu-latest
     needs: deploy_service
     environment: ${{ inputs.environment }}
     uses: ./.github/workflows/deploy-web-vercel.yaml
@@ -59,3 +64,4 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+

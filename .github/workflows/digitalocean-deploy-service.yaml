@@ -1,12 +1,12 @@
 name: Deploy Service Image
 
-on:
-  push:
-    branches:
-      - main
-    tags:
-      - "v*"
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - main
+#     tags:
+#       - "v*"
+#   workflow_dispatch:
 
 permissions:
   contents: read
@@ -61,4 +61,3 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
-
