@@ -13,7 +13,6 @@ on:
         required: true
         type: string
 
-# --spec ${{ vars.spec_file_name }} \
 jobs:
   build-image:
     name: Build Docker Image

@@ -23,7 +23,7 @@ jobs:
 
   deploy_service:
     needs: deploy_supabase
-    uses: ./.github/workflows/digitalocean-deploy-service.yaml
+    uses: ./.github/workflows/digitalocean-build-deploy-service.yaml
     with:
       environment: ${{ inputs.environment }}
     secrets: inherit
