@@ -1,4 +1,4 @@
-name: "[Service] Push Service Image to Digital Ocean"
+name: "[Service] Push Service Image to Digital Ocean Registry"
 
 on:
   workflow_call:
@@ -38,7 +38,7 @@ jobs:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          token: ${{ secrets.DIGITAL_OCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry (short-lived creds)
         run: doctl registry login --expiry-seconds 2400
