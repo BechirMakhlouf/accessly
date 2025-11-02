@@ -1,16 +1,16 @@
 name: Deploy Staging
 
 on:
-  push:
-    branches:
-      - main
+  #   push:
+  #     branches:
+  #       - main
+  workflow_dispatch:
 
 concurrency: staging-deploy-${{ github.ref }}
 
-env:
-  STAGING_ENVIRONMENT: staging
-
 jobs:
+  env:
+    STAGING_ENVIRONMENT: staging
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
