@@ -1,0 +1,41 @@
+name: "[Service] Build and Deploy to Digital Ocean"
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  build-image:
+    name: Build Docker Image
+    uses: ./.github/workflows/digitalocean-push-service-docker-image.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+
+  deploy-image:
+    name: Deploy Service to DigitalOcean
+    needs: build-image
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Set up doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Deploy to DigitalOcean
+        run: |
+          doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }} \
+          --spec .do/app.yaml \
+          --env ${{ inputs.environment }}
+

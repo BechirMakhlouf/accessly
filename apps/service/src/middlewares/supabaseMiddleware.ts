@@ -3,10 +3,11 @@ import type { MiddlewareHandler } from "hono";
 import { setCookie } from "hono/cookie";
 
 import { env } from "../lib/env";
-import { Database } from "../types/database.types";
 import { mapSameSite } from "../utils/mapCookieSameSite";
+import type { Database } from "@accessly/types";
 
 export const supabaseMiddleware: () => MiddlewareHandler =
+
   () => async (c, next) => {
     const supabase = createServerClient<Database>(
       env.SUPABASE_URL,

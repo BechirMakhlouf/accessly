@@ -6,6 +6,7 @@ import { env } from "./lib/env";
 import { supabaseMiddleware } from "./middlewares/supabaseMiddleware";
 import { slackRoute } from "./routes/slack.routes";
 
+
 const app = new Hono();
 
 app.use("*", etag(), logger(), supabaseMiddleware());

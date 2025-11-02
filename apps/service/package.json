@@ -2,10 +2,9 @@
   "name": "@accessly/service",
   "type": "module",
   "scripts": {
-    "-- NEXT --": "",
     "init-local": "shx cp .env.example .env.local",
     "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format esm",
+    "build": "node build.ts",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -17,8 +16,8 @@
     "@accessly/types": "workspace:*",
     "@hono/node-server": "^1.19.5",
     "@slack/web-api": "^7.9.3",
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.55.0",
+    "@supabase/ssr": "latest",
+    "@supabase/supabase-js": "latest",
     "dotenv": "^17.2.2",
     "hono": "^4.9.0",
     "zod": "^4.0.17"
@@ -26,11 +25,11 @@
   "devDependencies": {
     "@accessly/config": "workspace:*",
     "@types/node": "^24.5.2",
+    "esbuild": "^0.25.11",
     "eslint": "^9.36.0",
     "prettier": "^3.3.3",
     "shx": "^0.4.0",
     "tsx": "^4.20.5",
-    "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   }
 }

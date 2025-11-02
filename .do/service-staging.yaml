@@ -1,0 +1,49 @@
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+domains:
+  - domain: staging.service.accessly.me
+    type: PRIMARY
+features:
+  - buildpack-stack=ubuntu-22
+ingress:
+  rules:
+    - component:
+        name: accessly-service
+      match:
+        authority:
+          exact: ""
+        path:
+          prefix: /
+name: staging-accessly-service
+region: fra
+services:
+  - envs:
+      - key: SUPABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        value: http://127.0.0.1:54321
+      - key: SUPABASE_SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - key: SLACK_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        value: xoxb-9366747387440-9340339162499-ujPmgjRlZgyvcoKIQ63vDGwL
+      - key: PORT
+        scope: RUN_AND_BUILD_TIME
+        value: "8080"
+    health_check:
+      failure_threshold: 9
+      http_path: /health
+      period_seconds: 10
+      success_threshold: 1
+      timeout_seconds: 1
+    http_port: 8080
+    image:
+      deploy_on_push: {}
+      registry: accessly
+      registry_type: DOCR
+      repository: accessly-service
+      tag: latest
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    name: accessly-service

@@ -1,12 +1,7 @@
-import { config } from "dotenv";
 import { z } from "zod";
-
-if (process.env.NODE_ENV !== "production") {
-  config({
-    path: ".env.local",
-    quiet: true,
-  });
-}
+// import { config } from "dotenv";
+//
+// config();
 
 const EnvSchema = z.object({
   PORT: z.coerce.number().default(3030),

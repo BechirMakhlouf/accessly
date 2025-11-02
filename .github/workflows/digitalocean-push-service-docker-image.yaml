@@ -1,4 +1,4 @@
-name: "[Service] Deploy Service Image"
+name: "[Service] Deploy Service Image to Digital Ocean"
 
 on:
   workflow_call:
