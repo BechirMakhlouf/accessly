@@ -18,6 +18,8 @@ jobs:
   build-image:
     name: Build Docker Image
     uses: ./.github/workflows/digitalocean-push-service-docker-image.yaml
+    with:
+      environment: ${{ inputs.environment }}
     secrets: inherit
 
   deploy-image:
@@ -34,6 +36,4 @@ jobs:
 
       - name: Deploy to DigitalOcean
         run: |
-          doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }} \
-          --spec .do/app.yaml \
-          --env ${{ inputs.environment }}
+          doctl apps create-deployment ${{ secrets.DIGITAL_OCEAN_SERVICE_APP_ID }}
