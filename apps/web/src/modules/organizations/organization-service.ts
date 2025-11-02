@@ -15,7 +15,7 @@ import type {
 } from "./types";
 import { isNullOrUndefined, validateEmail } from "@/lib/utils";
 import { isDuplicateKeyError, isRlsError } from "@/lib/supabase/utils";
-
+import { useTranslations } from "next-intl";
 import type { IMailService } from "@/lib/mail";
 import { sendInviteMemberEmail } from "./emails";
 import { getFullRoute, routes } from "@/lib/routes";
@@ -40,6 +40,7 @@ export class OrganizationService {
   private supabaseAdmin: TypedSupabaseClient;
   private emailService: IMailService;
   private userId: string;
+  
 
   constructor(options: OrganizationServiceOptions) {
     this.supabase = options.supabase;
@@ -123,9 +124,9 @@ export class OrganizationService {
       console.error("Error while creating organization:", error);
       return { error: "org.failedToCreate" };
     }
-        await createNotificationService();
-
-eventBus.emit("organization_created_backend", { message: `Organization "${newOrg.name}" created successfully!`, type: "info", userId: this.userId });
+    await createNotificationService();
+    let message = newOrg.name+ " organization created successfully.";
+    eventBus.emit("organization_created_backend", { message: message, type: "info", userId: this.userId });
     return this.getBySlug(slug);
   }
   
