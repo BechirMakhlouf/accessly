@@ -1,4 +1,4 @@
-name: "[Service] Build and Deploy to Digital Ocean"
+name: "[Service] Build and Deploy Service to Digital Ocean"
 
 on:
   workflow_dispatch:
@@ -13,12 +13,11 @@ on:
         required: true
         type: string
 
+# --spec ${{ vars.spec_file_name }} \
 jobs:
   build-image:
     name: Build Docker Image
     uses: ./.github/workflows/digitalocean-push-service-docker-image.yaml
-    with:
-      environment: ${{ inputs.environment }}
     secrets: inherit
 
   deploy-image:
@@ -38,4 +37,3 @@ jobs:
           doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }} \
           --spec .do/app.yaml \
           --env ${{ inputs.environment }}
-
