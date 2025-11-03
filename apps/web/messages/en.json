@@ -169,6 +169,7 @@
     "notFound": "Organization not found",
     "unauthorized": "You are not authorized to access this organization",
     "failedToLoad": "Failed to load organization",
+    "notificationsMessage": "You have been added to the organization ",
     "failedToUpdate": "Failed to update organization",
     "failedToCreate": "Failed to create organization",
     "failedToDelete": "Failed to delete organization",
@@ -863,5 +864,11 @@
         "generic": "An error occurred. Please try again."
       }
     }
-  }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Manage your notification preferences.",
+    "label": "Notification Preferences",
+    "failedToLoad": "Failed to load notifications"
+      }
 }

@@ -124,7 +124,6 @@ export class OrganizationService {
       console.error("Error while creating organization:", error);
       return { error: "org.failedToCreate" };
     }
-    await createNotificationService();
     let message = newOrg.name+ " organization created successfully.";
     eventBus.emit("organization_created_backend", { message: message, type: "info", userId: this.userId });
     return this.getBySlug(slug);
