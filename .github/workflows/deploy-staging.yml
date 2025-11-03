@@ -1,16 +1,14 @@
 name: Deploy Staging
 
 on:
-  #   push:
-  #     branches:
-  #       - main
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency: staging-deploy-${{ github.ref }}
 
 jobs:
-  env:
-    STAGING_ENVIRONMENT: staging
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -61,7 +59,7 @@ jobs:
     if: needs.detect-changes.outputs.supabase_config == 'true'
     uses: ./.github/workflows/supabase-push-config.yaml
     with:
-      environment: ${{ env.STAGING_ENVIRONMENT }}
+      environment: staging
     secrets: inherit
 
   supabase-migrations:
@@ -69,18 +67,16 @@ jobs:
     if: needs.detect-changes.outputs.supabase_migrations == 'true'
     uses: ./.github/workflows/supabase-apply-migrations.yaml
     with:
-      environment: ${{ env.STAGING_ENVIRONMENT }}
+      environment: staging
     secrets: inherit
 
   supabase-functions:
     needs:
       - detect-changes
-      - supabase-config
-      - supabase-migrations
     if: needs.detect-changes.outputs.supabase_functions == 'true'
     uses: ./.github/workflows/supabase-deploy-edge-functions.yaml
     with:
-      environment: ${{ env.STAGING_ENVIRONMENT }}
+      environment: staging
     secrets: inherit
 
   deploy-service:
@@ -90,9 +86,9 @@ jobs:
       - supabase-migrations
       - supabase-functions
     if: needs.detect-changes.outputs.service == 'true'
-    uses: ./.github/workflows/digitalocean-deploy-service.yaml
+    uses: ./.github/workflows/digitalocean-build-deploy-service.yaml
     with:
-      environment: ${{ env.STAGING_ENVIRONMENT }}
+      environment: staging
     secrets: inherit
 
   deploy-web:
@@ -102,5 +98,5 @@ jobs:
     if: needs.detect-changes.outputs.web == 'true'
     uses: ./.github/workflows/vercel-deploy-web.yaml
     with:
-      environment: ${{ env.STAGING_ENVIRONMENT }}
+      environment: staging
     secrets: inherit
