@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-image:
-    name: Build Docker Image
+    name: Build and Push Docker Image
     uses: ./.github/workflows/digitalocean-push-service-docker-image.yaml
     with:
       environment: ${{ inputs.environment }}
