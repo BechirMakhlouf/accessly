@@ -1,5 +1,5 @@
 {
-  "extends": "@accessly/typescript-config/node",
+  "extends": "@accessly/config/typescript/node",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",

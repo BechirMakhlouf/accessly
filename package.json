@@ -26,10 +26,12 @@
     "web:install": "pnpm install --filter=@accessly/web --frozen-lockfile",
     "web:build": "turbo run build --filter=@accessly/web",
     "web:test": "pnpm --filter @accessly/web test",
+    "web:dev": "pnpm --filter @accessly/web dev",
     "-- SERVICE --": "",
     "service:build": "turbo run build --filter=@accessly/service",
     "service:install": "pnpm install --filter=@accessly/service --frozen-lockfile",
     "service:test": "pnpm --filter @accessly/web test",
+    "service:dev": "pnpm --filter @accessly/service dev",
     "-- SUPABASE --": "",
     "supabase:types:local": "supabase gen types typescript --local --schema public,auth,storage > packages/types/database.types.ts",
     "supabase:stop": "supabase stop",
@@ -54,9 +56,7 @@
     "ci:full": "run-s ci:lint ci:type-check ci:build"
   },
   "devDependencies": {
-    "@accessly/eslint-config": "workspace:*",
-    "@accessly/prettier-config": "workspace:*",
-    "@accessly/typescript-config": "workspace:*",
+    "@accessly/config": "workspace:*",
     "@turbo/gen": "^1.12.4",
     "eslint": "^9.36.0",
     "prettier": "^3.3.3",

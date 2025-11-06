@@ -1,5 +1,5 @@
 {
-  "extends": "./packages/typescript-config/base.json",
+  "extends": "@accessly/config/typescript/base",
   "exclude": [
     "scripts/"
   ]

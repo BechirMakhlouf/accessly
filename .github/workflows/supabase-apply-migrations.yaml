@@ -1,0 +1,67 @@
+name: "[Supabase] Apply DB Migrations"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    # paths:
+    #   - "supabase/migrations/**"
+    #   - "supabase/schemas/**"
+    #   - "supabase/tests/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
+jobs:
+  # test-migrations:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  #     SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF}}
+  #     SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+  #     SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: supabase/setup-cli@v1
+  #       with:
+  #         version: latest
+  #
+  #     - name: Cache Docker images
+  #       uses: ScribeMD/docker-cache@0.5.0
+  #       with:
+  #         key: docker-${{ runner.os }}-${{ hashFiles('.github/workflows/apply-migrations.yaml') }}
+  #
+  #     - name: Start Supabase locally
+  #       run: supabase start -x=storage-api,imgproxy,inbucket,edge-runtime,logflare,vector
+  #
+  #     - name: Run database tests
+  #       run: supabase test db
+  #
+  #     - name: Stop Supabase
+  #       if: always()
+  #       run: supabase stop
+
+  apply-migrations:
+    # needs: test-migrations
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF}}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link to production project
+        run: supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD
+
+      - name: Apply migrations to production
+        run: supabase db push --include-all

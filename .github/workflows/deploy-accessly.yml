@@ -1,0 +1,36 @@
+name: Accessly Release Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Target environment name"
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
+
+jobs:
+  deploy_supabase:
+    uses: ./.github/workflows/supabase-deploy.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+
+  deploy_service:
+    needs: deploy_supabase
+    uses: ./.github/workflows/digitalocean-build-deploy-service.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+
+  deploy_web:
+    needs: deploy_service
+    uses: ./.github/workflows/vercel-deploy-web.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit

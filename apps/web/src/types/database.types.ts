@@ -269,171 +269,6 @@ export type Database = {
           },
         ]
       }
-      oauth_authorizations: {
-        Row: {
-          approved_at: string | null
-          authorization_code: string | null
-          authorization_id: string
-          client_id: string
-          code_challenge: string | null
-          code_challenge_method:
-            | Database["auth"]["Enums"]["code_challenge_method"]
-            | null
-          created_at: string
-          expires_at: string
-          id: string
-          redirect_uri: string
-          resource: string | null
-          response_type: Database["auth"]["Enums"]["oauth_response_type"]
-          scope: string
-          state: string | null
-          status: Database["auth"]["Enums"]["oauth_authorization_status"]
-          user_id: string | null
-        }
-        Insert: {
-          approved_at?: string | null
-          authorization_code?: string | null
-          authorization_id: string
-          client_id: string
-          code_challenge?: string | null
-          code_challenge_method?:
-            | Database["auth"]["Enums"]["code_challenge_method"]
-            | null
-          created_at?: string
-          expires_at?: string
-          id: string
-          redirect_uri: string
-          resource?: string | null
-          response_type?: Database["auth"]["Enums"]["oauth_response_type"]
-          scope: string
-          state?: string | null
-          status?: Database["auth"]["Enums"]["oauth_authorization_status"]
-          user_id?: string | null
-        }
-        Update: {
-          approved_at?: string | null
-          authorization_code?: string | null
-          authorization_id?: string
-          client_id?: string
-          code_challenge?: string | null
-          code_challenge_method?:
-            | Database["auth"]["Enums"]["code_challenge_method"]
-            | null
-          created_at?: string
-          expires_at?: string
-          id?: string
-          redirect_uri?: string
-          resource?: string | null
-          response_type?: Database["auth"]["Enums"]["oauth_response_type"]
-          scope?: string
-          state?: string | null
-          status?: Database["auth"]["Enums"]["oauth_authorization_status"]
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oauth_authorizations_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "oauth_clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "oauth_authorizations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      oauth_clients: {
-        Row: {
-          client_name: string | null
-          client_secret_hash: string | null
-          client_type: Database["auth"]["Enums"]["oauth_client_type"]
-          client_uri: string | null
-          created_at: string
-          deleted_at: string | null
-          grant_types: string
-          id: string
-          logo_uri: string | null
-          redirect_uris: string
-          registration_type: Database["auth"]["Enums"]["oauth_registration_type"]
-          updated_at: string
-        }
-        Insert: {
-          client_name?: string | null
-          client_secret_hash?: string | null
-          client_type?: Database["auth"]["Enums"]["oauth_client_type"]
-          client_uri?: string | null
-          created_at?: string
-          deleted_at?: string | null
-          grant_types: string
-          id: string
-          logo_uri?: string | null
-          redirect_uris: string
-          registration_type: Database["auth"]["Enums"]["oauth_registration_type"]
-          updated_at?: string
-        }
-        Update: {
-          client_name?: string | null
-          client_secret_hash?: string | null
-          client_type?: Database["auth"]["Enums"]["oauth_client_type"]
-          client_uri?: string | null
-          created_at?: string
-          deleted_at?: string | null
-          grant_types?: string
-          id?: string
-          logo_uri?: string | null
-          redirect_uris?: string
-          registration_type?: Database["auth"]["Enums"]["oauth_registration_type"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      oauth_consents: {
-        Row: {
-          client_id: string
-          granted_at: string
-          id: string
-          revoked_at: string | null
-          scopes: string
-          user_id: string
-        }
-        Insert: {
-          client_id: string
-          granted_at?: string
-          id: string
-          revoked_at?: string | null
-          scopes: string
-          user_id: string
-        }
-        Update: {
-          client_id?: string
-          granted_at?: string
-          id?: string
-          revoked_at?: string | null
-          scopes?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oauth_consents_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "oauth_clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "oauth_consents_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       one_time_tokens: {
         Row: {
           created_at: string
@@ -628,7 +463,6 @@ export type Database = {
           id: string
           ip: unknown | null
           not_after: string | null
-          oauth_client_id: string | null
           refreshed_at: string | null
           tag: string | null
           updated_at: string | null
@@ -642,7 +476,6 @@ export type Database = {
           id: string
           ip?: unknown | null
           not_after?: string | null
-          oauth_client_id?: string | null
           refreshed_at?: string | null
           tag?: string | null
           updated_at?: string | null
@@ -656,7 +489,6 @@ export type Database = {
           id?: string
           ip?: unknown | null
           not_after?: string | null
-          oauth_client_id?: string | null
           refreshed_at?: string | null
           tag?: string | null
           updated_at?: string | null
@@ -664,13 +496,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "sessions_oauth_client_id_fkey"
-            columns: ["oauth_client_id"]
-            isOneToOne: false
-            referencedRelation: "oauth_clients"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "sessions_user_id_fkey"
             columns: ["user_id"]
@@ -715,21 +540,18 @@ export type Database = {
       sso_providers: {
         Row: {
           created_at: string | null
-          disabled: boolean | null
           id: string
           resource_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
-          disabled?: boolean | null
           id: string
           resource_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
-          disabled?: boolean | null
           id?: string
           resource_id?: string | null
           updated_at?: string | null
@@ -877,10 +699,6 @@ export type Database = {
       code_challenge_method: "s256" | "plain"
       factor_status: "unverified" | "verified"
       factor_type: "totp" | "webauthn" | "phone"
-      oauth_authorization_status: "pending" | "approved" | "denied" | "expired"
-      oauth_client_type: "public" | "confidential"
-      oauth_registration_type: "dynamic" | "manual"
-      oauth_response_type: "code"
       one_time_token_type:
         | "confirmation_token"
         | "reauthentication_token"
@@ -1028,39 +846,6 @@ export type Database = {
           },
         ]
       }
-      notifications: {
-        Row: {
-          id: string
-          message: string
-          read_at: string | null
-          sent_at: string
-          status: Database["public"]["Enums"]["notification_status"]
-          type: Database["public"]["Enums"]["notification_type"]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          message: string
-          read_at?: string | null
-          sent_at?: string
-          status?: Database["public"]["Enums"]["notification_status"]
-          type: Database["public"]["Enums"]["notification_type"]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          message?: string
-          read_at?: string | null
-          sent_at?: string
-          status?: Database["public"]["Enums"]["notification_status"]
-          type?: Database["public"]["Enums"]["notification_type"]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       organization_members: {
         Row: {
           created_at: string
@@ -1198,10 +983,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_boards: {
-        Args: { p_action: string; p_board_id: string; p_user_id: string }
-        Returns: boolean
-      }
       generate_board_slug: {
         Args: { p_title: string }
         Returns: string
@@ -1227,7 +1008,43 @@ export type Database = {
       }
       get_user_by_email: {
         Args: { p_email: string }
-        Returns: Database["auth"]["Tables"]["users"]["Row"]
+        Returns: {
+          aud: string | null
+          banned_until: string | null
+          confirmation_sent_at: string | null
+          confirmation_token: string | null
+          confirmed_at: string | null
+          created_at: string | null
+          deleted_at: string | null
+          email: string | null
+          email_change: string | null
+          email_change_confirm_status: number | null
+          email_change_sent_at: string | null
+          email_change_token_current: string | null
+          email_change_token_new: string | null
+          email_confirmed_at: string | null
+          encrypted_password: string | null
+          id: string
+          instance_id: string | null
+          invited_at: string | null
+          is_anonymous: boolean
+          is_sso_user: boolean
+          is_super_admin: boolean | null
+          last_sign_in_at: string | null
+          phone: string | null
+          phone_change: string | null
+          phone_change_sent_at: string | null
+          phone_change_token: string | null
+          phone_confirmed_at: string | null
+          raw_app_meta_data: Json | null
+          raw_user_meta_data: Json | null
+          reauthentication_sent_at: string | null
+          reauthentication_token: string | null
+          recovery_sent_at: string | null
+          recovery_token: string | null
+          role: string | null
+          updated_at: string | null
+        }
       }
       is_board_member: {
         Args: { board_id: string }
@@ -1245,8 +1062,6 @@ export type Database = {
     Enums: {
       boards_role: "admin" | "member"
       boards_visibility: "public" | "private"
-      notification_status: "archived" | "sent"
-      notification_type: "info" | "warning"
       org_invite_status: "pending" | "accepted" | "rejected" | "revoked"
       organization_role: "admin" | "member"
     }
@@ -1267,7 +1082,6 @@ export type Database = {
           owner: string | null
           owner_id: string | null
           public: boolean | null
-          type: Database["storage"]["Enums"]["buckettype"]
           updated_at: string | null
         }
         Insert: {
@@ -1280,7 +1094,6 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
-          type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
         }
         Update: {
@@ -1293,111 +1106,9 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
-          type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
         }
         Relationships: []
-      }
-      buckets_analytics: {
-        Row: {
-          created_at: string
-          format: string
-          id: string
-          type: Database["storage"]["Enums"]["buckettype"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          format?: string
-          id: string
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          format?: string
-          id?: string
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      iceberg_namespaces: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "iceberg_namespaces_bucket_id_fkey"
-            columns: ["bucket_id"]
-            isOneToOne: false
-            referencedRelation: "buckets_analytics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      iceberg_tables: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          id: string
-          location: string
-          name: string
-          namespace_id: string
-          updated_at: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          id?: string
-          location: string
-          name: string
-          namespace_id: string
-          updated_at?: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          id?: string
-          location?: string
-          name?: string
-          namespace_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "iceberg_tables_bucket_id_fkey"
-            columns: ["bucket_id"]
-            isOneToOne: false
-            referencedRelation: "buckets_analytics"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "iceberg_tables_namespace_id_fkey"
-            columns: ["namespace_id"]
-            isOneToOne: false
-            referencedRelation: "iceberg_namespaces"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       migrations: {
         Row: {
@@ -1426,7 +1137,6 @@ export type Database = {
           created_at: string | null
           id: string
           last_accessed_at: string | null
-          level: number | null
           metadata: Json | null
           name: string | null
           owner: string | null
@@ -1441,7 +1151,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_accessed_at?: string | null
-          level?: number | null
           metadata?: Json | null
           name?: string | null
           owner?: string | null
@@ -1456,7 +1165,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_accessed_at?: string | null
-          level?: number | null
           metadata?: Json | null
           name?: string | null
           owner?: string | null
@@ -1469,38 +1177,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "objects_bucketId_fkey"
-            columns: ["bucket_id"]
-            isOneToOne: false
-            referencedRelation: "buckets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      prefixes: {
-        Row: {
-          bucket_id: string
-          created_at: string | null
-          level: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string | null
-          level?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string | null
-          level?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prefixes_bucketId_fkey"
             columns: ["bucket_id"]
             isOneToOne: false
             referencedRelation: "buckets"
@@ -1611,21 +1287,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      add_prefixes: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: undefined
-      }
       can_insert_object: {
         Args: { bucketid: string; metadata: Json; name: string; owner: string }
         Returns: undefined
-      }
-      delete_leaf_prefixes: {
-        Args: { bucket_ids: string[]; names: string[] }
-        Returns: undefined
-      }
-      delete_prefix: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: boolean
       }
       extension: {
         Args: { name: string }
@@ -1636,18 +1300,6 @@ export type Database = {
         Returns: string
       }
       foldername: {
-        Args: { name: string }
-        Returns: string[]
-      }
-      get_level: {
-        Args: { name: string }
-        Returns: number
-      }
-      get_prefix: {
-        Args: { name: string }
-        Returns: string
-      }
-      get_prefixes: {
         Args: { name: string }
         Returns: string[]
       }
@@ -1689,10 +1341,6 @@ export type Database = {
           updated_at: string
         }[]
       }
-      lock_top_prefixes: {
-        Args: { bucket_ids: string[]; names: string[] }
-        Returns: undefined
-      }
       operation: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -1717,70 +1365,9 @@ export type Database = {
           updated_at: string
         }[]
       }
-      search_legacy_v1: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_v1_optimised: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_v2: {
-        Args: {
-          bucket_name: string
-          levels?: number
-          limits?: number
-          prefix: string
-          sort_column?: string
-          sort_column_after?: string
-          sort_order?: string
-          start_after?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          key: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
     }
     Enums: {
-      buckettype: "STANDARD" | "ANALYTICS"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1912,10 +1499,6 @@ export const Constants = {
       code_challenge_method: ["s256", "plain"],
       factor_status: ["unverified", "verified"],
       factor_type: ["totp", "webauthn", "phone"],
-      oauth_authorization_status: ["pending", "approved", "denied", "expired"],
-      oauth_client_type: ["public", "confidential"],
-      oauth_registration_type: ["dynamic", "manual"],
-      oauth_response_type: ["code"],
       one_time_token_type: [
         "confirmation_token",
         "reauthentication_token",
@@ -1930,16 +1513,12 @@ export const Constants = {
     Enums: {
       boards_role: ["admin", "member"],
       boards_visibility: ["public", "private"],
-      notification_status: ["archived", "sent"],
-      notification_type: ["info", "warning"],
       org_invite_status: ["pending", "accepted", "rejected", "revoked"],
       organization_role: ["admin", "member"],
     },
   },
   storage: {
-    Enums: {
-      buckettype: ["STANDARD", "ANALYTICS"],
-    },
+    Enums: {},
   },
 } as const
 

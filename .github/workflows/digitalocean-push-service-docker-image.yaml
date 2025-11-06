@@ -1,0 +1,75 @@
+name: "[Service] Push Service Image to Digital Ocean Registry"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Environment to deploy to"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: registry.digitalocean.com/accessly/accessly-service
+          flavor: |
+            latest=true
+          tags: |
+            type=ref,event=tag
+            type=sha,format=short
+          custom-tags: |
+            ${{ github.ref_name }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry (short-lived creds)
+        run: doctl registry login --expiry-seconds 2400
+
+      - name: Determine Docker Image Tag
+        id: determine-tag
+        run: |
+          # Check if the commit has an associated tag
+          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+          if [ -z "$TAG" ]; then
+            # No tag found, use the short commit SHA
+            echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          else
+            # Use the git tag
+            echo "TAG=$TAG" >> $GITHUB_ENV
+          fi
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/service/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: registry.digitalocean.com/accessly/accessly-service:${{ env.TAG }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true

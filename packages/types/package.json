@@ -1,0 +1,20 @@
+{
+    "name": "@accessly/types",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./index.ts",
+    "types": "./index.ts",
+    "exports": {
+        ".": {
+            "types": "./index.ts",
+            "default": "./index.ts"
+        },
+        "./database": {
+            "types": "./database.types.ts",
+            "default": "./database.types.ts"
+        }
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}

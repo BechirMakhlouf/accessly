@@ -1,5 +1,5 @@
 {
-  "extends": "@accessly/typescript-config/next",
+  "extends": "@accessly/config/typescript/next",
   "compilerOptions": {
     "target": "ES2017",
     "lib": [

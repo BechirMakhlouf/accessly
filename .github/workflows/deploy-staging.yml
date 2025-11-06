@@ -1,0 +1,102 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency: staging-deploy-${{ github.ref }}
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      supabase_config: ${{ steps.filter.outputs.supabase_config }}
+      supabase_functions: ${{ steps.filter.outputs.supabase_functions }}
+      supabase_migrations: ${{ steps.filter.outputs.supabase_migrations }}
+      service: ${{ steps.filter.outputs.service }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed areas
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            supabase_config:
+              - 'supabase/config.toml'
+            supabase_functions:
+              - 'supabase/functions/**'
+            supabase_migrations:
+              - 'supabase/migrations/**'
+              - 'supabase/schemas/**'
+              - 'supabase/tests/**'
+            service:
+              - 'apps/service/**'
+              - 'packages/**'
+              - 'scripts/**'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'package.json'
+              - 'turbo.json'
+              - 'tsconfig.json'
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'package.json'
+              - 'turbo.json'
+              - 'tsconfig.json'
+
+  supabase-config:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.supabase_config == 'true'
+    uses: ./.github/workflows/supabase-push-config.yaml
+    with:
+      environment: staging
+    secrets: inherit
+
+  supabase-migrations:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.supabase_migrations == 'true'
+    uses: ./.github/workflows/supabase-apply-migrations.yaml
+    with:
+      environment: staging
+    secrets: inherit
+
+  supabase-functions:
+    needs:
+      - detect-changes
+    if: needs.detect-changes.outputs.supabase_functions == 'true'
+    uses: ./.github/workflows/supabase-deploy-edge-functions.yaml
+    with:
+      environment: staging
+    secrets: inherit
+
+  deploy-service:
+    needs:
+      - detect-changes
+      - supabase-config
+      - supabase-migrations
+      - supabase-functions
+    if: needs.detect-changes.outputs.service == 'true'
+    uses: ./.github/workflows/digitalocean-build-deploy-service.yaml
+    with:
+      environment: staging
+    secrets: inherit
+
+  deploy-web:
+    needs:
+      - detect-changes
+      - deploy-service
+    if: needs.detect-changes.outputs.web == 'true'
+    uses: ./.github/workflows/vercel-deploy-web.yaml
+    with:
+      environment: staging
+    secrets: inherit

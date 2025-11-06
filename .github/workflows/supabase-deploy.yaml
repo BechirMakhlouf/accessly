@@ -1,0 +1,37 @@
+name: "[Supabase] Deploy All"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Environment to deploy to"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: environment
+
+jobs:
+  apply-migrations:
+    name: Apply Migrations
+    uses: ./.github/workflows/supabase-apply-migrations.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+
+  push-config:
+    name: Push Config
+    uses: ./.github/workflows/supabase-push-config.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
+
+  deploy-edge-functions:
+    name: Deploy Edge Functions
+    uses: ./.github/workflows/supabase-deploy-edge-functions.yaml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit

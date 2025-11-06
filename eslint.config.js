@@ -1,3 +1,3 @@
-import config from '@accessly/eslint-config';
+import config from '@accessly/config/eslint';
 
 export default config;
