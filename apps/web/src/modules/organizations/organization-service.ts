@@ -1,3 +1,4 @@
+
 import type { TypedSupabaseClient } from "@/lib/supabase/type";
 import type {
   Invite,
@@ -14,11 +15,13 @@ import type {
 } from "./types";
 import { isNullOrUndefined, validateEmail } from "@/lib/utils";
 import { isDuplicateKeyError, isRlsError } from "@/lib/supabase/utils";
-
+import { useTranslations } from "next-intl";
 import type { IMailService } from "@/lib/mail";
 import { sendInviteMemberEmail } from "./emails";
 import { getFullRoute, routes } from "@/lib/routes";
 import type { ServiceResult } from "@/lib/types";
+import { eventBus } from "@/lib/event-bus";
+import { createNotificationService } from "../notifications/notifications-factory";
 
 export interface OrganizationServiceOptions {
   supabase: TypedSupabaseClient;
@@ -37,6 +40,7 @@ export class OrganizationService {
   private supabaseAdmin: TypedSupabaseClient;
   private emailService: IMailService;
   private userId: string;
+  
 
   constructor(options: OrganizationServiceOptions) {
     this.supabase = options.supabase;
@@ -106,6 +110,7 @@ export class OrganizationService {
       slug = newOrg.slug;
     }
 
+
     if (isNullOrUndefined(slug)) {
       console.error("Error while generating slug");
       return { error: "org.failedToCreate" };
@@ -119,10 +124,11 @@ export class OrganizationService {
       console.error("Error while creating organization:", error);
       return { error: "org.failedToCreate" };
     }
-
+    let message = newOrg.name+ " organization created successfully.";
+    eventBus.emit("organization_created_backend", { message: message, type: "info", userId: this.userId });
     return this.getBySlug(slug);
   }
-
+  
   /**
    * Update organization
    */
