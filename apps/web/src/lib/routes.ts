@@ -67,6 +67,7 @@ export const routes = {
         new: "/dashboard/organizations/new",
         invites: "/dashboard/organizations/invites",
       },
+      notifications: "/dashboard/notifications", 
       org: {
         root: "/org",
         slug: {
