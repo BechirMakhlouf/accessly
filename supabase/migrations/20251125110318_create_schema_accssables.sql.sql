@@ -1,12 +1,10 @@
-create type "public"."accessable_type" as enum ('saas_app', 'infrastructure', 'database', 'shared_credentials', 'file_storage', 'vpn', 'physical', 'custom');
-
 create table "public"."accessables" (
     "id" uuid not null default gen_random_uuid(),
     "organization_id" uuid not null,
     "board_id" uuid not null,
     "user_id" uuid not null,
-    "name" text not null,
-    "type" accessable_type not null,
+    "name" text not null default ''::text,
+    "type" text not null default ''::text,
     "description" text,
     "owner_user_id" uuid,
     "url" text,
@@ -30,7 +28,7 @@ alter table "public"."accessables" add constraint "accessables_organization_id_f
 
 alter table "public"."accessables" validate constraint "accessables_organization_id_fkey";
 
-alter table "public"."accessables" add constraint "accessables_owner_user_id_fkey" FOREIGN KEY (owner_user_id) REFERENCES auth.users(id) ON DELETE CASCADE not valid;
+alter table "public"."accessables" add constraint "accessables_owner_user_id_fkey" FOREIGN KEY (owner_user_id) REFERENCES auth.users(id) ON DELETE SET NULL not valid;
 
 alter table "public"."accessables" validate constraint "accessables_owner_user_id_fkey";
 
