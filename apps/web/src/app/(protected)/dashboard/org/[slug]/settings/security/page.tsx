@@ -1,23 +1,31 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { useActiveOrg } from "@/modules/organizations"
-import { useTranslations } from "next-intl"
-import { isAdminRole } from "@/modules/organizations/utils"
+import { useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { useActiveOrg } from '@/modules/organizations';
+import { useTranslations } from 'next-intl';
+import { isAdminRole } from '@/modules/organizations/utils';
 
 export default function SecuritySettingsPage() {
   const { activeOrganization: org, currentUserRole } = useActiveOrg();
-  const t = useTranslations("org.settings.security");
+  const t = useTranslations('org.settings.security');
   const [enforce2FA, setEnforce2FA] = useState(false);
 
   if (!org) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">Organization not found</h1>
+      <div className='container mx-auto py-8 px-4'>
+        <div className='text-center'>
+          <h1 className='text-2xl font-bold text-foreground'>
+            Organization not found
+          </h1>
         </div>
       </div>
     );
@@ -26,29 +34,29 @@ export default function SecuritySettingsPage() {
   const handle2FAToggle = (enabled: boolean) => {
     setEnforce2FA(enabled);
     // Here you would typically send an API request to update the organization's 2FA policy
-    console.log("Updating 2FA policy:", { orgId: org.id, enforce2FA: enabled });
+    console.log('Updating 2FA policy:', { orgId: org.id, enforce2FA: enabled });
     // You could add a toast notification here
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <Card>
         <CardHeader>
-          <CardTitle>{t("twoFactorAuth.title")}</CardTitle>
-          <CardDescription>{t("twoFactorAuth.description")}</CardDescription>
+          <CardTitle>{t('twoFactorAuth.title')}</CardTitle>
+          <CardDescription>{t('twoFactorAuth.description')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
+          <div className='flex items-center justify-between'>
             <div>
-              <Label htmlFor="enforce-2fa" className="text-base font-semibold">
-                {t("twoFactorAuth.enforceLabel")}
+              <Label htmlFor='enforce-2fa' className='text-base font-semibold'>
+                {t('twoFactorAuth.enforceLabel')}
               </Label>
-              <p className="text-sm text-muted-foreground">
-                {t("twoFactorAuth.enforceDescription")}
+              <p className='text-sm text-muted-foreground'>
+                {t('twoFactorAuth.enforceDescription')}
               </p>
             </div>
-            <Switch 
-              id="enforce-2fa" 
+            <Switch
+              id='enforce-2fa'
               checked={enforce2FA}
               onCheckedChange={handle2FAToggle}
               disabled={!currentUserRole || !isAdminRole(currentUserRole)}
@@ -57,5 +65,5 @@ export default function SecuritySettingsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

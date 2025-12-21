@@ -70,7 +70,7 @@
         "label": "Description",
         "placeholder": "Describe your organization"
       },
-      
+
       "notFound": "Organization not found"
     },
     "card": {
@@ -344,10 +344,11 @@
             "minLength": "Organization name must be at least 2 characters long",
             "maxLength": "Organization name must be less than 100 characters"
           }
-        },"buttons": {
-        "saving": "Saving...",
-        "saveChanges": "Save changes"
-      },
+        },
+        "buttons": {
+          "saving": "Saving...",
+          "saveChanges": "Save changes"
+        },
 
         "orgDescription": {
           "title": "Organization Description",
@@ -870,5 +871,5 @@
     "description": "Manage your notification preferences.",
     "label": "Notification Preferences",
     "failedToLoad": "Failed to load notifications"
-      }
+  }
 }

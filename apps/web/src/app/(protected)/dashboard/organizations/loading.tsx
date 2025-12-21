@@ -1,5 +1,5 @@
-import { OrganizationsLoadingState } from '@/modules/organizations/components/organizations-loading-state'
+import { OrganizationsLoadingState } from '@/modules/organizations/components/organizations-loading-state';
 
 export default function OrganizationsLoading() {
-  return <OrganizationsLoadingState />
+  return <OrganizationsLoadingState />;
 }

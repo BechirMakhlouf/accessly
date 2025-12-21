@@ -3,7 +3,7 @@
 
 export { assertSignedInAndGetUserId } from './server-utils';
 export { getUserId } from './utils';
-export { 
+export {
   signOut,
   signInWithOAuthAction,
   isAuthenticated,

@@ -1,7 +1,7 @@
-import type { TypedSupabaseClient } from "@/lib/supabase/type";
-import type { Notification, NotificationInsert } from "./types";
-import type { ServiceResult } from "@/lib/types";
-import { eventBus } from "@/lib/event-bus";
+import type { TypedSupabaseClient } from '@/lib/supabase/type';
+import type { Notification, NotificationInsert } from './types';
+import type { ServiceResult } from '@/lib/types';
+import { eventBus } from '@/lib/event-bus';
 
 export interface NotificationServiceOptions {
   supabase: TypedSupabaseClient;
@@ -39,23 +39,30 @@ export class NotificationService {
     this.listenersRegistered = true;
 
     eventBus.on(
-      "organization_created_backend",
+      'organization_created_backend',
       this.handleOrganizationCreated.bind(this)
     );
 
-    console.log(" NotificationService listeners registered once");
+    console.log(' NotificationService listeners registered once');
   }
 
   /**
    * Handles the organization_created_backend event
    */
-  private async handleOrganizationCreated(data: { message: string; type?: string; userId: string }) {
-    console.log("Handling organization_created_backend event for user:", data.userId);
+  private async handleOrganizationCreated(data: {
+    message: string;
+    type?: string;
+    userId: string;
+  }) {
+    console.log(
+      'Handling organization_created_backend event for user:',
+      data.userId
+    );
     const notification: NotificationInsert = {
-      user_id: data.userId || "",
+      user_id: data.userId || '',
       message: data.message,
-      type: (data.type as Notification["type"]) || "info",
-      status: "sent",
+      type: (data.type as Notification['type']) || 'info',
+      status: 'sent',
     };
 
     await this.create(notification);
@@ -65,38 +72,40 @@ export class NotificationService {
    * Inserts a new notification into the database
    */
   private async create(
-    notification: NotificationInsert,
+    notification: NotificationInsert
   ): Promise<ServiceResult<Notification>> {
     const { data, error } = await this.supabase
-      .from("notifications")
+      .from('notifications')
       .insert(notification)
       .select()
       .single();
 
     if (error) {
-      console.error("Failed to send notification:", error);
+      console.error('Failed to send notification:', error);
       return {
         success: false,
-        error: error.message || "Failed to insert notification",
+        error: error.message || 'Failed to insert notification',
       } as ServiceResult<Notification>;
     }
 
-    console.log("Notification inserted successfully");
+    console.log('Notification inserted successfully');
     return { success: true, data } as ServiceResult<Notification>;
   }
 
   /**
    * Fetches notifications for a specific user
    */
-  public async getNotificationsForUser(): Promise<ServiceResult<Notification[]>> {
+  public async getNotificationsForUser(): Promise<
+    ServiceResult<Notification[]>
+  > {
     const { data, error } = await this.supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", this.userId);
+      .from('notifications')
+      .select('*')
+      .eq('user_id', this.userId);
 
     if (error) {
-      console.error("Failed to fetch notifications:", error);
-      return { error: "notifications.failedToLoad" };
+      console.error('Failed to fetch notifications:', error);
+      return { error: 'notifications.failedToLoad' };
     }
 
     return { data };

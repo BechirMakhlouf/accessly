@@ -2,10 +2,10 @@ import {
   PostgrestError,
   PostgrestResponse,
   SupabaseClient,
-} from "@supabase/supabase-js";
-import { Database } from "@/types/database.types";
+} from '@supabase/supabase-js';
+import { Database } from '@/types/database.types';
 
-export type TypedSupabaseClient = SupabaseClient<Database, "public", "public">;
+export type TypedSupabaseClient = SupabaseClient<Database, 'public', 'public'>;
 
 export type PostgrestSuccessResponse<T> = Extract<
   PostgrestResponse<T>,
@@ -16,4 +16,4 @@ export type PostgrestErrorResponse<T> = Extract<
   { error: PostgrestError }
 >;
 
-export type Buckets = "avatars";
+export type Buckets = 'avatars';

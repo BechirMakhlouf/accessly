@@ -2,9 +2,9 @@ import type { EventBusEvents } from './events';
 
 export type EventHandler<T> = (payload: T) => void;
 
-
 export class EventBus<Events extends Record<string, unknown>> {
-  private listeners: { [K in keyof Events]?: Set<EventHandler<Events[K]>> } = {};
+  private listeners: { [K in keyof Events]?: Set<EventHandler<Events[K]>> } =
+    {};
 
   on<K extends keyof Events>(event: K, handler: EventHandler<Events[K]>) {
     (this.listeners[event] ||= new Set()).add(handler);
@@ -12,7 +12,7 @@ export class EventBus<Events extends Record<string, unknown>> {
   }
 
   once<K extends keyof Events>(event: K, handler: EventHandler<Events[K]>) {
-    const wrap: EventHandler<Events[K]> = (payload) => {
+    const wrap: EventHandler<Events[K]> = payload => {
       this.off(event, wrap);
       handler(payload);
     };
@@ -21,7 +21,8 @@ export class EventBus<Events extends Record<string, unknown>> {
 
   off<K extends keyof Events>(event: K, handler: EventHandler<Events[K]>) {
     this.listeners[event]?.delete(handler);
-    if (this.listeners[event] && this.listeners[event]!.size === 0) delete this.listeners[event];
+    if (this.listeners[event] && this.listeners[event]!.size === 0)
+      delete this.listeners[event];
   }
 
   emit<K extends keyof Events>(event: K, payload: Events[K]) {
@@ -36,7 +37,9 @@ export class EventBus<Events extends Record<string, unknown>> {
 }
 
 const GLOBAL_SYMBOL = Symbol.for('__accessly_event_bus__');
-type GlobalWithBus = { [GLOBAL_SYMBOL]?: EventBus<EventBusEvents> } & typeof globalThis;
+type GlobalWithBus = {
+  [GLOBAL_SYMBOL]?: EventBus<EventBusEvents>;
+} & typeof globalThis;
 
 export function getGlobalEventBus(): EventBus<EventBusEvents> {
   const g = globalThis as GlobalWithBus;

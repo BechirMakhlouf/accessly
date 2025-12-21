@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useTheme } from "next-themes";
-import { useUserSettings } from "./hooks";
-import { useEffect, useRef } from "react";
-import type { Locale } from "@/lib/i18n";
-import { setAppLocale } from "@/lib/i18n";
-import { USER_SETTINGS_KEY } from "./queries";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/lib/auth";
+import { useTheme } from 'next-themes';
+import { useUserSettings } from './hooks';
+import { useEffect, useRef } from 'react';
+import type { Locale } from '@/lib/i18n';
+import { setAppLocale } from '@/lib/i18n';
+import { USER_SETTINGS_KEY } from './queries';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/lib/auth';
 
 export function SettingsProvider() {
   const { settings } = useUserSettings();

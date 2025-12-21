@@ -1,12 +1,14 @@
-import { I18nMessageKey } from "./i18n";
+import { I18nMessageKey } from './i18n';
 
-export type ServiceResult<T> = {
-  data: T;
-  error?: null;
-} | {
-  data?: null;
-  error: I18nMessageKey;
-};
+export type ServiceResult<T> =
+  | {
+      data: T;
+      error?: null;
+    }
+  | {
+      data?: null;
+      error: I18nMessageKey;
+    };
 
 /**
  * bayi: to flatten types
@@ -19,8 +21,7 @@ export type Prettify<T> = {
  * makes a key or a union of keys optional
  */
 export type WithOptional<T, K extends keyof T> = Prettify<
-  & { [P in keyof T as P extends K ? never : P]: T[P] }
-  & {
+  { [P in keyof T as P extends K ? never : P]: T[P] } & {
     [P in K]?: T[P];
   }
 >;
@@ -40,9 +41,7 @@ export type WithOptional<T, K extends keyof T> = Prettify<
  */
 export type WithRequired<T, K extends keyof T> = Prettify<
   // Keep everything except the keys we want to make required
-  & { [P in keyof T as P extends K ? never : P]: T[P] }
-  & // Re-add those keys as required
-  { [P in K]-?: T[P]; }
+  { [P in keyof T as P extends K ? never : P]: T[P] } & { [P in K]-?: T[P] } // Re-add those keys as required
 >;
 
 export type LooseAutocomplete<T extends string> = T | Omit<string, T>;

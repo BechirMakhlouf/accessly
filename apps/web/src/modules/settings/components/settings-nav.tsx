@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { routes } from "@/lib/routes";
-import { Palette, Settings, User } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { routes } from '@/lib/routes';
+import { Palette, Settings, User } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const settingsPagesUrls = [
   {
-    id: "general",
+    id: 'general',
     url: routes.protected.dashboard.account.settings.general,
-    name: "General",
+    name: 'General',
     icon: User,
   },
   {
-    id: "preferences",
+    id: 'preferences',
     url: routes.protected.dashboard.account.settings.preferences,
-    name: "Preferences",
+    name: 'Preferences',
     icon: Palette,
   },
   {
-    id: "account",
+    id: 'account',
     url: routes.protected.dashboard.account.settings.account,
-    name: "Account",
+    name: 'Account',
     icon: Settings,
   },
 ] as const;
@@ -31,20 +31,20 @@ export function SettingsNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="grid gap-2 text-sm text-muted-foreground">
-      {settingsPagesUrls.map((settingsPage) => {
+    <nav className='grid gap-2 text-sm text-muted-foreground'>
+      {settingsPagesUrls.map(settingsPage => {
         const Icon = settingsPage.icon;
         const isActive = pathname === settingsPage.url;
 
         return (
           <Button
             key={settingsPage.id}
-            variant={isActive ? "secondary" : "ghost"}
-            className="w-full justify-start"
+            variant={isActive ? 'secondary' : 'ghost'}
+            className='w-full justify-start'
             asChild
           >
             <Link href={settingsPage.url}>
-              <Icon className="mr-2 h-4 w-4" />
+              <Icon className='mr-2 h-4 w-4' />
               {settingsPage.name}
             </Link>
           </Button>

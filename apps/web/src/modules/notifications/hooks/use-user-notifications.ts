@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/lib/auth";
-import { getNotificationsForUserQueryOptions } from "../queries";
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/lib/auth';
+import { getNotificationsForUserQueryOptions } from '../queries';
 
 export function useUserNotifications() {
   const { user } = useAuth();
-  const userId = user?.id ?? "";
+  const userId = user?.id ?? '';
 
   const {
     data = [],
@@ -20,12 +20,9 @@ export function useUserNotifications() {
   });
 
   return {
-
     notifications: data ?? [],
     isLoading: isLoading || isFetching,
     error,
     refetch,
   };
 }
-
-

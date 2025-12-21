@@ -1,19 +1,17 @@
-import type { User } from "@supabase/supabase-js";
-import type { TypedSupabaseClient } from "../supabase/type";
+import type { User } from '@supabase/supabase-js';
+import type { TypedSupabaseClient } from '../supabase/type';
 
-export async function getUserId(
-  supabase: TypedSupabaseClient,
-) {
+export async function getUserId(supabase: TypedSupabaseClient) {
   // Prefer JWT claims (fast) then fall back to getUser(). Always return null on failure.
   try {
-    const { data: claimsData, error: claimsError } = await supabase.auth
-      .getClaims();
+    const { data: claimsData, error: claimsError } =
+      await supabase.auth.getClaims();
     if (!claimsError) {
       const sub = claimsData?.claims?.sub;
       if (sub) return sub;
     }
   } catch (e) {
-    console.debug("error while getting user claims: ", e);
+    console.debug('error while getting user claims: ', e);
   }
 
   try {
@@ -22,7 +20,7 @@ export async function getUserId(
       return data.user.id;
     }
   } catch (e) {
-    console.error("error while calling getUser():", e);
+    console.error('error while calling getUser():', e);
   }
 
   return null;
@@ -38,26 +36,26 @@ export function extractUserNameFromOAuth(user: User): string | null {
 
   // Try different common fields where providers store the full name
   const possibleNameFields = [
-    "full_name",
-    "name",
-    "display_name",
-    "preferred_username",
-    "given_name",
-    "family_name",
+    'full_name',
+    'name',
+    'display_name',
+    'preferred_username',
+    'given_name',
+    'family_name',
   ];
 
   // First, try to find a full name directly
   for (const field of possibleNameFields) {
-    if (metadata[field] && typeof metadata[field] === "string") {
+    if (metadata[field] && typeof metadata[field] === 'string') {
       return metadata[field].trim();
     }
   }
 
   // If no full name found, try to construct from first and last name
-  const firstName = metadata.given_name || metadata.first_name ||
-    metadata.firstname;
-  const lastName = metadata.family_name || metadata.last_name ||
-    metadata.lastname;
+  const firstName =
+    metadata.given_name || metadata.first_name || metadata.firstname;
+  const lastName =
+    metadata.family_name || metadata.last_name || metadata.lastname;
 
   if (firstName && lastName) {
     return `${firstName} ${lastName}`.trim();
@@ -86,19 +84,19 @@ export function extractUserImageFromOAuth(user: User): string | null {
 
   // Try different common fields where providers store avatar URLs
   const possibleImageFields = [
-    "avatar_url", // GitHub, Slack
-    "picture", // Google, Microsoft
-    "photo", // Some providers
-    "profile_picture", // Some providers
-    "image", // Some providers
-    "profile_image", // Some providers
+    'avatar_url', // GitHub, Slack
+    'picture', // Google, Microsoft
+    'photo', // Some providers
+    'profile_picture', // Some providers
+    'image', // Some providers
+    'profile_image', // Some providers
   ];
 
   for (const field of possibleImageFields) {
-    if (metadata[field] && typeof metadata[field] === "string") {
+    if (metadata[field] && typeof metadata[field] === 'string') {
       const url = metadata[field].trim();
       // Basic URL validation
-      if (url.startsWith("http://") || url.startsWith("https://")) {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
       }
     }

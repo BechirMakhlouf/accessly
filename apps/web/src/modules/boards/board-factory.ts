@@ -10,5 +10,5 @@ export async function createBoardService(): Promise<BoardsService> {
   const adminSupabase = await createAdminClient();
   const supabase = await createSSRClient();
   const userId = await assertSignedInAndGetUserId();
-  return new BoardsService(supabase , adminSupabase , userId);
+  return new BoardsService(supabase, adminSupabase, userId);
 }

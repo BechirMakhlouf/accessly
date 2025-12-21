@@ -1,10 +1,10 @@
-import { hasLocale } from "next-intl";
-import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
-import { locales } from "@/lib/i18n";
+import { hasLocale } from 'next-intl';
+import { notFound } from 'next/navigation';
+import { setRequestLocale } from 'next-intl/server';
+import { locales } from '@/lib/i18n';
 
 export async function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+  return locales.map(locale => ({ locale }));
 }
 
 export default async function LocaleLayout({

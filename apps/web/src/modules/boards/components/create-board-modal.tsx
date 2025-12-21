@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { z } from "zod";
-import { Plus } from "lucide-react";
-import type { TranslationFunction } from "@/lib/i18n/types";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { z } from 'zod';
+import { Plus } from 'lucide-react';
+import type { TranslationFunction } from '@/lib/i18n/types';
 
 import {
   Dialog,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -24,32 +24,32 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { useActiveOrgBoards } from "../hooks/useOrgBoards";
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { useActiveOrgBoards } from '../hooks/useOrgBoards';
 
 // Validation schema factory
 const createBoardSchema = (t: TranslationFunction) =>
   z.object({
     title: z
       .string()
-      .min(3, t("boards.form.errors.nameTooShort"))
-      .max(100, t("boards.form.errors.nameTooLong")),
+      .min(3, t('boards.form.errors.nameTooShort'))
+      .max(100, t('boards.form.errors.nameTooLong')),
     description: z
       .string()
-      .max(500, t("boards.form.errors.descriptionTooLong"))
+      .max(500, t('boards.form.errors.descriptionTooLong'))
       .optional(),
-    visibility: z.enum(["public", "private"] as const, {
-      error: t("boards.form.errors.visibilityRequired"),
+    visibility: z.enum(['public', 'private'] as const, {
+      error: t('boards.form.errors.visibilityRequired'),
     }),
   });
 
@@ -60,9 +60,10 @@ interface CreateBoardModalProps {
   onSuccess?: () => void;
 }
 
-export function CreateBoardModal(
-  { trigger, onSuccess }: CreateBoardModalProps,
-) {
+export function CreateBoardModal({
+  trigger,
+  onSuccess,
+}: CreateBoardModalProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations();
   const { createBoard, isCreating, activeOrganization } = useActiveOrgBoards();
@@ -70,15 +71,15 @@ export function CreateBoardModal(
   const form = useForm<CreateBoardFormData>({
     resolver: zodResolver(createBoardSchema(t)),
     defaultValues: {
-      title: "",
-      description: "",
-      visibility: "private",
+      title: '',
+      description: '',
+      visibility: 'private',
     },
   });
 
   const onSubmit = async (data: CreateBoardFormData) => {
     if (!activeOrganization?.id) {
-      console.error("No active organization");
+      console.error('No active organization');
       return;
     }
 
@@ -87,7 +88,7 @@ export function CreateBoardModal(
         title: data.title,
         description: data.description || null,
         visibility: data.visibility,
-        slug: "",
+        slug: '',
         organization_id: activeOrganization.id,
         // organization_id and created_by will be set by the hook
       });
@@ -96,47 +97,43 @@ export function CreateBoardModal(
       setOpen(false);
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to create board:", error);
+      console.error('Failed to create board:', error);
       // Error handling is done by the hook
     }
   };
 
   const defaultTrigger = (
-    <Button variant="ghost" size="sm" className="gap-2">
-      <Plus className="h-4 w-4" />
-      {t("boards.actions.create")}
+    <Button variant='ghost' size='sm' className='gap-2'>
+      <Plus className='h-4 w-4' />
+      {t('boards.actions.create')}
     </Button>
   );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger ?? defaultTrigger}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogTrigger asChild>{trigger ?? defaultTrigger}</DialogTrigger>
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>{t("boards.form.title")}</DialogTitle>
-          <DialogDescription>
-            {t("boards.form.subtitle")}
-          </DialogDescription>
+          <DialogTitle>{t('boards.form.title')}</DialogTitle>
+          <DialogDescription>{t('boards.form.subtitle')}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             <FormField
               control={form.control}
-              name="title"
+              name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("boards.form.name.label")}</FormLabel>
+                  <FormLabel>{t('boards.form.name.label')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t("boards.form.name.placeholder")}
+                      placeholder={t('boards.form.name.placeholder')}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    {t("boards.form.name.helpText")}
+                    {t('boards.form.name.helpText')}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -145,20 +142,20 @@ export function CreateBoardModal(
 
             <FormField
               control={form.control}
-              name="description"
+              name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("boards.form.description.label")}</FormLabel>
+                  <FormLabel>{t('boards.form.description.label')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("boards.form.description.placeholder")}
-                      className="resize-none"
+                      placeholder={t('boards.form.description.placeholder')}
+                      className='resize-none'
                       rows={3}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    {t("boards.form.description.helpText")}
+                    {t('boards.form.description.helpText')}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -167,10 +164,10 @@ export function CreateBoardModal(
 
             <FormField
               control={form.control}
-              name="visibility"
+              name='visibility'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("boards.form.visibility.label")}</FormLabel>
+                  <FormLabel>{t('boards.form.visibility.label')}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -178,40 +175,40 @@ export function CreateBoardModal(
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
-                          placeholder={t("boards.form.visibility.label")}
+                          placeholder={t('boards.form.visibility.label')}
                         />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="private">
-                        {t("boards.form.visibility.private")}
+                      <SelectItem value='private'>
+                        {t('boards.form.visibility.private')}
                       </SelectItem>
-                      <SelectItem value="public">
-                        {t("boards.form.visibility.public")}
+                      <SelectItem value='public'>
+                        {t('boards.form.visibility.public')}
                       </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    {t("boards.form.visibility.helpText")}
+                    {t('boards.form.visibility.helpText')}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="flex justify-end space-x-2">
+            <div className='flex justify-end space-x-2'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => setOpen(false)}
                 disabled={isCreating}
               >
-                {t("boards.form.buttons.cancel")}
+                {t('boards.form.buttons.cancel')}
               </Button>
-              <Button type="submit" disabled={isCreating}>
+              <Button type='submit' disabled={isCreating}>
                 {isCreating
-                  ? t("boards.form.buttons.creating")
-                  : t("boards.form.buttons.create")}
+                  ? t('boards.form.buttons.creating')
+                  : t('boards.form.buttons.create')}
               </Button>
             </div>
           </form>

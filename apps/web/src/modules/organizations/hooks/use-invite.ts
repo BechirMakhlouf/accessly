@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/lib/auth";
-import { getOrgById } from "../actions";
-import { useUserInvites } from "./use-user-invites";
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/lib/auth';
+import { getOrgById } from '../actions';
+import { useUserInvites } from './use-user-invites';
 
 interface UseInviteOptions {
   inviteId: string;
@@ -22,12 +22,14 @@ export function useInvite({ inviteId }: UseInviteOptions) {
     isLoading: orgLoading,
     error: orgError,
   } = useQuery({
-    queryKey: ["organization", invite?.organization_id],
+    queryKey: ['organization', invite?.organization_id],
     queryFn: async () => {
       if (!invite?.organization_id) return null;
       const result = await getOrgById(invite.organization_id);
       if (result.error) {
-        throw new Error(typeof result.error === 'string' ? result.error : 'Unknown error');
+        throw new Error(
+          typeof result.error === 'string' ? result.error : 'Unknown error'
+        );
       }
       return result.data || null;
     },
@@ -39,12 +41,12 @@ export function useInvite({ inviteId }: UseInviteOptions) {
 
   // Actions
   const handleAcceptInvite = async () => {
-    if (!invite) return { error: "No invite found" };
+    if (!invite) return { error: 'No invite found' };
     return await acceptInvite(invite.id);
   };
 
   const handleRejectInvite = async () => {
-    if (!invite) return { error: "No invite found" };
+    if (!invite) return { error: 'No invite found' };
     return await rejectInvite(invite.id);
   };
 
@@ -52,15 +54,15 @@ export function useInvite({ inviteId }: UseInviteOptions) {
     // Data
     invite,
     organization,
-    
+
     // State
     isLoading,
     error,
-    
+
     // Actions
     acceptInvite: handleAcceptInvite,
     rejectInvite: handleRejectInvite,
-    
+
     // Mutation states
     isUpdating,
   };

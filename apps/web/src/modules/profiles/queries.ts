@@ -1,14 +1,14 @@
-import type { Profile, UpsertProfile } from "./types";
-import { QueryClient } from "@tanstack/react-query";
+import type { Profile, UpsertProfile } from './types';
+import { QueryClient } from '@tanstack/react-query';
 import {
   deleteUserAvatar,
   getProfile,
   uploadUserAvatar,
   upsertProfile,
-} from "./actions";
-import { isNullOrUndefined } from "@/lib/utils";
+} from './actions';
+import { isNullOrUndefined } from '@/lib/utils';
 
-export const PROFILE_KEY = ["profile"] as const;
+export const PROFILE_KEY = ['profile'] as const;
 
 export const getProfileQueryOptions = () => ({
   queryKey: PROFILE_KEY,
@@ -38,10 +38,8 @@ export const getUserAvatarMutationOptions = (queryClient: QueryClient) => ({
 });
 
 // Example mutation: update profile display name
-export const updateFullNameMutationOptions = (
-  queryClient: QueryClient,
-) => ({
-  mutationFn: async (fullName: Profile["full_name"]) => {
+export const updateFullNameMutationOptions = (queryClient: QueryClient) => ({
+  mutationFn: async (fullName: Profile['full_name']) => {
     await upsertProfile({ full_name: fullName });
   },
   onSuccess: () => queryClient.invalidateQueries({ queryKey: PROFILE_KEY }),

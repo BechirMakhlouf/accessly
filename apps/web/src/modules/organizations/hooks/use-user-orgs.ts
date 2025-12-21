@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/lib/auth";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/lib/auth';
 import {
   getUserOrganizationsQueryOptions,
   createOrganizationMutationOptions,
@@ -9,8 +9,8 @@ import {
   leaveOrganizationMutationOptions,
   checkSlugUniquenessMutationOptions,
   deleteOrganizationMutationOptions,
-} from "../queries";
-import type { OrgUpdate, OrgInput } from "../types";
+} from '../queries';
+import type { OrgUpdate, OrgInput } from '../types';
 
 export function useUserOrgs() {
   const { user } = useAuth();
@@ -87,11 +87,11 @@ export function useUserOrgs() {
   return {
     // Data
     organizations,
-    
+
     // State
     isLoading,
     error,
-    
+
     // Actions
     createOrganization,
     updateOrganization,
@@ -99,14 +99,14 @@ export function useUserOrgs() {
     checkSlugUniqueness,
     deleteOrganization,
     refetch,
-    
+
     // Mutation states
     isCreating: createOrgMutation.isPending,
     isUpdating: updateOrgMutation.isPending,
     isLeaving: leaveOrgMutation.isPending,
     isCheckingSlug: checkSlugMutation.isPending,
     isDeleting: deleteOrgMutation.isPending,
-    
+
     // Mutation errors
     createError: createOrgMutation.error,
     updateError: updateOrgMutation.error,

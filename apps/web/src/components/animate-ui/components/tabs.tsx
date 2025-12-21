@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import type { Transition, HTMLMotionProps } from "motion/react";
-import { motion } from "motion/react";
+import type { Transition, HTMLMotionProps } from 'motion/react';
+import { motion } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 import {
@@ -18,7 +18,7 @@ type TabsContextType<T extends string> = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TabsContext = React.createContext<TabsContextType<any> | undefined>(
-  undefined,
+  undefined
 );
 
 function useTabs<T extends string = string>(): TabsContextType<T> {
@@ -58,7 +58,7 @@ function Tabs<T extends string = string>({
   ...props
 }: TabsProps<T>) {
   const [activeValue, setActiveValue] = React.useState<T | undefined>(
-    defaultValue ?? undefined,
+    defaultValue ?? undefined
   );
   const triggersRef = React.useRef(new Map<string, HTMLElement>());
   const initialSet = React.useRef(false);
@@ -103,7 +103,7 @@ function Tabs<T extends string = string>({
       }}
     >
       <div
-        data-slot="tabs"
+        data-slot='tabs'
         className={cn('flex flex-col gap-2', className)}
         {...props}
       >
@@ -140,11 +140,11 @@ function TabsList({
       transition={transition}
     >
       <div
-        role="tablist"
-        data-slot="tabs-list"
+        role='tablist'
+        data-slot='tabs-list'
         className={cn(
           'bg-muted text-muted-foreground inline-flex h-10 w-fit items-center justify-center rounded-lg p-[4px]',
-          className,
+          className
         )}
         {...props}
       >
@@ -177,17 +177,17 @@ function TabsTrigger({
   }, [value, registerTrigger]);
 
   return (
-    <MotionHighlightItem value={value} className="size-full">
+    <MotionHighlightItem value={value} className='size-full'>
       <motion.button
         ref={localRef}
-        data-slot="tabs-trigger"
-        role="tab"
+        data-slot='tabs-trigger'
+        role='tab'
         whileTap={{ scale: 0.95 }}
         onClick={() => handleValueChange(value)}
         data-state={activeValue === value ? 'active' : 'inactive'}
         className={cn(
           'inline-flex cursor-pointer items-center size-full justify-center whitespace-nowrap rounded-sm px-2 py-1 text-sm font-medium ring-offset-background transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground z-[1]',
-          className,
+          className
         )}
         {...props}
       >
@@ -222,22 +222,22 @@ function TabsContents({
       typeof child.props === 'object' &&
       child.props !== null &&
       'value' in child.props &&
-      child.props.value === activeValue,
+      child.props.value === activeValue
   );
 
   return (
     <div
-      data-slot="tabs-contents"
+      data-slot='tabs-contents'
       className={cn('overflow-hidden', className)}
       {...props}
     >
       <motion.div
-        className="flex -mx-2"
+        className='flex -mx-2'
         animate={{ x: activeIndex * -100 + '%' }}
         transition={transition}
       >
         {childrenArray.map((child, index) => (
-          <div key={index} className="w-full shrink-0 px-2">
+          <div key={index} className='w-full shrink-0 px-2'>
             {child}
           </div>
         ))}
@@ -261,8 +261,8 @@ function TabsContent({
   const isActive = activeValue === value;
   return (
     <motion.div
-      role="tabpanel"
-      data-slot="tabs-content"
+      role='tabpanel'
+      data-slot='tabs-content'
       className={cn('overflow-hidden', className)}
       initial={{ filter: 'blur(0px)' }}
       animate={{ filter: isActive ? 'blur(0px)' : 'blur(4px)' }}

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,13 +19,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { AlertTriangle, Key, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { UserEmail } from "@/components/user-email";
-import { PasswordConfirmationDialog } from "./password-confirmation-dialog";
+} from '@/components/ui/alert-dialog';
+import { AlertTriangle, Key, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { UserEmail } from '@/components/user-email';
+import { PasswordConfirmationDialog } from './password-confirmation-dialog';
 
-type PendingAction = "email" | "phone" | "password" | "delete" | null;
+type PendingAction = 'email' | 'phone' | 'password' | 'delete' | null;
 
 export function AccountSettings() {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
@@ -33,64 +33,64 @@ export function AccountSettings() {
 
   const handlePasswordReset = async () => {
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     setIsLoading(false);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    toast("Password reset email sent successfully!");
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    toast('Password reset email sent successfully!');
   };
 
   // phone is handled in its own component
   const handleAccountDelete = async () => {
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     setIsLoading(false);
     toast(
-      "Account deletion initiated. Please check your email for confirmation.",
+      'Account deletion initiated. Please check your email for confirmation.'
     );
   };
 
   const getDialogProps = (action: PendingAction) => {
     switch (action) {
-      case "email":
+      case 'email':
         return {
-          title: "Update Email Address",
+          title: 'Update Email Address',
           description:
-            "Please enter your current password to update your email address.",
+            'Please enter your current password to update your email address.',
           onConfirm: () => {},
         };
-      case "phone":
+      case 'phone':
         return {
-          title: "Update Phone Number",
+          title: 'Update Phone Number',
           description:
-            "Please enter your current password to update your phone number.",
+            'Please enter your current password to update your phone number.',
           onConfirm: () => {},
         };
-      case "password":
+      case 'password':
         return {
-          title: "Reset Password",
+          title: 'Reset Password',
           description:
-            "Please enter your current password to send a password reset email.",
+            'Please enter your current password to send a password reset email.',
           onConfirm: handlePasswordReset,
         };
-      case "delete":
+      case 'delete':
         return {
-          title: "Delete Account",
+          title: 'Delete Account',
           description:
-            "Please enter your current password to confirm account deletion. This action cannot be undone.",
+            'Please enter your current password to confirm account deletion. This action cannot be undone.',
           onConfirm: handleAccountDelete,
         };
       default:
         return {
-          title: "Confirm Operation",
+          title: 'Confirm Operation',
           description:
-            "Please enter your current password to confirm your operation.",
+            'Please enter your current password to confirm your operation.',
           onConfirm: () => {},
         };
     }
   };
   const dialogProps = getDialogProps(pendingAction);
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <Card>
         <CardHeader>
           <CardTitle>Email Address</CardTitle>
@@ -98,7 +98,7 @@ export function AccountSettings() {
             Update your email address for account notifications.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           <UserEmail />
         </CardContent>
       </Card>
@@ -112,20 +112,22 @@ export function AccountSettings() {
         </CardHeader>
         <CardContent>
           <Button
-            onClick={() => setPendingAction("password")}
+            onClick={() => setPendingAction('password')}
             disabled={isLoading}
           >
-            {isLoading
-              ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              : <Key className="mr-2 h-4 w-4" />}
-            {isLoading ? "Sending..." : "Send Reset Email"}
+            {isLoading ? (
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+            ) : (
+              <Key className='mr-2 h-4 w-4' />
+            )}
+            {isLoading ? 'Sending...' : 'Send Reset Email'}
           </Button>
         </CardContent>
       </Card>
 
-      <Card className="border-destructive">
+      <Card className='border-destructive'>
         <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardTitle className='text-destructive'>Danger Zone</CardTitle>
           <CardDescription>
             Permanently delete your account and all associated data.
           </CardDescription>
@@ -133,8 +135,8 @@ export function AccountSettings() {
         <CardContent>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">
-                <AlertTriangle className="mr-2 h-4 w-4" />
+              <Button variant='destructive'>
+                <AlertTriangle className='mr-2 h-4 w-4' />
                 Delete Account
               </Button>
             </AlertDialogTrigger>
@@ -149,8 +151,8 @@ export function AccountSettings() {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => setPendingAction("delete")}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={() => setPendingAction('delete')}
+                  className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
                 >
                   Delete Account
                 </AlertDialogAction>
@@ -161,7 +163,7 @@ export function AccountSettings() {
       </Card>
       <PasswordConfirmationDialog
         open={pendingAction !== null}
-        onOpenChange={(open) => !open && setPendingAction(null)}
+        onOpenChange={open => !open && setPendingAction(null)}
         title={dialogProps.title}
         description={dialogProps.description}
         onConfirm={dialogProps.onConfirm}

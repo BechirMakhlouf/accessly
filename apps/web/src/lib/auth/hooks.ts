@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AUTH_USER_KEY,
   getAuthUserQueryOptions,
   signInMutationOptions,
   signInWithOAuthMutationOptions,
   signUpMutationOptions,
-} from "./queries";
+} from './queries';
 
-import { useLocale } from "next-intl";
-import { signOut } from "./actions";
-import { User } from "@supabase/supabase-js";
-import { useSupabase } from "../supabase/hooks";
+import { useLocale } from 'next-intl';
+import { signOut } from './actions';
+import { User } from '@supabase/supabase-js';
+import { useSupabase } from '../supabase/hooks';
 
 type SupabaseUser = NonNullable<User>;
 
@@ -54,7 +54,7 @@ export function useAuth() {
     isPending: isSigningInWithOAuth,
     error: signInOAuthError,
   } = useMutation(
-    signInWithOAuthMutationOptions(supabase, queryClient, locale),
+    signInWithOAuthMutationOptions(supabase, queryClient, locale)
   );
 
   const refresh = () =>
@@ -63,7 +63,7 @@ export function useAuth() {
   // Single surfaced error (already localized in your mutation options)
   const anyError = useMemo(
     () => error ?? signInError ?? signUpError ?? signInOAuthError ?? null,
-    [error, signInError, signUpError, signInOAuthError],
+    [error, signInError, signUpError, signInOAuthError]
   );
 
   return {

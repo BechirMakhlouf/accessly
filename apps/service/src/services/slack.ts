@@ -11,7 +11,10 @@ type SlackResult<T> = {
   error?: unknown;
 };
 
-export async function sendSlackMessage(text: string, channel: string): Promise<SlackResult<{ ts: string }>> {
+export async function sendSlackMessage(
+  text: string,
+  channel: string
+): Promise<SlackResult<{ ts: string }>> {
   try {
     const res = await slackClient.chat.postMessage({ channel, text });
     return { ok: true, data: { ts: res.ts! } };
@@ -20,19 +23,32 @@ export async function sendSlackMessage(text: string, channel: string): Promise<S
   }
 }
 
-export async function createSlackChannel(name: string): Promise<SlackResult<{ id?: string; name?: string }>> {
+export async function createSlackChannel(
+  name: string
+): Promise<SlackResult<{ id?: string; name?: string }>> {
   try {
-    const res: ConversationsCreateResponse = await slackClient.conversations.create({ name });
-    return { ok: res.ok ?? false, data: { id: res.channel?.id, name: res.channel?.name }, error: res.error };
+    const res: ConversationsCreateResponse =
+      await slackClient.conversations.create({ name });
+    return {
+      ok: res.ok ?? false,
+      data: { id: res.channel?.id, name: res.channel?.name },
+      error: res.error,
+    };
   } catch (error) {
     return { ok: false, error };
   }
 }
 
-export async function listSlackChannels(): Promise<SlackResult<{ channels?: any[] }>> {
+export async function listSlackChannels(): Promise<
+  SlackResult<{ channels?: any[] }>
+> {
   try {
     const res = await slackClient.conversations.list();
-    return { ok: res.ok ?? false, data: { channels: res.channels }, error: res.error };
+    return {
+      ok: res.ok ?? false,
+      data: { channels: res.channels },
+      error: res.error,
+    };
   } catch (error) {
     return { ok: false, error };
   }
@@ -43,9 +59,12 @@ export async function listSlackMessages(channel: string, limit = 20) {
       channel,
       limit,
     });
-    return { ok: res.ok ?? false, data: { messages: res.messages }, error: res.error };
+    return {
+      ok: res.ok ?? false,
+      data: { messages: res.messages },
+      error: res.error,
+    };
   } catch (error) {
     return { ok: false, error };
   }
 }
-

@@ -1,15 +1,14 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from 'react'
-import { OrganizationsHeader } from '@/modules/organizations/components/organizations-header'
-import { OrganizationsGrid } from '@/modules/organizations/components/organizations-grid'
-import { OrganizationsEmptyState } from '@/modules/organizations/components/organizations-empty-state'
-import { OrganizationsLoadingState } from '@/modules/organizations/components/organizations-loading-state'
-import { useOrganizationsPage } from '@/modules/organizations'
-
+import { useEffect, useState } from 'react';
+import { OrganizationsHeader } from '@/modules/organizations/components/organizations-header';
+import { OrganizationsGrid } from '@/modules/organizations/components/organizations-grid';
+import { OrganizationsEmptyState } from '@/modules/organizations/components/organizations-empty-state';
+import { OrganizationsLoadingState } from '@/modules/organizations/components/organizations-loading-state';
+import { useOrganizationsPage } from '@/modules/organizations';
 
 export default function OrganizationsPage() {
-  const [isHydrated, setIsHydrated] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false);
   const {
     organizations,
     searchQuery,
@@ -17,20 +16,20 @@ export default function OrganizationsPage() {
     isLoading,
     handleCreateOrganization,
     handleClearSearch,
-  } = useOrganizationsPage()
+  } = useOrganizationsPage();
 
   useEffect(() => {
-    setIsHydrated(true)
-  }, [])
+    setIsHydrated(true);
+  }, []);
 
   if (!isHydrated || isLoading) {
-    return <OrganizationsLoadingState />
+    return <OrganizationsLoadingState />;
   }
 
   return (
     <div className='flex justify-center'>
-      <div className="min-h-screen bg-background">
-        <main className="container py-8">
+      <div className='min-h-screen bg-background'>
+        <main className='container py-8'>
           <OrganizationsHeader
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -50,5 +49,5 @@ export default function OrganizationsPage() {
         </main>
       </div>
     </div>
-  )
+  );
 }

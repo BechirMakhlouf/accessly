@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { SupabaseCSRClient } from "@/lib/supabase/client";
+import { SupabaseCSRClient } from '@/lib/supabase/client';
 import type {
   AuthError,
   AuthOtpResponse,
@@ -11,8 +11,8 @@ import type {
   SignInWithPasswordlessCredentials,
   SignUpWithPasswordCredentials,
   User,
-} from "@supabase/supabase-js";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+} from '@supabase/supabase-js';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, {
   createContext,
   useCallback,
@@ -20,41 +20,47 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from "react";
-import { signOut as signOutAction } from "./actions";
-import { signInWithOauth } from "./queries/signInWithOauth";
-import { useLocale } from "next-intl";
+} from 'react';
+import { signOut as signOutAction } from './actions';
+import { signInWithOauth } from './queries/signInWithOauth';
+import { useLocale } from 'next-intl';
 
 type AuthContextValue = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  signInWithPassword: (
-    creds: { email: string; password: string },
-  ) => Promise<AuthTokenResponsePassword>;
+  signInWithPassword: (creds: {
+    email: string;
+    password: string;
+  }) => Promise<AuthTokenResponsePassword>;
   signUp: (creds: SignUpWithPasswordCredentials) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
-  signInWithOAuth: (
-    provider: Provider,
-  ) => Promise<{ data: { provider: Provider; url: string | null }; error: AuthError | null }>;
+  signInWithOAuth: (provider: Provider) => Promise<{
+    data: { provider: Provider; url: string | null };
+    error: AuthError | null;
+  }>;
   signInWithOtp: (
-    creds: SignInWithPasswordlessCredentials,
+    creds: SignInWithPasswordlessCredentials
   ) => Promise<AuthOtpResponse>;
-  resetPasswordForEmail: (email: string, redirectTo?: string) => Promise<
-    {
-      data: object;
-      error: null;
-    } | {
-      data: null;
-      error: AuthError;
-    }
+  resetPasswordForEmail: (
+    email: string,
+    redirectTo?: string
+  ) => Promise<
+    | {
+        data: object;
+        error: null;
+      }
+    | {
+        data: null;
+        error: AuthError;
+      }
   >;
   refetchUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const AUTH_USER_QUERY_KEY = ["auth", "user"] as const;
+const AUTH_USER_QUERY_KEY = ['auth', 'user'] as const;
 
 export function AuthProvider({ children }: React.PropsWithChildren) {
   const supabase = SupabaseCSRClient;
@@ -82,7 +88,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         setSession(newSession ?? null);
 
         try {
-          if (event === "SIGNED_OUT") {
+          if (event === 'SIGNED_OUT') {
             queryClient.setQueryData<User | null>(AUTH_USER_QUERY_KEY, null);
           } else {
             // const { data } = await supabase.auth.getUser();
@@ -91,7 +97,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         } catch {
           queryClient.setQueryData<User | null>(AUTH_USER_QUERY_KEY, null);
         }
-      },
+      }
     );
 
     return () => {
@@ -107,7 +113,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
       setSession(s.data?.session ?? null);
       return res;
     },
-    [supabase.auth, queryClient],
+    [supabase.auth, queryClient]
   );
 
   const signUp = useCallback(
@@ -116,7 +122,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
       queryClient.invalidateQueries({ queryKey: AUTH_USER_QUERY_KEY });
       return res;
     },
-    [queryClient, supabase.auth],
+    [queryClient, supabase.auth]
   );
 
   const signOut = useCallback(async () => {
@@ -124,26 +130,24 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
   }, []);
 
   const signInWithOAuth = useCallback(
-    async (
-      provider: Provider,
-    ) => {
-      return await signInWithOauth(supabase, locale, provider)
+    async (provider: Provider) => {
+      return await signInWithOauth(supabase, locale, provider);
     },
-    [supabase, locale],
+    [supabase, locale]
   );
 
   const signInWithOtp = useCallback(
     async (creds: SignInWithPasswordlessCredentials) => {
       return await supabase.auth.signInWithOtp(creds);
     },
-    [supabase.auth],
+    [supabase.auth]
   );
 
   const resetPasswordForEmail = useCallback(
     async (email: string, redirectTo?: string) => {
       return await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     },
-    [supabase.auth],
+    [supabase.auth]
   );
 
   const refetchUser = useCallback(async () => {
@@ -174,7 +178,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
       signInWithOtp,
       resetPasswordForEmail,
       refetchUser,
-    ],
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -183,7 +187,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
 export function useAuthContextValue() {
   const ctx = useContext(AuthContext);
   if (!ctx) {
-    throw new Error("useAuthContextValue must be used within AuthProvider");
+    throw new Error('useAuthContextValue must be used within AuthProvider');
   }
   return ctx;
 }

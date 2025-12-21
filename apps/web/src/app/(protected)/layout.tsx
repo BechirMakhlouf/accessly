@@ -1,17 +1,16 @@
-import { isAuthenticated } from "@/lib/auth/server";
-import { redirect } from "@/lib/i18n";
-import { routes } from "@/lib/routes";
-import { getLocale } from "next-intl/server";
+import { isAuthenticated } from '@/lib/auth/server';
+import { redirect } from '@/lib/i18n';
+import { routes } from '@/lib/routes';
+import { getLocale } from 'next-intl/server';
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   const locale = await getLocale();
-  if (!await isAuthenticated())
+  if (!(await isAuthenticated()))
     redirect({ href: routes.auth.signIn, locale });
 
-  return <> {children} </>
+  return <> {children} </>;
 }

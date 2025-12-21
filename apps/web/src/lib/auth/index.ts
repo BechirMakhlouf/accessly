@@ -11,10 +11,7 @@ export {
 } from './actions';
 
 // Utilities (client-safe)
-export {
-  extractUserNameFromOAuth,
-  extractUserImageFromOAuth,
-} from './utils';
+export { extractUserNameFromOAuth, extractUserImageFromOAuth } from './utils';
 
 // Queries and mutations
 export {

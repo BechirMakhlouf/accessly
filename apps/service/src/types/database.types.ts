@@ -1,2 +1,2 @@
 // Re-export all types from the shared package
-export * from "@accessly/types";
+export * from '@accessly/types';

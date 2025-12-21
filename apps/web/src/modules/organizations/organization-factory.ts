@@ -1,8 +1,8 @@
-import { createSSRClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/adminClient";
-import { OrganizationService } from "./organization-service";
-import { assertSignedInAndGetUserId } from "@/lib/auth/server";
-import { createMailService } from "@/lib/mail";
+import { createSSRClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/adminClient';
+import { OrganizationService } from './organization-service';
+import { assertSignedInAndGetUserId } from '@/lib/auth/server';
+import { createMailService } from '@/lib/mail';
 
 /**
  * Factory function to create organization service with only admin client

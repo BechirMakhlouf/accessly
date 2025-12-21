@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getProfileQueryOptions,
   getProfileMutationOptions,
   getUserAvatarMutationOptions,
   updateFullNameMutationOptions,
-} from "../queries";
+} from '../queries';
 
 export const useUserProfile = () => {
   const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { createOrgService } from "./organization-factory";
-import type { InviteStatus, OrgInput, OrgRole, OrgUpdate } from "./types";
+import { createOrgService } from './organization-factory';
+import type { InviteStatus, OrgInput, OrgRole, OrgUpdate } from './types';
 
 export async function getOrgBySlug(slug: string) {
   const orgService = await createOrgService();
@@ -17,7 +17,7 @@ export async function createOrg(newOrg: OrgInput) {
   const orgService = await createOrgService();
   const result = await orgService.create(newOrg);
 
-  console.debug("result: ", result);
+  console.debug('result: ', result);
   if (result.error || !result.data) {
     return result;
   }
@@ -42,7 +42,7 @@ export async function getUserOrgs() {
   const result = await orgService.getUserOrgs();
 
   if (result.error) {
-    console.error("Failed to load organizations:", result.error);
+    console.error('Failed to load organizations:', result.error);
     return null;
   }
 
@@ -62,7 +62,7 @@ export async function getOrganizationMembers(orgId: string) {
 export async function updateMemberRole(
   orgId: string,
   memberId: string,
-  newRole: OrgRole,
+  newRole: OrgRole
 ) {
   const orgService = await createOrgService();
   return await orgService.updateMemberRole(orgId, memberId, newRole);
@@ -81,7 +81,7 @@ export async function leaveOrganization(orgId: string) {
 export async function inviteMember(
   orgId: string,
   email: string,
-  role: OrgRole,
+  role: OrgRole
 ) {
   const orgService = await createOrgService();
   return await orgService.inviteMember(orgId, role, email);
@@ -99,7 +99,7 @@ export async function getOrgInvites(orgId: string) {
 
 export async function updateInviteStatus(
   inviteId: string,
-  status: InviteStatus,
+  status: InviteStatus
 ) {
   const orgService = await createOrgService();
   return await orgService.updateInviteStatus(inviteId, status);
@@ -112,7 +112,7 @@ export async function getUserInvites() {
 
 export async function updateUserOwnInvite(
   inviteId: string,
-  status: "accepted" | "rejected",
+  status: 'accepted' | 'rejected'
 ) {
   const orgService = await createOrgService();
   return await orgService.updateUserOwnInvite(inviteId, status);
@@ -128,12 +128,13 @@ export async function getInviteById(inviteId: string) {
  * Used for invite pages that need to work for both authenticated and unauthenticated users
  */
 export async function getPublicInviteById(inviteId: string) {
-  const { createAdminClient } = await import("@/lib/supabase/adminClient");
+  const { createAdminClient } = await import('@/lib/supabase/adminClient');
   const adminSupabase = await createAdminClient();
 
   const { data, error } = await adminSupabase
-    .from("invites")
-    .select(`
+    .from('invites')
+    .select(
+      `
       *,
       organization:organizations!inner(
         *
@@ -141,16 +142,17 @@ export async function getPublicInviteById(inviteId: string) {
       inviterProfile:user_profiles!invited_by(
         *
       )
-    `)
-    .eq("id", inviteId)
+    `
+    )
+    .eq('id', inviteId)
     .single();
 
   if (error) {
-    console.error("Failed to load invite:", error);
-    if (error.code === "PGRST116") {
-      return { error: "org.invite.notFound" };
+    console.error('Failed to load invite:', error);
+    if (error.code === 'PGRST116') {
+      return { error: 'org.invite.notFound' };
     }
-    return { error: "org.invite.failedToLoad" };
+    return { error: 'org.invite.failedToLoad' };
   }
 
   return { data };

@@ -1,8 +1,8 @@
-import { env } from "@/lib/env";
-import type { Database } from "@/types/database.types";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import type { TypedSupabaseClient } from "./type";
+import { env } from '@/lib/env';
+import type { Database } from '@/types/database.types';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import type { TypedSupabaseClient } from './type';
 
 export async function createSSRClient(showDebug: boolean = false) {
   const cookieStore = await cookies();
@@ -15,7 +15,7 @@ export async function createSSRClient(showDebug: boolean = false) {
         getAll() {
           const cookies = cookieStore.getAll();
           if (showDebug) {
-            console.debug("[Supabase] SSR cookies: ", cookies);
+            console.debug('[Supabase] SSR cookies: ', cookies);
           }
 
           return cookies;
@@ -33,7 +33,7 @@ export async function createSSRClient(showDebug: boolean = false) {
           }
         },
       },
-    },
+    }
   );
   return supabase;
 }

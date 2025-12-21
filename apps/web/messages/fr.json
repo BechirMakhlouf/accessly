@@ -1,18 +1,18 @@
 {
   "organizations": {
-  "title": "Organisations",
-  "description": "Gérez vos organisations et collaborez avec votre équipe.",
-  "selectOrganization": "Sélectionner une organisation",
-  "invitations": "Invitations",
-  "invitedBy": "Invité par",
-  "search": {
-    "placeholder": "Rechercher des organisations...",
-    "noResults": {
-      "title": "Aucune organisation trouvée",
-      "description": "Aucune organisation ne correspond à votre recherche « {query} »."
+    "title": "Organisations",
+    "description": "Gérez vos organisations et collaborez avec votre équipe.",
+    "selectOrganization": "Sélectionner une organisation",
+    "invitations": "Invitations",
+    "invitedBy": "Invité par",
+    "search": {
+      "placeholder": "Rechercher des organisations...",
+      "noResults": {
+        "title": "Aucune organisation trouvée",
+        "description": "Aucune organisation ne correspond à votre recherche « {query} »."
+      },
+      "clear": "Effacer la recherche"
     },
-    "clear": "Effacer la recherche"
-  },
     "empty": {
       "title": "Aucune organisation pour le moment",
       "description": "Commencez par créer votre première organisation pour collaborer avec votre équipe."

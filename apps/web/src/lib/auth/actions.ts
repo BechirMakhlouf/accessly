@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { createSSRClient } from "@/lib/supabase/server";
-import { getFullRoute, routes } from "@/lib/routes";
-import { getUserId } from "./utils";
-import { Provider } from "@supabase/supabase-js";
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { createSSRClient } from '@/lib/supabase/server';
+import { getFullRoute, routes } from '@/lib/routes';
+import { getUserId } from './utils';
+import { Provider } from '@supabase/supabase-js';
 
 export async function signOut() {
   const supabase = await createSSRClient();
   await supabase.auth.signOut();
-  revalidatePath("/", "layout");
+  revalidatePath('/', 'layout');
   redirect(routes.auth.signIn);
 }
 
@@ -18,7 +18,7 @@ export async function signInWithOAuthAction(provider: Provider) {
   const supabase = await createSSRClient();
 
   const redirectTo = getFullRoute(routes.api.auth.callback);
-  console.log("[auth][oauth] signing with oauth with redirectTo: ", redirectTo);
+  console.log('[auth][oauth] signing with oauth with redirectTo: ', redirectTo);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
@@ -27,12 +27,12 @@ export async function signInWithOAuthAction(provider: Provider) {
   });
 
   if (error) {
-    console.error("[auth][oauth] error while signing in: ", error);
+    console.error('[auth][oauth] error while signing in: ', error);
     return { data, error };
   }
 
-  revalidatePath("/", "layout");
-  console.log("[auth][oauth] redirecting to: ", data.url);
+  revalidatePath('/', 'layout');
+  console.log('[auth][oauth] redirecting to: ', data.url);
   redirect(data.url);
 }
 
@@ -120,7 +120,7 @@ export async function resetPassword(email: string) {
 export async function verifyOtp(
   email: string,
   token: string,
-  type: "email" | "recovery" | "magiclink" | "email_change",
+  type: 'email' | 'recovery' | 'magiclink' | 'email_change'
 ) {
   const supabase = await createSSRClient();
 

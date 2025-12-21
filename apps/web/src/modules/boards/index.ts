@@ -1,16 +1,16 @@
 // Types
-export * from "./types";
+export * from './types';
 
 // Hooks
-export { useActiveBoard } from "./hooks/useActiveBoard";
-export { useActiveOrgBoards } from "./hooks/useOrgBoards";
+export { useActiveBoard } from './hooks/useActiveBoard';
+export { useActiveOrgBoards } from './hooks/useOrgBoards';
 
 // Actions
-export * from "./actions";
+export * from './actions';
 
 // Queries
-export * from "./queries";
+export * from './queries';
 
 // Components
-export { BoardsDropdown } from "./components/boards-dropdown";
-export { CreateBoardModal } from "./components/create-board-modal";
+export { BoardsDropdown } from './components/boards-dropdown';
+export { CreateBoardModal } from './components/create-board-modal';

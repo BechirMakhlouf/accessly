@@ -1,20 +1,20 @@
-import { OrganizationCard } from './org-card'
-import type { OrgWithMembers } from "../types";
+import { OrganizationCard } from './org-card';
+import type { OrgWithMembers } from '../types';
 
 interface OrganizationsGridProps {
-  organizations: OrgWithMembers[]
+  organizations: OrgWithMembers[];
 }
 
 export function OrganizationsGrid({ organizations }: OrganizationsGridProps) {
   if (organizations.length === 0) {
-    return null
+    return null;
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {organizations.map((organization) => (
+    <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
+      {organizations.map(organization => (
         <OrganizationCard key={organization.id} organization={organization} />
       ))}
     </div>
-  )
+  );
 }

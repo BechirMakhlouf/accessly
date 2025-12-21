@@ -3,8 +3,8 @@
 import * as React from 'react';
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
 import { Check, ChevronRight, Circle } from 'lucide-react';
-import type { HTMLMotionProps, Transition } from "motion/react";
-import { AnimatePresence, motion, } from "motion/react";
+import type { HTMLMotionProps, Transition } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 import {
@@ -44,7 +44,7 @@ function DropdownMenu({
   ...props
 }: DropdownMenuProps) {
   const [isOpen, setIsOpen] = React.useState(
-    props?.open ?? props?.defaultOpen ?? false,
+    props?.open ?? props?.defaultOpen ?? false
   );
 
   React.useEffect(() => {
@@ -56,7 +56,7 @@ function DropdownMenu({
       setIsOpen(open);
       props.onOpenChange?.(open);
     },
-    [props],
+    [props]
   );
 
   return (
@@ -64,7 +64,7 @@ function DropdownMenu({
       value={{ isOpen, highlightTransition: transition, animateOnHover }}
     >
       <DropdownMenuPrimitive.Root
-        data-slot="dropdown-menu"
+        data-slot='dropdown-menu'
         {...props}
         onOpenChange={handleOpenChange}
       >
@@ -81,7 +81,7 @@ type DropdownMenuTriggerProps = React.ComponentProps<
 function DropdownMenuTrigger(props: DropdownMenuTriggerProps) {
   return (
     <DropdownMenuPrimitive.Trigger
-      data-slot="dropdown-menu-trigger"
+      data-slot='dropdown-menu-trigger'
       {...props}
     />
   );
@@ -93,7 +93,7 @@ type DropdownMenuGroupProps = React.ComponentProps<
 
 function DropdownMenuGroup(props: DropdownMenuGroupProps) {
   return (
-    <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
+    <DropdownMenuPrimitive.Group data-slot='dropdown-menu-group' {...props} />
   );
 }
 
@@ -103,7 +103,7 @@ type DropdownMenuPortalProps = React.ComponentProps<
 
 function DropdownMenuPortal(props: DropdownMenuPortalProps) {
   return (
-    <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
+    <DropdownMenuPrimitive.Portal data-slot='dropdown-menu-portal' {...props} />
   );
 }
 
@@ -112,7 +112,7 @@ type DropdownMenuSubProps = React.ComponentProps<
 >;
 
 function DropdownMenuSub(props: DropdownMenuSubProps) {
-  return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />;
+  return <DropdownMenuPrimitive.Sub data-slot='dropdown-menu-sub' {...props} />;
 }
 
 type DropdownMenuRadioGroupProps = React.ComponentProps<
@@ -122,7 +122,7 @@ type DropdownMenuRadioGroupProps = React.ComponentProps<
 function DropdownMenuRadioGroup(props: DropdownMenuRadioGroupProps) {
   return (
     <DropdownMenuPrimitive.RadioGroup
-      data-slot="dropdown-menu-radio-group"
+      data-slot='dropdown-menu-radio-group'
       {...props}
     />
   );
@@ -145,18 +145,18 @@ function DropdownMenuSubTrigger({
     <MotionHighlightItem disabled={disabled}>
       <DropdownMenuPrimitive.SubTrigger {...props} disabled={disabled} asChild>
         <motion.div
-          data-slot="dropdown-menu-sub-trigger"
+          data-slot='dropdown-menu-sub-trigger'
           data-inset={inset}
           data-disabled={disabled}
           whileTap={{ scale: 0.95 }}
           className={cn(
             "[&:not([data-highlight])]:focus:bg-accent focus:text-accent-foreground [&:not([data-highlight])]:data-[state=open]:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:[&_[data-chevron]]:rotate-90 [&_[data-chevron]]:transition-transform [&_[data-chevron]]:duration-150 [&_[data-chevron]]:ease-in-out [&_svg:not([class*='text-'])]:text-muted-foreground relative z-[1] flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
             inset && 'pl-8',
-            className,
+            className
           )}
         >
           {children}
-          <ChevronRight data-chevron className="ml-auto" />
+          <ChevronRight data-chevron className='ml-auto' />
         </motion.div>
       </DropdownMenuPrimitive.SubTrigger>
     </MotionHighlightItem>
@@ -173,10 +173,10 @@ function DropdownMenuSubContent({
 }: DropdownMenuSubContentProps) {
   return (
     <DropdownMenuPrimitive.SubContent
-      data-slot="dropdown-menu-sub-content"
+      data-slot='dropdown-menu-sub-content'
       className={cn(
         'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]',
-        className,
+        className
       )}
       {...props}
     />
@@ -204,7 +204,7 @@ function DropdownMenuContent({
       {isOpen && (
         <DropdownMenuPrimitive.Portal
           forceMount
-          data-slot="dropdown-menu-portal"
+          data-slot='dropdown-menu-portal'
         >
           <DropdownMenuPrimitive.Content
             sideOffset={sideOffset}
@@ -212,11 +212,11 @@ function DropdownMenuContent({
             {...props}
           >
             <motion.div
-              key="dropdown-menu-content"
-              data-slot="dropdown-menu-content"
+              key='dropdown-menu-content'
+              data-slot='dropdown-menu-content'
               className={cn(
                 'z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]',
-                className,
+                className
               )}
               initial={{
                 opacity: 0,
@@ -236,7 +236,7 @@ function DropdownMenuContent({
             >
               <MotionHighlight
                 hover
-                className="rounded-sm"
+                className='rounded-sm'
                 controlledItems
                 transition={highlightTransition}
                 enabled={animateOnHover}
@@ -277,7 +277,7 @@ function DropdownMenuItem({
     >
       <DropdownMenuPrimitive.Item {...props} disabled={disabled} asChild>
         <motion.div
-          data-slot="dropdown-menu-item"
+          data-slot='dropdown-menu-item'
           data-inset={inset}
           data-variant={variant}
           data-disabled={disabled}
@@ -285,7 +285,7 @@ function DropdownMenuItem({
           className={cn(
             "[&:not([data-highlight])]:focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive [&:not([data-highlight])]:data-[variant=destructive]:focus:bg-destructive/10 dark:[&:not([data-highlight])]:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative z-[1] flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus-visible:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
             inset && 'pl-8',
-            className,
+            className
           )}
         >
           {children}
@@ -315,17 +315,17 @@ function DropdownMenuCheckboxItem({
         asChild
       >
         <motion.div
-          data-slot="dropdown-menu-checkbox-item"
+          data-slot='dropdown-menu-checkbox-item'
           data-disabled={disabled}
           whileTap={{ scale: 0.95 }}
           className={cn(
             "[&:not([data-highlight])]:focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-            className,
+            className
           )}
         >
-          <span className="absolute left-2 flex size-3.5 items-center justify-center">
-            <DropdownMenuPrimitive.ItemIndicator data-slot="dropdown-menu-checkbox-item-indicator">
-              <Check className="size-4" />
+          <span className='absolute left-2 flex size-3.5 items-center justify-center'>
+            <DropdownMenuPrimitive.ItemIndicator data-slot='dropdown-menu-checkbox-item-indicator'>
+              <Check className='size-4' />
             </DropdownMenuPrimitive.ItemIndicator>
           </span>
           {children}
@@ -349,17 +349,17 @@ function DropdownMenuRadioItem({
     <MotionHighlightItem disabled={disabled}>
       <DropdownMenuPrimitive.RadioItem {...props} disabled={disabled} asChild>
         <motion.div
-          data-slot="dropdown-menu-radio-item"
+          data-slot='dropdown-menu-radio-item'
           data-disabled={disabled}
           whileTap={{ scale: 0.95 }}
           className={cn(
             "[&:not([data-highlight])]:focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-            className,
+            className
           )}
         >
-          <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
-            <DropdownMenuPrimitive.ItemIndicator data-slot="dropdown-menu-radio-item-indicator">
-              <Circle className="size-2 fill-current" />
+          <span className='pointer-events-none absolute left-2 flex size-3.5 items-center justify-center'>
+            <DropdownMenuPrimitive.ItemIndicator data-slot='dropdown-menu-radio-item-indicator'>
+              <Circle className='size-2 fill-current' />
             </DropdownMenuPrimitive.ItemIndicator>
           </span>
           {children}
@@ -382,12 +382,12 @@ function DropdownMenuLabel({
 }: DropdownMenuLabelProps) {
   return (
     <DropdownMenuPrimitive.Label
-      data-slot="dropdown-menu-label"
+      data-slot='dropdown-menu-label'
       data-inset={inset}
       className={cn(
         'px-2 py-1.5 text-sm font-semibold',
         inset && 'pl-8',
-        className,
+        className
       )}
       {...props}
     />
@@ -404,7 +404,7 @@ function DropdownMenuSeparator({
 }: DropdownMenuSeparatorProps) {
   return (
     <DropdownMenuPrimitive.Separator
-      data-slot="dropdown-menu-separator"
+      data-slot='dropdown-menu-separator'
       className={cn('-mx-1 my-1 h-px bg-border', className)}
       {...props}
     />
@@ -419,10 +419,10 @@ function DropdownMenuShortcut({
 }: DropdownMenuShortcutProps) {
   return (
     <span
-      data-slot="dropdown-menu-shortcut"
+      data-slot='dropdown-menu-shortcut'
       className={cn(
         'text-muted-foreground ml-auto text-xs tracking-widest',
-        className,
+        className
       )}
       {...props}
     />

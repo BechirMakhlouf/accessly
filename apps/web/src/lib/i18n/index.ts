@@ -1,15 +1,15 @@
 // Types
-export type { I18nMessageKey, TranslationFunction } from "./types";
+export type { I18nMessageKey, TranslationFunction } from './types';
 
 // Configuration
-export { defaultLocale, locales, localesInfo } from "./config";
-export type { Locale } from "./config";
+export { defaultLocale, locales, localesInfo } from './config';
+export type { Locale } from './config';
 
 // Middleware
-export { i18nMiddleware } from "./middleware";
+export { i18nMiddleware } from './middleware';
 
 // Formats
-export { INTL_FORMATS } from "./formats";
+export { INTL_FORMATS } from './formats';
 
 // Navigation
 export {
@@ -18,13 +18,13 @@ export {
   redirect,
   usePathname,
   useRouter,
-} from "./navigation";
+} from './navigation';
 
 // Routing
-export { routing } from "./routing";
+export { routing } from './routing';
 
 // Components
-export { LocaleSwitcher } from "./components/locale-selector";
+export { LocaleSwitcher } from './components/locale-selector';
 
 // Server utilities (for server contexts only)
-export * from "./server";
+export * from './server';

@@ -1,12 +1,12 @@
-import { env } from "../env";
-import type { CreateEmailOptions, CreateEmailResponse, Resend } from "resend";
-import type { IMailService } from "./types";
-import { EmailOptions, EmailResponse } from "./types";
+import { env } from '../env';
+import type { CreateEmailOptions, CreateEmailResponse, Resend } from 'resend';
+import type { IMailService } from './types';
+import { EmailOptions, EmailResponse } from './types';
 
 /**
  * Development environment email routing
  */
-const DEV_EMAIL = "delivered@resend.dev";
+const DEV_EMAIL = 'delivered@resend.dev';
 
 /**
  * Get the default from email address using the configured domain
@@ -19,7 +19,7 @@ function getDefaultFromEmail(): string {
  * Route emails to test addresses in development
  */
 function routeEmailForDevelopment(email: string | string[]): string | string[] {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     if (Array.isArray(email)) {
       return email.map(() => DEV_EMAIL);
     }
@@ -55,23 +55,23 @@ export class EmailService implements IMailService {
       } as CreateEmailOptions);
 
       if (result.error) {
-        console.error("Failed to send email:", result.error);
+        console.error('Failed to send email:', result.error);
         return {
           data: null,
           error: {
-            message: result.error.message || "Unknown error",
-            code: "RESEND_ERROR",
+            message: result.error.message || 'Unknown error',
+            code: 'RESEND_ERROR',
           },
         };
       }
       return { data: { id: result.data.id }, error: null };
     } catch (error) {
-      console.error("Failed to send email:", error);
+      console.error('Failed to send email:', error);
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error",
-          code: "RESEND_ERROR",
+          message: error instanceof Error ? error.message : 'Unknown error',
+          code: 'RESEND_ERROR',
         },
       };
     }

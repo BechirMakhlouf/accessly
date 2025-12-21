@@ -1,18 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
-import type { Organization, OrgMember, OrgRole } from "@/modules/organizations";
-import { canManageMembers, useActiveOrg,  } from "@/modules/organizations";
-import { useOrgInvite } from "./use-org-invite";
-import { routes } from "@/lib/routes";
-
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+import { useRouter, useSearchParams } from 'next/navigation';
+import type { Organization, OrgMember, OrgRole } from '@/modules/organizations';
+import { canManageMembers, useActiveOrg } from '@/modules/organizations';
+import { useOrgInvite } from './use-org-invite';
+import { routes } from '@/lib/routes';
 
 const ITEMS_PER_PAGE = 10;
-
-
 
 export const useMembersPage = () => {
   const {
@@ -26,7 +23,7 @@ export const useMembersPage = () => {
     isRemovingMember,
     currentUserRole: userRole,
   } = useActiveOrg();
-  
+
   const {
     invites,
     revokeInvite,
@@ -38,30 +35,29 @@ export const useMembersPage = () => {
     members: members || [],
   });
 
-  const t = useTranslations("org.members");
+  const t = useTranslations('org.members');
   const rootT = useTranslations();
   const router = useRouter();
-  const searchParams = useSearchParams(); 
+  const searchParams = useSearchParams();
 
-  
-  const initialQuery = searchParams.get("search") ?? "";
+  const initialQuery = searchParams.get('search') ?? '';
   const [searchQuery, setSearchQuery] = useState(initialQuery);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (searchQuery.trim() !== "") {
-      params.set("search", searchQuery);
+    if (searchQuery.trim() !== '') {
+      params.set('search', searchQuery);
     } else {
-      params.delete("search");
+      params.delete('search');
     }
     router.replace(`?${params.toString()}`);
   }, [searchQuery, router, searchParams]);
-  
+
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<OrgRole>("member");
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<OrgRole>('member');
   const currentUserRole = useMemo(() => {
     return userRole ? { role: userRole } : null;
   }, [userRole]);
@@ -78,15 +74,13 @@ export const useMembersPage = () => {
     ? canManageMembers(currentUserRole.role)
     : false;
 
-
-   
   const filteredMembers = useMemo(() => {
     if (!members) return [];
     const query = searchQuery.trim().toLowerCase();
     if (!query) return members;
 
     return members.filter(
-      (member) =>
+      member =>
         member.profile?.full_name?.toLowerCase().includes(query) ||
         member.profile?.email.toLowerCase().includes(query)
     );
@@ -97,18 +91,17 @@ export const useMembersPage = () => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return invites;
 
-    return invites.filter((invite) =>
-      invite.email.toLowerCase().includes(query)
-    );
+    return invites.filter(invite => invite.email.toLowerCase().includes(query));
   }, [invites, searchQuery]);
 
   const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedMembers = filteredMembers.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE,
+    startIndex + ITEMS_PER_PAGE
   );
-  const isAllSelected = paginatedMembers.length > 0 &&
+  const isAllSelected =
+    paginatedMembers.length > 0 &&
     selectedMembers.length === paginatedMembers.length;
   const totalFilteredMembers = filteredMembers.length;
 
@@ -117,14 +110,14 @@ export const useMembersPage = () => {
     if (!org?.id) return;
     const memberList = members || [];
 
-    if (newRole === "member") {
-      const target = memberList.find((m) => m.user_id === memberId);
-      if (target?.role === "admin") {
-        const otherAdmins = memberList.filter((m) =>
-          m.role === "admin" && m.user_id !== memberId
+    if (newRole === 'member') {
+      const target = memberList.find(m => m.user_id === memberId);
+      if (target?.role === 'admin') {
+        const otherAdmins = memberList.filter(
+          m => m.role === 'admin' && m.user_id !== memberId
         );
         if (otherAdmins.length === 0) {
-          toast.error(t("actions.cannotDemoteLastAdmin"));
+          toast.error(t('actions.cannotDemoteLastAdmin'));
           return;
         }
       }
@@ -132,10 +125,10 @@ export const useMembersPage = () => {
 
     try {
       await updateMemberRole(memberId, newRole);
-      toast.success(t("actions.roleUpdated"));
+      toast.success(t('actions.roleUpdated'));
     } catch (error) {
-      console.error("Failed to update role:", error);
-      toast.error(t("actions.roleUpdateError"));
+      console.error('Failed to update role:', error);
+      toast.error(t('actions.roleUpdateError'));
     }
   };
 
@@ -144,17 +137,17 @@ export const useMembersPage = () => {
 
     try {
       await removeMember(memberId);
-      toast.success(t("actions.memberRemoved"));
+      toast.success(t('actions.memberRemoved'));
     } catch (error) {
-      console.error("Failed to remove member:", error);
-      toast.error(t("actions.memberRemoveError"));
+      console.error('Failed to remove member:', error);
+      toast.error(t('actions.memberRemoveError'));
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedMembers(
-        paginatedMembers.map((member: OrgMember) => member.user_id),
+        paginatedMembers.map((member: OrgMember) => member.user_id)
       );
     } else {
       setSelectedMembers([]);
@@ -163,9 +156,9 @@ export const useMembersPage = () => {
 
   const handleSelectMember = (memberId: string, checked: boolean) => {
     if (checked) {
-      setSelectedMembers((prev) => [...prev, memberId]);
+      setSelectedMembers(prev => [...prev, memberId]);
     } else {
-      setSelectedMembers((prev) => prev.filter((id) => id !== memberId));
+      setSelectedMembers(prev => prev.filter(id => id !== memberId));
     }
   };
 
@@ -174,18 +167,18 @@ export const useMembersPage = () => {
 
     try {
       const result = await inviteMember(inviteEmail.trim(), inviteRole);
-      console.log("invite result: ", result);
+      console.log('invite result: ', result);
       if (result?.error) {
         toast.error(rootT(result.error));
       }
-      toast.success(t("actions.invitationSent"));
+      toast.success(t('actions.invitationSent'));
       // Reset form
       setIsInviteModalOpen(false);
-      setInviteEmail("");
-      setInviteRole("member");
+      setInviteEmail('');
+      setInviteRole('member');
     } catch (error) {
-      console.error("Failed to invite member:", error);
-      toast.error(t("actions.invitationError"));
+      console.error('Failed to invite member:', error);
+      toast.error(t('actions.invitationError'));
     }
   };
 
@@ -198,11 +191,11 @@ export const useMembersPage = () => {
         await removeMember(memberId);
       }
 
-      toast.success(t("actions.memberRemoved"));
+      toast.success(t('actions.memberRemoved'));
       setSelectedMembers([]);
     } catch (error) {
-      console.error("Failed to bulk delete members:", error);
-      toast.error(t("actions.memberRemoveError"));
+      console.error('Failed to bulk delete members:', error);
+      toast.error(t('actions.memberRemoveError'));
     }
   };
 

@@ -1,7 +1,6 @@
-import { createSSRClient } from "@/lib/supabase/server";
-import { NotificationService } from "./notification-service";
-import { assertSignedInAndGetUserId } from "@/lib/auth/server";
-
+import { createSSRClient } from '@/lib/supabase/server';
+import { NotificationService } from './notification-service';
+import { assertSignedInAndGetUserId } from '@/lib/auth/server';
 
 /**
  * Factory function to create (or reuse) a singleton notification service

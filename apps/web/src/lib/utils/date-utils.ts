@@ -8,7 +8,7 @@ import { useFormatter, useNow } from 'next-intl';
 export const useFormatRelativeDate = () => {
   const now = useNow();
   const format = useFormatter();
-  
+
   return (dateString: string | Date): string => {
     const date = new Date(dateString);
     return format.relativeTime(date, now);

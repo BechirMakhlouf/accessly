@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTheme } from "next-themes";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTheme } from 'next-themes';
 import {
   getUserSettingsMutationOptions,
   getUserSettingsQueryOptions,
   updateUserLocaleMutationOptions,
   updateUserThemeMutationOptions,
-} from "./queries";
+} from './queries';
 
 export const useUserSettings = () => {
   const queryClient = useQueryClient();
@@ -34,7 +34,7 @@ export const useThemeManager = () => {
       try {
         await setUserTheme.mutateAsync(newTheme);
       } catch (error) {
-        console.error("Failed to sync theme to database:", error);
+        console.error('Failed to sync theme to database:', error);
       }
     }, 300);
 

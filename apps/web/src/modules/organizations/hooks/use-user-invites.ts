@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/lib/auth";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/lib/auth';
 import {
   getUserInvitesQueryOptions,
   updateUserInviteMutationOptions,
-} from "../queries";
+} from '../queries';
 
 export function useUserInvites() {
   const { user } = useAuth();
@@ -32,35 +32,35 @@ export function useUserInvites() {
 
   // Actions
   const acceptInvite = async (inviteId: string) => {
-    return await updateInviteMutation.mutateAsync({ 
-      inviteId, 
-      status: "accepted" 
+    return await updateInviteMutation.mutateAsync({
+      inviteId,
+      status: 'accepted',
     });
   };
 
   const rejectInvite = async (inviteId: string) => {
-    return await updateInviteMutation.mutateAsync({ 
-      inviteId, 
-      status: "rejected" 
+    return await updateInviteMutation.mutateAsync({
+      inviteId,
+      status: 'rejected',
     });
   };
 
   return {
     // Data
     invites,
-    
+
     // State
     isLoading,
     error,
-    
+
     // Actions
     acceptInvite,
     rejectInvite,
     refetch,
-    
+
     // Mutation states
     isUpdating: updateInviteMutation.isPending,
-    
+
     // Mutation errors
     updateError: updateInviteMutation.error,
   };

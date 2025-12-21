@@ -1,19 +1,19 @@
-import { z } from "zod";
-import type { TranslationFunction } from "@/lib/i18n";
+import { z } from 'zod';
+import type { TranslationFunction } from '@/lib/i18n';
 
 // --- SLUG ---
 export const createOrgSlugSchema = (t: TranslationFunction) =>
   z.object({
     slug: z
       .string()
-      .min(2, t("org.settings.general.orgSlug.errors.minLength"))
-      .max(50, t("org.settings.general.orgSlug.errors.maxLength"))
+      .min(2, t('org.settings.general.orgSlug.errors.minLength'))
+      .max(50, t('org.settings.general.orgSlug.errors.maxLength'))
       .regex(
         /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-        t("org.settings.general.orgSlug.errors.invalidFormat"),
+        t('org.settings.general.orgSlug.errors.invalidFormat')
       )
-      .refine((val) => !val.startsWith("-") && !val.endsWith("-"), {
-        message: t("org.settings.general.orgSlug.errors.noHyphensAtEnds"),
+      .refine(val => !val.startsWith('-') && !val.endsWith('-'), {
+        message: t('org.settings.general.orgSlug.errors.noHyphensAtEnds'),
       }),
   });
 
@@ -21,24 +21,24 @@ export const createOrgDetailsSchema = (t: TranslationFunction) =>
   z.object({
     name: z
       .string()
-      .min(2, t("org.settings.general.orgName.errors.minLength"))
-      .max(100, t("org.settings.general.orgName.errors.maxLength"))
+      .min(2, t('org.settings.general.orgName.errors.minLength'))
+      .max(100, t('org.settings.general.orgName.errors.maxLength'))
       .trim(),
 
     description: z
       .string()
-      .max(500, t("org.settings.general.orgDescription.errors.maxLength"))
+      .max(500, t('org.settings.general.orgDescription.errors.maxLength'))
       .optional()
-      .or(z.literal("")),
+      .or(z.literal('')),
   });
 
 export const createOrgDescriptionSchema = (t: TranslationFunction) =>
   z.object({
     description: z
       .string()
-      .max(500, t("org.settings.general.orgDescription.errors.maxLength"))
+      .max(500, t('org.settings.general.orgDescription.errors.maxLength'))
       .optional()
-      .or(z.literal("")),
+      .or(z.literal('')),
   });
 
 // --- DELETE ---

@@ -1,4 +1,4 @@
-import type { IMailService } from "@/lib/mail";
+import type { IMailService } from '@/lib/mail';
 import { InviteMemberEmail } from './invite-member-email';
 
 export interface SendInviteEmailParams {

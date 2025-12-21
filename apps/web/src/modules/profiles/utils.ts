@@ -1,11 +1,9 @@
-
-import { v4 } from "uuid"
+import { v4 } from 'uuid';
 
 export function createAvatarPath(user_id: string, file: File) {
-  const fileExt = file.name.split(".").pop()
+  const fileExt = file.name.split('.').pop();
   if (!fileExt) {
-    throw new Error("File must have an extension")
+    throw new Error('File must have an extension');
   }
-  return `${user_id}/${v4()}.${fileExt}`
+  return `${user_id}/${v4()}.${fileExt}`;
 }
-

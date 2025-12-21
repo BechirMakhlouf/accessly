@@ -1,18 +1,18 @@
-"use client"
+'use client';
 
-import { AlertCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useTranslations } from "next-intl"
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useTranslations } from 'next-intl';
 import {
   useMembersPage,
   MembersHeader,
   MembersSearchBar,
   InviteMemberModal,
-  MembersPagination
-} from "@/modules/organizations"
-import { MembersTable } from "@/modules/organizations/components/members-table"
+  MembersPagination,
+} from '@/modules/organizations';
+import { MembersTable } from '@/modules/organizations/components/members-table';
 export default function MembersPage() {
-  const t = useTranslations("org.members");
+  const t = useTranslations('org.members');
 
   const {
     // State
@@ -59,20 +59,18 @@ export default function MembersPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {t('errors.loadError')}
-          </AlertDescription>
+      <div className='container mx-auto py-8 px-4'>
+        <Alert variant='destructive'>
+          <AlertCircle className='h-4 w-4' />
+          <AlertDescription>{t('errors.loadError')}</AlertDescription>
         </Alert>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex flex-col space-y-6">
+    <div className='container mx-auto py-8 px-4'>
+      <div className='flex flex-col space-y-6'>
         <MembersHeader
           canManageMembers={canManageMembersRole}
           onInviteClick={() => setIsInviteModalOpen(true)}
@@ -102,8 +100,8 @@ export default function MembersPage() {
           onSelectMember={handleSelectMember}
           onRoleChange={handleRoleChange}
           onDeleteMember={handleDeleteMember}
-          onRevokeInvite={(inviteId) => revokeInvite(inviteId)}
-          onToggleExpiredInvites={() => { }}
+          onRevokeInvite={inviteId => revokeInvite(inviteId)}
+          onToggleExpiredInvites={() => {}}
           searchQuery={searchQuery}
         />
         <MembersPagination
@@ -127,5 +125,5 @@ export default function MembersPage() {
         />
       </div>
     </div>
-  )
+  );
 }

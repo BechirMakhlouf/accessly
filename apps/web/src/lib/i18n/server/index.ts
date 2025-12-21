@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { cookies } from "next/headers";
-import { hasLocale } from "next-intl";
-import type { Locale } from "../config";
-import { defaultLocale, locales } from "../config";
+import { cookies } from 'next/headers';
+import { hasLocale } from 'next-intl';
+import type { Locale } from '../config';
+import { defaultLocale, locales } from '../config';
 
 // Cookie name for storing app locale
-const APP_LOCALE_COOKIE_NAME = "APP_LOCALE" as const;
+const APP_LOCALE_COOKIE_NAME = 'APP_LOCALE' as const;
 
 /**
  * Gets the app locale from cookies

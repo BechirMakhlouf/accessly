@@ -1,5 +1,5 @@
-import { Resend } from "resend";
-import { env } from "../env";
+import { Resend } from 'resend';
+import { env } from '../env';
 
 /**
  * Shared Resend client instance. Server-only.

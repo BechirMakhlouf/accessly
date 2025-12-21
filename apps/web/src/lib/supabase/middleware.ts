@@ -1,13 +1,18 @@
-import { createServerClient } from "@supabase/ssr";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-import { env } from "@/lib/env";
-import { getUserId } from "../auth/server";
+import { createServerClient } from '@supabase/ssr';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { env } from '@/lib/env';
+import { getUserId } from '../auth/server';
 
-export async function supabaseMiddleware(request: NextRequest, response?: NextResponse) {
-  let supabaseResponse = response ?? NextResponse.next({
-    request,
-  });
+export async function supabaseMiddleware(
+  request: NextRequest,
+  response?: NextResponse
+) {
+  let supabaseResponse =
+    response ??
+    NextResponse.next({
+      request,
+    });
 
   const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
@@ -19,18 +24,17 @@ export async function supabaseMiddleware(request: NextRequest, response?: NextRe
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            supabaseResponse.cookies.set(name, value),
+            supabaseResponse.cookies.set(name, value)
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
+            supabaseResponse.cookies.set(name, value, options)
           );
         },
       },
-
-    },
+    }
   );
 
   //WARNING: DO NOT REMOVE getUserId
