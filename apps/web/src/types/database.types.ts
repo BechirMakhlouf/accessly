@@ -1,1 +1,1 @@
-import type { Database } from '@accessly/types';
+export type { Database } from '@accessly/types';
