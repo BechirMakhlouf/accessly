@@ -5,7 +5,7 @@
     "init-local": "shx cp .env.example .env.local",
     "dev": "tsx watch src/index.ts",
     "build": "node build.ts",
-    "start": "node dist/index.js",
+    "start": "node dist/index.cjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
