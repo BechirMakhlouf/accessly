@@ -24,7 +24,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       supabase:
-        specifier: ^2.67.1
+        specifier: latest
         version: 2.70.5
       turbo:
         specifier: ^2.2.3

@@ -11,8 +11,7 @@ ENV PNPM_HOME="/pnpm" \
   PNPM_STORE_PATH="/pnpm/store" \
   PATH="/pnpm:${PATH}"
 
-RUN corepack enable \
-  && corepack prepare "pnpm@${PNPM_VERSION}" --activate
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 WORKDIR /repo
 
