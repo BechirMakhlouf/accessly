@@ -52,6 +52,8 @@ schema_paths = [
   "./schemas/extensions.sql",
   "./schemas/*.sql",
   "./schemas/organizations/tables.sql",
+  "./schemas/boards/tables.sql",
+  "./schemas/accessables/tables.sql",
   "./schemas/*/tables.sql",
   "./schemas/*/functions.sql",
   "./schemas/*/triggers.sql",

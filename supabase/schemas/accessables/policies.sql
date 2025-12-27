@@ -1,0 +1,1 @@
+ALTER TABLE public.accessables ENABLE ROW LEVEL SECURITY;
