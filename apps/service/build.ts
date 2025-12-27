@@ -6,7 +6,7 @@ await build({
   outfile: 'dist/index.cjs',
   platform: 'node',
   // outdir: "dist",
-  target: 'node22',
+  target: 'node25',
   format: 'cjs',
   sourcemap: true,
   logLevel: 'info',
