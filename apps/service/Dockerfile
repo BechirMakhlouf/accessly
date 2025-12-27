@@ -1,34 +1,20 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------------------------------------------------------------------------
-# Base image: configure a consistent Node.js + pnpm toolchain for all stages.
+# Base image
 # ---------------------------------------------------------------------------
 FROM node:25-slim AS base
-
-ARG PNPM_VERSION=9.0.0
 
 ENV PNPM_HOME="/pnpm" \
   PNPM_STORE_PATH="/pnpm/store" \
   PATH="/pnpm:${PATH}"
 
-RUN npm install -g pnpm@${PNPM_VERSION}
-
 WORKDIR /repo
 
-# ---------------------------------------------------------------------------
-# Dependencies stage: pre-fetch workspace packages to warm the pnpm store.
-# ---------------------------------------------------------------------------
-FROM base AS deps
-
-COPY apps/service/package.json apps/service/package.json
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY packages packages
-
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-  pnpm fetch --filter @accessly/service...
+RUN npm install -g pnpm@10.0.0
 
 # ---------------------------------------------------------------------------
-# Build stage: install, compile, and create a pruned production bundle.
+# Builder stage: install deps and build
 # ---------------------------------------------------------------------------
 FROM base AS builder
 
@@ -37,13 +23,17 @@ COPY tsconfig.json ./tsconfig.json
 COPY apps/service apps/service
 COPY packages packages
 
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-  pnpm install --offline --frozen-lockfile --filter @accessly/service...
-RUN pnpm --filter @accessly/service --prod build
+# Install dependencies
+RUN pnpm install --frozen-lockfile --filter @accessly/service...
+
+# Build
+RUN pnpm --filter @accessly/service build
+
+# Deploy only production deps
 RUN pnpm deploy --filter @accessly/service --prod /deploy/service
 
 # ---------------------------------------------------------------------------
-# Runtime stage: minimal image containing only the production artifacts.
+# Runtime stage: minimal production image
 # ---------------------------------------------------------------------------
 FROM node:25-slim AS runtime
 
