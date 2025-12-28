@@ -703,7 +703,7 @@ export type Database = {
     Tables: {
       accessables: {
         Row: {
-          board_id: string
+          board_id: string | null
           created_at: string
           description: string | null
           id: string
@@ -717,7 +717,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          board_id: string
+          board_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -731,7 +731,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          board_id?: string
+          board_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
