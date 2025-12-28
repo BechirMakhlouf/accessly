@@ -1,8 +1,6 @@
 #!/usr/bin/env tsx
 
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
-import { join } from 'path';
 
 /**
  * Migration workflow script that:
@@ -16,7 +14,7 @@ import { join } from 'path';
 
 function main() {
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0) {
     console.error('❌ Error: Migration name is required');
     console.log('Usage: npm run migration:workflow -- <migration-name>');

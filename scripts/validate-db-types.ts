@@ -12,7 +12,6 @@
 
 import { execSync } from "child_process";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { join } from "path";
 
 const DATABASE_TYPES_PATH = "src/types/database.types.ts";
 const TEMP_TYPES_PATH = "temp-database.types.ts";
@@ -91,8 +90,7 @@ function compareFiles(file1Path: string, file2Path: string): string[] {
 
       if (line1 !== line2) {
         differences.push(
-          `Line ${i + 1}: ${
-            line1 !== "" ? "Expected" : "Missing"
+          `Line ${i + 1}: ${line1 !== "" ? "Expected" : "Missing"
           }: "${line1}" | ${line2 !== "" ? "Actual" : "Missing"}: "${line2}"`,
         );
 
