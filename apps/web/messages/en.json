@@ -530,6 +530,109 @@
       "public": "Public"
     }
   },
+  "accessable": {
+    "unauthorized": "You are not authorized to perform this accessable action",
+    "notFound": "Accessable not found",
+    "failedToLoad": "Failed to load accessable",
+    "failedToCreate": "Failed to create accessable",
+    "failedToUpdate": "Failed to update accessable",
+    "failedToDelete": "Failed to delete accessable",
+    "insufficientPermissions": "You do not have sufficient permissions to perform this action"
+  },
+  "accessables": {
+    "title": "Accessables",
+    "description": "Manage accessible resources for your board",
+    "empty": {
+      "title": "No accessables yet",
+      "description": "Create your first accessable to start managing resources for this board"
+    },
+    "search": {
+      "placeholder": "Search accessables...",
+      "noResults": {
+        "title": "No accessables found",
+        "description": "No accessables match your search query \"{query}\""
+      },
+      "clear": "Clear search"
+    },
+    "actions": {
+      "create": "New Accessable",
+      "created": "Accessable created successfully",
+      "updated": "Accessable updated successfully",
+      "deleted": "Accessable deleted successfully",
+      "createError": "Failed to create accessable",
+      "updateError": "Failed to update accessable",
+      "deleteError": "Failed to delete accessable"
+    },
+    "form": {
+      "createTitle": "Create New Accessable",
+      "editTitle": "Edit Accessable",
+      "subtitle": "Add a new accessible resource to your board",
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter accessable name"
+      },
+      "type": {
+        "label": "Type",
+        "placeholder": "Enter resource type"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe this resource"
+      },
+      "url": {
+        "label": "URL",
+        "placeholder": "https://example.com"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "creating": "Creating...",
+        "updating": "Updating...",
+        "create": "Create Accessable",
+        "update": "Update Accessable"
+      },
+      "errors": {
+        "nameRequired": "Name is required",
+        "nameTooLong": "Name must be less than 255 characters",
+        "typeRequired": "Type is required",
+        "typeTooLong": "Type must be less than 100 characters",
+        "descriptionTooLong": "Description must be less than 1000 characters",
+        "invalidUrl": "Please enter a valid URL"
+      }
+    },
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "description": "Description",
+      "url": "URL",
+      "owner": "Owner",
+      "createdAt": "Created",
+      "updatedAt": "Updated",
+      "actions": "Actions",
+      "selectAll": "Select all",
+      "noDescription": "No description",
+      "noUrl": "No URL",
+      "noOwner": "No owner",
+      "viewUrl": "View URL",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteDialog": {
+      "title": "Delete Accessable",
+      "description": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete": "Delete Accessable"
+    },
+    "errors": {
+      "failedToLoad": "Failed to load accessables",
+      "failedToCreate": "Failed to create accessable",
+      "failedToUpdate": "Failed to update accessable",
+      "failedToDelete": "Failed to delete accessable",
+      "unauthorized": "You are not authorized to perform this action",
+      "notFound": "Accessable not found",
+      "insufficientPermissions": "Insufficient permissions to perform this action"
+    }
+  },
   "sidebar": {
     "overview": "Overview",
     "boards": "Boards",
