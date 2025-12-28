@@ -34,7 +34,7 @@ export class InbucketMailService implements IMailService {
       await this.sendToMailpit({
         to: recipients,
         from: options.from || `noreply@${env.MAIL_FROM_DOMAIN}`,
-        subject: options.subject,
+        subject: options.subject || "",
         html: htmlContent,
         text: options.text,
       });

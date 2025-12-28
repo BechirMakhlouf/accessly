@@ -73,9 +73,10 @@ export function useCreateAccessable() {
     mutationFn: (input: AccessableInsert) => createAccessable(input),
     onSuccess: result => {
       if (result.data) {
-        queryClient.invalidateQueries({
-          queryKey: accessablesKeys.byBoard(result.data.board_id),
-        });
+        if (result.data.board_id)
+          queryClient.invalidateQueries({
+            queryKey: accessablesKeys.byBoard(result.data.board_id),
+          });
         queryClient.invalidateQueries({
           queryKey: accessablesKeys.byOrganization(result.data.organization_id),
         });
@@ -95,9 +96,11 @@ export function useUpdateAccessable() {
         queryClient.invalidateQueries({
           queryKey: accessablesKeys.byId(variables.id),
         });
-        queryClient.invalidateQueries({
-          queryKey: accessablesKeys.byBoard(result.data.board_id),
-        });
+        if (result.data.board_id) {
+          queryClient.invalidateQueries({
+            queryKey: accessablesKeys.byBoard(result.data.board_id),
+          });
+        }
         queryClient.invalidateQueries({
           queryKey: accessablesKeys.byOrganization(result.data.organization_id),
         });
