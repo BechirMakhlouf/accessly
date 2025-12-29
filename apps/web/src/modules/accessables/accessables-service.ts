@@ -1,6 +1,6 @@
-import type { TypedSupabaseClient } from '@/lib/supabase/type';
-import type { ServiceResult } from '@/lib/types';
-import type { Accessable, AccessableInsert, AccessableUpdate } from './types';
+import type { TypedSupabaseClient } from "@/lib/supabase/type";
+import type { ServiceResult } from "@/lib/types";
+import type { Accessable, AccessableInsert, AccessableUpdate } from "./types";
 
 export class AccessablesService {
   private readonly supabase: TypedSupabaseClient;
@@ -13,98 +13,98 @@ export class AccessablesService {
 
   async getById(id: string): Promise<ServiceResult<Accessable>> {
     const { data, error } = await this.supabase
-      .from('accessables')
-      .select('*')
-      .eq('id', id)
+      .from("accessables")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (error) {
-      console.error('Failed to get accessable by id:', error);
-      return { error: 'accessable.failedToLoad' };
+      console.error("Failed to get accessable by id:", error);
+      return { error: "accessable.failedToLoad" };
     }
 
     if (!data) {
-      return { error: 'accessable.notFound' };
+      return { error: "accessable.notFound" };
     }
 
-    return { data };
+    return { data: data as Accessable };
   }
 
   async getByBoardId(boardId: string): Promise<ServiceResult<Accessable[]>> {
     const { data, error } = await this.supabase
-      .from('accessables')
-      .select('*')
-      .eq('board_id', boardId)
-      .order('created_at', { ascending: false });
+      .from("accessables")
+      .select("*")
+      .eq("board_id", boardId)
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error('Failed to get accessables by board id:', error);
-      return { error: 'accessable.failedToLoad' };
+      console.error("Failed to get accessables by board id:", error);
+      return { error: "accessable.failedToLoad" };
     }
 
-    return { data: data || [] };
+    return { data: (data || []) as Accessable[] };
   }
 
   async getByOrganizationId(
-    organizationId: string
+    organizationId: string,
   ): Promise<ServiceResult<Accessable[]>> {
     const { data, error } = await this.supabase
-      .from('accessables')
-      .select('*')
-      .eq('organization_id', organizationId)
-      .order('created_at', { ascending: false });
+      .from("accessables")
+      .select("*")
+      .eq("organization_id", organizationId)
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error('Failed to get accessables by organization id:', error);
-      return { error: 'accessable.failedToLoad' };
+      console.error("Failed to get accessables by organization id:", error);
+      return { error: "accessable.failedToLoad" };
     }
 
-    return { data: data || [] };
+    return { data: (data || []) as Accessable[] };
   }
 
   async create(input: AccessableInsert): Promise<ServiceResult<Accessable>> {
     const { data, error } = await this.supabase
-      .from('accessables')
+      .from("accessables")
       .insert({ ...input, user_id: this.userId })
-      .select('*')
+      .select("*")
       .single();
 
     if (error || !data) {
-      console.error('Failed to create accessable:', error);
-      return { error: 'accessable.failedToCreate' };
+      console.error("Failed to create accessable:", error);
+      return { error: "accessable.failedToCreate" };
     }
 
-    return { data };
+    return { data: data as Accessable };
   }
 
   async update(
     id: string,
-    updates: AccessableUpdate
+    updates: AccessableUpdate,
   ): Promise<ServiceResult<Accessable>> {
     const { data, error } = await this.supabase
-      .from('accessables')
+      .from("accessables")
       .update(updates)
-      .eq('id', id)
-      .select('*')
+      .eq("id", id)
+      .select("*")
       .single();
 
     if (error || !data) {
-      console.error('Failed to update accessable:', error);
-      return { error: 'accessable.failedToUpdate' };
+      console.error("Failed to update accessable:", error);
+      return { error: "accessable.failedToUpdate" };
     }
 
-    return { data };
+    return { data: data as Accessable };
   }
 
   async delete(id: string): Promise<ServiceResult<null>> {
     const { error } = await this.supabase
-      .from('accessables')
+      .from("accessables")
       .delete()
-      .eq('id', id);
+      .eq("id", id);
 
     if (error) {
-      console.error('Failed to delete accessable:', error);
-      return { error: 'accessable.failedToDelete' };
+      console.error("Failed to delete accessable:", error);
+      return { error: "accessable.failedToDelete" };
     }
 
     return { data: null };

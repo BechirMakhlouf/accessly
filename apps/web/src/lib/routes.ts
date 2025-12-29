@@ -1,7 +1,7 @@
-import { env } from './env';
+import { env } from "./env";
 
 function joinPath(base: string, path: string): string {
-  return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+  return `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
 }
 
 type Params = Record<string, string | number | boolean | undefined>;
@@ -30,19 +30,19 @@ export type Route = ValueOf<typeof routes> | (string & {});
 
 export const routes = {
   // Public routes
-  landingPage: '/',
+  landingPage: "/",
 
   // Authentication routes
   auth: {
-    signIn: '/sign-in',
-    signUp: '/sign-up',
-    signInRedirect: '/dashboard',
-    signOutRedirect: '/sign-in',
-    forgotPassword: '/forgot-password',
-    authCodeError: '/auth-code-error',
-    confirmEmail: '/confirm-email',
-    updatePassword: '/update-password',
-    signUpSuccess: '/sign-up-success',
+    signIn: "/sign-in",
+    signUp: "/sign-up",
+    signInRedirect: "/dashboard",
+    signOutRedirect: "/sign-in",
+    forgotPassword: "/forgot-password",
+    authCodeError: "/auth-code-error",
+    confirmEmail: "/confirm-email",
+    updatePassword: "/update-password",
+    signUpSuccess: "/sign-up-success",
   },
 
   invite: {
@@ -52,27 +52,28 @@ export const routes = {
   },
   protected: {
     dashboard: {
-      root: '/dashboard',
+      root: "/dashboard",
       account: {
-        root: '/dashboard/account',
+        root: "/dashboard/account",
         settings: {
-          root: '/dashboard/account/settings/',
-          general: '/dashboard/account/settings/general',
-          account: '/dashboard/account/settings/account',
-          preferences: '/dashboard/account/settings/preferences',
-          billing: '/dashboard/account/settings/billing',
+          root: "/dashboard/account/settings/",
+          general: "/dashboard/account/settings/general",
+          account: "/dashboard/account/settings/account",
+          preferences: "/dashboard/account/settings/preferences",
+          billing: "/dashboard/account/settings/billing",
         },
       },
       organizations: {
-        root: '/dashboard/organizations',
-        new: '/dashboard/organizations/new',
-        invites: '/dashboard/organizations/invites',
+        root: "/dashboard/organizations",
+        new: "/dashboard/organizations/new",
+        invites: "/dashboard/organizations/invites",
       },
       org: {
-        root: '/org',
+        root: "/org",
         slug: {
           root: (slug: string) => `/dashboard/org/${slug}/`,
           members: (slug: string) => `/dashboard/org/${slug}/members`,
+          accessables: (slug: string) => `/dashboard/org/${slug}/accessables`,
           settings: {
             root: (slug: string) => `/dashboard/org/${slug}/settings`,
             general: (slug: string) =>
@@ -103,19 +104,19 @@ export const routes = {
   },
 
   marketing: {
-    features: '/',
-    pricing: '/',
-    docs: '/',
-    blog: '/',
-    about: '/',
-    contact: '/',
+    features: "/",
+    pricing: "/",
+    docs: "/",
+    blog: "/",
+    about: "/",
+    contact: "/",
   },
 
   api: {
     auth: {
-      callback: '/api/auth/callback',
-      confirmEmail: '/api/auth/confirm-email',
-      resetPassword: '/api/auth/reset-password',
+      callback: "/api/auth/callback",
+      confirmEmail: "/api/auth/confirm-email",
+      resetPassword: "/api/auth/reset-password",
     },
   },
 } as const;

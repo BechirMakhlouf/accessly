@@ -1,9 +1,9 @@
-import { createSSRClient } from '@/lib/supabase/server';
 import { assertSignedInAndGetUserId } from '@/lib/auth/server';
 import { AccessablesService } from './accessables-service';
+import { createAdminClient } from '@/lib/supabase/adminClient';
 
 export async function createAccessablesService(): Promise<AccessablesService> {
-  const supabase = await createSSRClient();
   const userId = await assertSignedInAndGetUserId();
-  return new AccessablesService(supabase, userId);
+  const adminSupabase = await createAdminClient();
+  return new AccessablesService(adminSupabase, userId);
 }

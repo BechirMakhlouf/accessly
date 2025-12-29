@@ -542,6 +542,7 @@
   "accessables": {
     "title": "Accessables",
     "description": "Manage accessible resources for your board",
+    "orgLevelDescription": "Manage accessible resources for your organization",
     "empty": {
       "title": "No accessables yet",
       "description": "Create your first accessable to start managing resources for this board"
@@ -597,6 +598,70 @@
         "typeTooLong": "Type must be less than 100 characters",
         "descriptionTooLong": "Description must be less than 1000 characters",
         "invalidUrl": "Please enter a valid URL"
+      },
+      "metadata": {
+        "service": {
+          "label": "Service",
+          "placeholder": "Select a service"
+        },
+        "username": {
+          "label": "Username",
+          "placeholder": "account@example.com"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter password"
+        },
+        "twoFactorEnabled": {
+          "label": "2FA Enabled"
+        },
+        "connectionString": {
+          "label": "Connection String",
+          "placeholder": "postgres://user:pass@host:5432/db"
+        },
+        "host": {
+          "label": "Host",
+          "placeholder": "localhost"
+        },
+        "port": {
+          "label": "Port",
+          "placeholder": "5432"
+        },
+        "databaseName": {
+          "label": "Database Name",
+          "placeholder": "mydb"
+        },
+        "apiKey": {
+          "label": "API Key",
+          "placeholder": "sk_live_..."
+        },
+        "apiSecret": {
+          "label": "API Secret (optional)",
+          "placeholder": "Enter secret"
+        },
+        "environment": {
+          "label": "Environment",
+          "placeholder": "Select environment",
+          "production": "Production",
+          "staging": "Staging",
+          "development": "Development"
+        },
+        "fileUrl": {
+          "label": "File URL",
+          "placeholder": "https://docs.google.com/..."
+        },
+        "endpoint": {
+          "label": "Endpoint URL",
+          "placeholder": "https://api.example.com"
+        },
+        "authMethod": {
+          "label": "Authentication Method",
+          "placeholder": "Select auth method",
+          "api_key": "API Key",
+          "oauth": "OAuth",
+          "basic": "Basic Auth",
+          "bearer": "Bearer Token"
+        }
       }
     },
     "table": {
@@ -622,6 +687,10 @@
       "cancel": "Cancel",
       "deleting": "Deleting...",
       "delete": "Delete Accessable"
+    },
+    "view": {
+      "grid": "Grid view",
+      "list": "List view"
     },
     "errors": {
       "failedToLoad": "Failed to load accessables",

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { useActiveOrg } from '@/modules/organizations';
-import { useActiveBoard } from '@/modules/boards';
-import { routes } from '@/lib/routes';
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useActiveOrg } from "@/modules/organizations";
+import { useActiveBoard } from "@/modules/boards";
+import { routes } from "@/lib/routes";
 import {
   Building2,
   FileText,
@@ -14,7 +14,7 @@ import {
   Receipt,
   Settings,
   Users,
-} from 'lucide-react';
+} from "lucide-react";
 
 export type NavItem = {
   href: string;
@@ -29,10 +29,10 @@ export function useSidebarItems() {
   const { activeOrganization: org } = useActiveOrg();
   const { activeBoard, isUnderBoardContext, orgSlug, boardSlug } =
     useActiveBoard();
-  const t = useTranslations('sidebar');
+  const t = useTranslations("sidebar");
 
   // Check if we're in an organization context
-  const isOrgContext = pathname?.includes('/dashboard/org/');
+  const isOrgContext = pathname?.includes("/dashboard/org/");
 
   const sidebarItems = useMemo(() => {
     // Board context - show board-specific navigation
@@ -42,60 +42,60 @@ export function useSidebarItems() {
           {
             href: routes.protected.dashboard.org.slug.board.root(
               orgSlug,
-              boardSlug
+              boardSlug,
             ),
-            label: t('overview'),
+            label: t("overview"),
             icon: Home,
             match: (p: string) =>
               p ===
               routes.protected.dashboard.org.slug.board.root(
                 orgSlug,
-                boardSlug
+                boardSlug,
               ),
           },
           {
             href: routes.protected.dashboard.org.slug.board.accessables(
               orgSlug,
-              boardSlug
+              boardSlug,
             ),
-            label: t('accessables'),
+            label: t("accessables"),
             icon: FileText,
             match: (p: string) =>
               p.includes(
                 routes.protected.dashboard.org.slug.board.accessables(
                   orgSlug,
-                  boardSlug
-                )
+                  boardSlug,
+                ),
               ),
           },
           {
             href: routes.protected.dashboard.org.slug.board.members(
               orgSlug,
-              boardSlug
+              boardSlug,
             ),
-            label: t('members'),
+            label: t("members"),
             icon: Users,
             match: (p: string) =>
               p.includes(
                 routes.protected.dashboard.org.slug.board.members(
                   orgSlug,
-                  boardSlug
-                )
+                  boardSlug,
+                ),
               ),
           },
           {
             href: routes.protected.dashboard.org.slug.board.settings(
               orgSlug,
-              boardSlug
+              boardSlug,
             ),
-            label: t('settings'),
+            label: t("settings"),
             icon: Settings,
             match: (p: string) =>
               p.includes(
                 routes.protected.dashboard.org.slug.board.settings(
                   orgSlug,
-                  boardSlug
-                )
+                  boardSlug,
+                ),
               ),
           },
         ] as NavItem[],
@@ -109,47 +109,56 @@ export function useSidebarItems() {
         primary: [
           {
             href: routes.protected.dashboard.org.slug.root(org.slug),
-            label: t('overview'),
+            label: t("overview"),
             icon: Home,
             match: (p: string) => {
               const orgRoot = routes.protected.dashboard.org.slug.root(
-                org.slug
+                org.slug,
               );
               return p === orgRoot || p === orgRoot.slice(0, -1);
             },
           },
           {
             href: routes.protected.dashboard.org.slug.boards.root(org.slug),
-            label: t('boards'),
+            label: t("boards"),
             icon: Layout,
             match: (p: string) =>
               p.includes(
-                routes.protected.dashboard.org.slug.boards.root(org.slug)
+                routes.protected.dashboard.org.slug.boards.root(org.slug),
+              ),
+          },
+          {
+            href: routes.protected.dashboard.org.slug.accessables(org.slug),
+            label: t("accessables"),
+            icon: FileText,
+            match: (p: string) =>
+              p.includes(
+                routes.protected.dashboard.org.slug.accessables(org.slug),
               ),
           },
           {
             href: routes.protected.dashboard.org.slug.members(org.slug),
-            label: t('members'),
+            label: t("members"),
             icon: Users,
             match: (p: string) =>
               p.includes(routes.protected.dashboard.org.slug.members(org.slug)),
           },
           {
             href: routes.protected.dashboard.org.slug.settings.root(org.slug),
-            label: t('settings'),
+            label: t("settings"),
             icon: Settings,
             match: (p: string) =>
               p.includes(
-                routes.protected.dashboard.org.slug.settings.root(org.slug)
+                routes.protected.dashboard.org.slug.settings.root(org.slug),
               ),
           },
         ] as NavItem[],
         secondary: [
           {
             href: routes.protected.dashboard.org.slug.settings.billing(
-              org.slug
+              org.slug,
             ),
-            label: t('billing'),
+            label: t("billing"),
             icon: Receipt,
             match: (p: string) =>
               p ===
@@ -164,13 +173,13 @@ export function useSidebarItems() {
       primary: [
         {
           href: routes.protected.dashboard.root,
-          label: t('dashboard'),
+          label: t("dashboard"),
           icon: Home,
           match: (p: string) => p === routes.protected.dashboard.root,
         },
         {
           href: routes.protected.dashboard.organizations.root,
-          label: t('organizations'),
+          label: t("organizations"),
           icon: Building2,
           match: (p: string) =>
             p.includes(routes.protected.dashboard.organizations.root),
@@ -190,7 +199,7 @@ export function useSidebarItems() {
 
   // Active map for quick lookup
   const isActive = useMemo(() => {
-    return (item: NavItem) => item.match(pathname || '');
+    return (item: NavItem) => item.match(pathname || "");
   }, [pathname]);
 
   // Don't render sidebar if no org in org context or no board in board context
