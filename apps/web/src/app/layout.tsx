@@ -1,26 +1,27 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import { Providers } from '@/providers/providers';
-import { getLocale } from '@/lib/i18n';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/next';
-import { getPathname } from '@/lib/utils/get-pathname';
-import { routes } from '@/lib/routes';
+import type { Metadata } from "next";
+import { Bai_Jamjuree, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+import { Providers } from "@/providers/providers";
+import { getLocale } from "@/lib/i18n";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+import { getPathname } from "@/lib/utils/get-pathname";
+import { routes } from "@/lib/routes";
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+const sansFont = Bai_Jamjuree({
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700"],
+  variable: "--font-bai-jamjuree",
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+const monoFont = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
 });
 
 export const metadata: Metadata = {
-  title: 'Accessly',
-  description: 'Accessly Access Management For Agile Teams',
+  title: "Accessly",
+  description: "Accessly Access Management For Agile Teams",
 };
 
 export default async function RootLayout({
@@ -38,7 +39,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
+        className={`${sansFont.variable} ${monoFont.variable} antialiased bg-background`}
       >
         <Providers>{children}</Providers>
         <SpeedInsights />
