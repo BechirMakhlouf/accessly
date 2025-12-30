@@ -4,11 +4,10 @@ import { AddAccessableModal } from "@/modules/accessables/components/add-accessa
 import { AccessablesGrid } from "@/modules/accessables/components/accessables-grid";
 import { AccessablesList } from "@/modules/accessables/components/accessables-list";
 import { AccessablesEmptyState } from "@/modules/accessables/components/accessables-empty-state";
-import {
-  ViewToggle,
-  type ViewMode,
-} from "@/modules/accessables/components/view-toggle";
+import { AccessablesToolbar } from "@/modules/accessables/components/accessables-toolbar";
+import type { ViewMode } from "@/modules/accessables/components/view-toggle";
 import { useActiveOrgAccessables } from "@/modules/accessables/hooks/use-active-org-accessables";
+import { useAccessablesFilters } from "@/modules/accessables/hooks/use-accessables-filters";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -40,6 +39,15 @@ export function OrganizationAccessables() {
     "accessables-view-mode",
     "grid",
   );
+  const {
+    search,
+    setSearch,
+    type,
+    setType,
+    filteredAccessables,
+    clearFilters,
+    hasActiveFilters,
+  } = useAccessablesFilters(orgLevelAccessables);
 
   if (isLoading || !organization) {
     return <AccessablesSkeleton />;
@@ -53,14 +61,21 @@ export function OrganizationAccessables() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end gap-2">
-        <ViewToggle value={viewMode} onChange={setViewMode} />
-        {addButton}
-      </div>
+      <AccessablesToolbar
+        search={search}
+        onSearchChange={setSearch}
+        type={type}
+        onTypeChange={setType}
+        hasActiveFilters={hasActiveFilters}
+        onClearFilters={clearFilters}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        addButton={addButton}
+      />
       {viewMode === "grid" ? (
-        <AccessablesGrid accessables={orgLevelAccessables} />
+        <AccessablesGrid accessables={filteredAccessables} />
       ) : (
-        <AccessablesList accessables={orgLevelAccessables} />
+        <AccessablesList accessables={filteredAccessables} />
       )}
     </div>
   );

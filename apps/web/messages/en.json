@@ -692,6 +692,19 @@
       "grid": "Grid view",
       "list": "List view"
     },
+    "options": {
+      "title": "Options",
+      "filterByType": "Filter by type",
+      "allTypes": "All types",
+      "clearFilters": "Clear filters"
+    },
+    "types": {
+      "shared_account": "Shared Account",
+      "database": "Database",
+      "api_key": "API Key",
+      "document": "Document",
+      "service": "Service"
+    },
     "errors": {
       "failedToLoad": "Failed to load accessables",
       "failedToCreate": "Failed to create accessable",
