@@ -107,7 +107,7 @@ export default async function InvitePage({
         <div className='min-h-screen flex items-center justify-center bg-background'>
           <div className='max-w-md w-full mx-auto p-6'>
             <div className='text-center'>
-              <h1 className='text-2xl font-bold text-foreground mb-2'>
+              <h1 className='text-2xl font-semibold text-foreground mb-2'>
                 {t('expired.title')}
               </h1>
               <p className='text-muted-foreground mb-6'>
@@ -130,7 +130,7 @@ export default async function InvitePage({
         <div className='min-h-screen flex items-center justify-center bg-background'>
           <div className='max-w-md w-full mx-auto p-6'>
             <div className='text-center'>
-              <h1 className='text-2xl font-bold text-foreground mb-2'>
+              <h1 className='text-2xl font-semibold text-foreground mb-2'>
                 {t('revoked.title')}
               </h1>
               <p className='text-muted-foreground mb-6'>
@@ -235,7 +235,7 @@ export default async function InvitePage({
       <div className='min-h-screen flex items-center justify-center bg-background'>
         <div className='max-w-md w-full mx-auto p-6'>
           <div className='text-center'>
-            <h1 className='text-2xl font-bold text-foreground mb-2'>
+            <h1 className='text-2xl font-semibold text-foreground mb-2'>
               {t('notFound.title')}
             </h1>
             <p className='text-muted-foreground mb-6'>

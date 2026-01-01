@@ -23,7 +23,7 @@ export default function SecuritySettingsPage() {
     return (
       <div className='container mx-auto py-8 px-4'>
         <div className='text-center'>
-          <h1 className='text-2xl font-bold text-foreground'>
+          <h1 className='text-2xl font-semibold text-foreground'>
             Organization not found
           </h1>
         </div>

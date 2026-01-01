@@ -18,7 +18,7 @@ export default async function InvitesPage() {
           <main className='container py-8'>
             <div className='max-w-4xl mx-auto'>
               <div className='mb-8'>
-                <h1 className='text-3xl font-bold tracking-tight'>
+                <h1 className='text-3xl font-semibold tracking-tight'>
                   {t('title')}
                 </h1>
                 <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>
@@ -44,7 +44,7 @@ export default async function InvitesPage() {
           <main className='container py-8 w-full'>
             <div className='max-w-4xl mx-auto'>
               <div className='mb-8'>
-                <h1 className='text-3xl font-bold tracking-tight'>
+                <h1 className='text-3xl font-semibold tracking-tight'>
                   {t('title')}
                 </h1>
                 <p className='text-muted-foreground mt-2'>{t('subtitle')}</p>

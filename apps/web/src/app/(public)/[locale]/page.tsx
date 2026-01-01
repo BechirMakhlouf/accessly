@@ -19,7 +19,7 @@ export default function LandingPage() {
             <div className='w-8 h-8 bg-linear-to-br from-primary to-primary rounded-lg flex items-center justify-center'>
               <Lock className='w-5 h-5 text-primary-foreground' />
             </div>
-            <span className='text-xl font-bold bg-linear-to-r from-primary to-primary bg-clip-text text-transparent'>
+            <span className='text-xl font-semibold bg-linear-to-r from-primary to-primary bg-clip-text text-transparent'>
               Accessly
             </span>
           </div>
@@ -74,7 +74,7 @@ export default function LandingPage() {
               <Zap className='w-4 h-4 mr-2' />
               The Future of Access Management
             </Badge>
-            <h1 className='text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-foreground'>
+            <h1 className='text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight mb-6 text-foreground'>
               Your{' '}
               <span className='bg-linear-to-r from-primary via-primary to-primary bg-clip-text text-transparent'>
                 Single Pane of Glass
@@ -120,7 +120,7 @@ export default function LandingPage() {
                 <div className='w-8 h-8 bg-linear-to-br from-primary to-primary rounded-lg flex items-center justify-center'>
                   <Lock className='w-5 h-5 text-primary-foreground' />
                 </div>
-                <span className='text-xl font-bold'>Accessly</span>
+                <span className='text-xl font-semibold'>Accessly</span>
               </div>
               <p className='text-muted-foreground mb-4'>
                 The single pane of glass for access management and operations.

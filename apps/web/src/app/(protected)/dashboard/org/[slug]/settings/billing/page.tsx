@@ -71,7 +71,7 @@ export default function BillingSettingsPage() {
     return (
       <div className='container mx-auto py-8 px-4'>
         <div className='text-center'>
-          <h1 className='text-2xl font-bold text-foreground'>
+          <h1 className='text-2xl font-semibold text-foreground'>
             Organization not found
           </h1>
         </div>
@@ -84,7 +84,7 @@ export default function BillingSettingsPage() {
     return (
       <div className='container mx-auto py-8 px-4'>
         <div className='text-center'>
-          <h1 className='text-2xl font-bold text-foreground'>Access Denied</h1>
+          <h1 className='text-2xl font-semibold text-foreground'>Access Denied</h1>
           <p className='text-muted-foreground mt-2'>
             Only admins can access billing settings
           </p>

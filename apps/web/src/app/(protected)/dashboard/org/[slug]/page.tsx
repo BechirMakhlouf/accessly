@@ -94,7 +94,7 @@ export default function OrgPage() {
         {/* Header */}
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
           <div>
-            <h1 className='text-3xl font-bold text-foreground'>
+            <h1 className='text-3xl font-semibold text-foreground'>
               {activeOrganization.name}
             </h1>
             <p className='text-muted-foreground'>
@@ -135,7 +135,7 @@ export default function OrgPage() {
               <Users className='h-4 w-4 text-muted-foreground' />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>{memberCount}</div>
+              <div className='text-2xl font-semibold'>{memberCount}</div>
               <p className='text-xs text-muted-foreground'>
                 {t('stats.totalMembers.description')}
               </p>
@@ -150,7 +150,7 @@ export default function OrgPage() {
               <Calendar className='h-4 w-4 text-muted-foreground' />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>
+              <div className='text-2xl font-semibold'>
                 {formatDate(activeOrganization.created_at)}
               </div>
               <p className='text-xs text-muted-foreground'>
@@ -169,7 +169,7 @@ export default function OrgPage() {
               <Activity className='h-4 w-4 text-muted-foreground' />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>
+              <div className='text-2xl font-semibold'>
                 {formatDate(activeOrganization.updated_at)}
               </div>
               <p className='text-xs text-muted-foreground'>

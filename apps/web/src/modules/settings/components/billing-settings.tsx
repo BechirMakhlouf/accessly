@@ -78,7 +78,7 @@ export function BillingSettings() {
                 <CardDescription>Perfect for getting started</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>$0</div>
+                <div className='text-2xl font-semibold'>$0</div>
                 <div className='text-sm text-muted-foreground'>per month</div>
                 <ul className='mt-4 space-y-2 text-sm'>
                   <li>• Basic features</li>
@@ -111,7 +111,7 @@ export function BillingSettings() {
                 <CardDescription>For power users and teams</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>$9.99</div>
+                <div className='text-2xl font-semibold'>$9.99</div>
                 <div className='text-sm text-muted-foreground'>per month</div>
                 <ul className='mt-4 space-y-2 text-sm'>
                   <li>• All features</li>

@@ -21,7 +21,7 @@ export function OrganizationsHeader({
   return (
     <div className='flex items-center justify-between mb-8 gap-x-4'>
       <div>
-        <h1 className='text-3xl font-bold tracking-tight'>{t('title')}</h1>
+        <h1 className='text-3xl font-semibold tracking-tight'>{t('title')}</h1>
         <p className='text-muted-foreground mt-2'>{t('description')}</p>
       </div>
       <div className='flex items-center space-x-3'>

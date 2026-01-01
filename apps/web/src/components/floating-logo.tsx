@@ -10,7 +10,7 @@ export async function FloatingLogo() {
           <div className='w-8 h-8 bg-gradient-to-br from-primary to-primary rounded-lg flex items-center justify-center'>
             <Lock className='w-5 h-5 text-primary-foreground' />
           </div>
-          <span className='text-xl font-bold bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent'>
+          <span className='text-xl font-semibold bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent'>
             Accessly
           </span>
         </div>

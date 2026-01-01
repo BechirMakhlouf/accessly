@@ -2,7 +2,7 @@ export default async function BoardPage() {
   return (
     <div className='container mx-auto py-6'>
       <div className='mb-6'>
-        <h1 className='text-3xl font-bold'>Board Dashboard</h1>
+        <h1 className='text-3xl font-semibold'>Board Dashboard</h1>
         <p className='text-muted-foreground mt-2'>
           Manage your board settings, members, and access controls
         </p>

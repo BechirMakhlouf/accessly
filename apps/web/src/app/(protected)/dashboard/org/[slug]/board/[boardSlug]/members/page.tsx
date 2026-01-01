@@ -15,7 +15,7 @@ export default function BoardMembersPage() {
     <div className='container mx-auto py-6'>
       <div className='flex items-center justify-between mb-6'>
         <div>
-          <h1 className='text-3xl font-bold'>Board Members</h1>
+          <h1 className='text-3xl font-semibold'>Board Members</h1>
           <p className='text-muted-foreground mt-2'>
             Manage members and their permissions for this board
           </p>
@@ -118,15 +118,15 @@ export default function BoardMembersPage() {
           <h2 className='text-xl font-semibold mb-4'>Overview</h2>
           <div className='grid md:grid-cols-3 gap-4'>
             <div className='text-center'>
-              <div className='text-2xl font-bold'>3</div>
+              <div className='text-2xl font-semibold'>3</div>
               <div className='text-sm text-muted-foreground'>Total Members</div>
             </div>
             <div className='text-center'>
-              <div className='text-2xl font-bold'>1</div>
+              <div className='text-2xl font-semibold'>1</div>
               <div className='text-sm text-muted-foreground'>Admins</div>
             </div>
             <div className='text-center'>
-              <div className='text-2xl font-bold'>2</div>
+              <div className='text-2xl font-semibold'>2</div>
               <div className='text-sm text-muted-foreground'>
                 Regular Members
               </div>
