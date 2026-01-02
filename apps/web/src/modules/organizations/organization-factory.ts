@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/adminClient';
 import { OrganizationService } from './organization-service';
 import { assertSignedInAndGetUserId } from '@/lib/auth/server';
 import { createMailService } from '@/lib/mail';
-
+import { db } from "@/lib/supabase/db"
 /**
  * Factory function to create organization service with only admin client
  */
@@ -18,5 +18,6 @@ export async function createOrgService(): Promise<OrganizationService> {
     adminSupabase,
     userId,
     emailService,
+    db
   });
 }

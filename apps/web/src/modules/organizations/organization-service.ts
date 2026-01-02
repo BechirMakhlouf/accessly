@@ -1,3 +1,4 @@
+import "server-only";
 import type { TypedSupabaseClient } from '@/lib/supabase/type';
 import type {
   Invite,
@@ -14,17 +15,19 @@ import type {
 } from './types';
 import { isNullOrUndefined, validateEmail } from '@/lib/utils';
 import { isDuplicateKeyError, isRlsError } from '@/lib/supabase/utils';
-import { useTranslations } from 'next-intl';
 import type { IMailService } from '@/lib/mail';
 import { sendInviteMemberEmail } from './emails';
 import { getFullRoute, routes } from '@/lib/routes';
 import type { ServiceResult } from '@/lib/types';
 import { eventBus } from '@/lib/event-bus';
-import { createNotificationService } from '../notifications/notifications-factory';
+import { DatabaseClient } from "@/lib/supabase/db";
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { tryCatch } from "@/lib/utils/try-catch";
 
 export interface OrganizationServiceOptions {
   supabase: TypedSupabaseClient;
   adminSupabase: TypedSupabaseClient;
+  db: DatabaseClient;
   emailService: IMailService;
   userId: string;
 }
@@ -39,12 +42,14 @@ export class OrganizationService {
   private supabaseAdmin: TypedSupabaseClient;
   private emailService: IMailService;
   private userId: string;
+  private db: DatabaseClient;
 
   constructor(options: OrganizationServiceOptions) {
     this.supabase = options.supabase;
     this.supabaseAdmin = options.adminSupabase;
     this.emailService = options.emailService;
     this.userId = options.userId;
+    this.db = options.db;
   }
 
   /**
@@ -197,27 +202,35 @@ export class OrganizationService {
    * Get user's organizations
    */
   async getUserOrgs(): Promise<ServiceResult<OrgWithMembers[]>> {
-    const { data, error } = await this.supabase
-      .from('organizations')
-      .select(
-        `
-        *,
-        organization_members!inner(
-          *,
-          profile:user_profiles(
-            *
-          )
-        )
-      `
-      )
-      .eq('organization_members.user_id', this.userId);
 
-    if (error) {
-      console.error('Failed to load organizations:', error);
+    const result = await tryCatch(
+      this.db
+        .selectFrom('organizations as o')
+        .selectAll('o')
+        .select((eb) =>
+          jsonArrayFrom(
+            eb
+              .selectFrom('organization_members as om')
+              .innerJoin('user_profiles as up', 'up.user_id', 'om.user_id')
+              .selectAll()
+              .whereRef('om.organization_id', '=', 'o.id')
+              .orderBy('om.joined_at')
+          ).as('organization_members')
+        )
+        .where('o.id', 'in', (eb) =>
+          eb
+            .selectFrom('organization_members')
+            .select('organization_id')
+            .where('user_id', '=', this.userId)
+        )
+        .execute()
+    );
+    if (result.error) {
+      console.error('Failed to load organizations:', result.error);
       return { error: 'org.failedToLoad' };
     }
 
-    return { data };
+    return { data: result.data };
   }
 
   /**
@@ -562,8 +575,8 @@ export class OrganizationService {
   }
 
   async removeInvitation(
-    _orgId: string,
-    _invitationId: string
+    orgId: string,
+    invitationId: string
   ): Promise<ServiceResult<{ success: true }>> {
     if (!this.userId) {
       return { error: 'org.invite.unauthorized' };
@@ -573,9 +586,9 @@ export class OrganizationService {
     // Parameters are prefixed with _ to indicate they are intentionally unused
     console.log(
       'Remove invitation for org:',
-      _orgId,
+      orgId,
       'invitation:',
-      _invitationId
+      invitationId
     );
     return { data: { success: true } };
   }
