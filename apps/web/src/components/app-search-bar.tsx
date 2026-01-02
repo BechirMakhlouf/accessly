@@ -76,7 +76,7 @@ export function AppSearchBar({
       <Button
         variant={variant}
         className={cn(
-          'relative w-full justify-start rounded-[0.5rem] text-muted-foreground bg-transparent',
+          'relative w-full justify-start rounded-xl text-muted-foreground bg-transparent',
           showShortcut && 'sm:pr-12',
           sizeClasses[size],
           className
@@ -86,7 +86,7 @@ export function AppSearchBar({
         <Search className='mr-2 h-4 w-4' />
         <span className='truncate'>{placeholder}</span>
         {showShortcut && (
-          <kbd className='pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex '>
+          <kbd className='pointer-events-none absolute right-[0.3rem] top-[0.45rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>
             <span className='text-xs'>⌘</span>K
           </kbd>
         )}
@@ -142,8 +142,8 @@ export function AppSearchBar({
 
               <CommandGroup heading='Settings'>
                 <CommandItem onSelect={() => handleSelect('/profile')}>
-                  <Settings className='mr-2 h-4 w-4' />
                   <span>Profile Settings</span>
+                  <Settings className='mr-2 h-4 w-4' />
                 </CommandItem>
                 <CommandItem onSelect={() => handleSelect('/preferences')}>
                   <Settings className='mr-2 h-4 w-4' />
