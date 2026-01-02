@@ -1,0 +1,48 @@
+{
+  "name": "@accessly/core",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "type": "module",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./modules/*": {
+      "types": "./src/modules/*/index.ts",
+      "default": "./src/modules/*/index.ts"
+    },
+    "./event-bus": {
+      "types": "./src/event-bus/index.ts",
+      "default": "./src/event-bus/index.ts"
+    },
+    "./types": {
+      "types": "./src/types/index.ts",
+      "default": "./src/types/index.ts"
+    },
+    "./utils": {
+      "types": "./src/utils/index.ts",
+      "default": "./src/utils/index.ts"
+    }
+  },
+  "dependencies": {
+    "@accessly/types": "workspace:*",
+    "zod": "^4.2.1"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.89.0",
+    "kysely": "^0.28.9"
+  },
+  "devDependencies": {
+    "@accessly/config": "workspace:*",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

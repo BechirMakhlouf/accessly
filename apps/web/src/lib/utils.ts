@@ -19,7 +19,7 @@ export function isNullOrUndefined<T>(
  * @returns true if the email format is valid, false otherwise
  */
 export function validateEmail(email: string): boolean {
-  const emailSchema = z.string().email();
+  const emailSchema = z.email();
   const emailValidation = emailSchema.safeParse(email);
 
   return emailValidation.success;
