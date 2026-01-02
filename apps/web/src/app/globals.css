@@ -46,7 +46,7 @@
   --font-sans: Bai Jamjuree, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Noto Serif, ui-serif, serif;
   --font-mono: JetBrains Mono, ui-monospace, monospace;
-  --radius: 0.3rem;
+  --radius: 0.25rem;
   --shadow-x: 0px;
   --shadow-y: 1px;
   --shadow-blur: 2px;
@@ -101,7 +101,7 @@
   --font-sans: Bai Jamjuree, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Noto Serif, ui-serif, serif;
   --font-mono: JetBrains Mono, ui-monospace, monospace;
-  --radius: 0.3rem;
+  --radius: 0.25rem;
   --shadow-x: 0px;
   --shadow-y: 1px;
   --shadow-blur: 2px;
