@@ -14,6 +14,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1),
     MAIL_FROM_DOMAIN: z.string().min(1),
     INBUCKET_URL: z.url().default('http://localhost:54324'),
+    DATABASE_URL: z.url(),
   },
 
   // For Next.js >= 13.4.4, you only need to destructure client variables:
