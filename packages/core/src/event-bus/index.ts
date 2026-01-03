@@ -1,6 +1,6 @@
-import { eventBus } from "./core";
-import { EventBusEvents } from "./events";
-export type { EventPayload, EventBusEvents } from "./events";
+import { eventBus } from "@/event-bus/core";
+import { EventBusEvents } from "@/event-bus/events";
+export type { EventPayload, EventBusEvents } from "@/event-bus/events";
 
 export { eventBus };
 
