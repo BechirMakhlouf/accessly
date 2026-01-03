@@ -1,5 +1,6 @@
 'use server';
 
+import { OrgErrorCode } from '@accessly/core';
 import { createOrgService } from './organization-factory';
 import type { InviteStatus, OrgInput, OrgRole, OrgUpdate } from './types';
 
@@ -22,7 +23,6 @@ export async function createOrg(newOrg: OrgInput) {
     return result;
   }
 
-  // Return the created organization
   return await orgService.getBySlug(result.data.slug);
 }
 
@@ -123,10 +123,6 @@ export async function getInviteById(inviteId: string) {
   return await orgService.getInviteById(inviteId);
 }
 
-/**
- * Get invite by ID for public access (no authentication required)
- * Used for invite pages that need to work for both authenticated and unauthenticated users
- */
 export async function getPublicInviteById(inviteId: string) {
   const { createAdminClient } = await import('@/lib/supabase/adminClient');
   const adminSupabase = await createAdminClient();
@@ -150,9 +146,9 @@ export async function getPublicInviteById(inviteId: string) {
   if (error) {
     console.error('Failed to load invite:', error);
     if (error.code === 'PGRST116') {
-      return { error: 'org.invite.notFound' };
+      return { error: OrgErrorCode.INVITE_NOT_FOUND };
     }
-    return { error: 'org.invite.failedToLoad' };
+    return { error: OrgErrorCode.INVITE_FAILED_TO_LOAD };
   }
 
   return { data };

@@ -1,57 +1,42 @@
-export const OrgErrors = {
-  notFound: "org.notFound",
-  failedToLoad: "org.failedToLoad",
-  failedToCreate: "org.failedToCreate",
-  failedToUpdate: "org.failedToUpdate",
-  failedToDelete: "org.failedToDelete",
-  unauthorized: "org.unauthorized",
-  slugAlreadyExists: "org.slugAlreadyExists",
+export const OrgErrorCode = {
+  NOT_FOUND: "ORG_NOT_FOUND",
+  NO_ORG_SELECTED: "ORG_NO_ORG_SELECTED",
+  FAILED_TO_LOAD: "ORG_FAILED_TO_LOAD",
+  FAILED_TO_CREATE: "ORG_FAILED_TO_CREATE",
+  FAILED_TO_UPDATE: "ORG_FAILED_TO_UPDATE",
+  FAILED_TO_DELETE: "ORG_FAILED_TO_DELETE",
+  UNAUTHORIZED: "ORG_UNAUTHORIZED",
+  SLUG_ALREADY_EXISTS: "ORG_SLUG_ALREADY_EXISTS",
+
+  MEMBER_FAILED_TO_LOAD: "ORG_MEMBER_FAILED_TO_LOAD",
+  MEMBER_FAILED_TO_UPDATE: "ORG_MEMBER_FAILED_TO_UPDATE",
+  MEMBER_FAILED_TO_REMOVE: "ORG_MEMBER_FAILED_TO_REMOVE",
+  MEMBER_FAILED_TO_ADD: "ORG_MEMBER_FAILED_TO_ADD",
+  MEMBER_UNAUTHORIZED: "ORG_MEMBER_UNAUTHORIZED",
+  MEMBER_INSUFFICIENT_PERMISSIONS: "ORG_MEMBER_INSUFFICIENT_PERMISSIONS",
+  MEMBER_LOAD_ERROR: "ORG_MEMBER_LOAD_ERROR",
+  MEMBER_ALREADY_MEMBER: "ORG_MEMBER_ALREADY_MEMBER",
+
+  LEAVE_FAILED_TO_CHECK_MEMBERSHIP: "ORG_LEAVE_FAILED_TO_CHECK_MEMBERSHIP",
+  LEAVE_FAILED: "ORG_LEAVE_FAILED",
+  LEAVE_NOT_MEMBER: "ORG_LEAVE_NOT_MEMBER",
+  LEAVE_UNAUTHORIZED: "ORG_LEAVE_UNAUTHORIZED",
+
+  INVITE_FAILED_TO_LOAD: "ORG_INVITE_FAILED_TO_LOAD",
+  INVITE_FAILED_TO_LOAD_USER_INVITES: "ORG_INVITE_FAILED_TO_LOAD_USER_INVITES",
+  INVITE_FAILED_TO_UPDATE: "ORG_INVITE_FAILED_TO_UPDATE",
+  INVITE_FAILED_TO_UPDATE_USER_INVITE:
+    "ORG_INVITE_FAILED_TO_UPDATE_USER_INVITE",
+  INVITE_FAILED_TO_INSERT: "ORG_INVITE_FAILED_TO_INSERT",
+  INVITE_FAILED_TO_CHECK_USER: "ORG_INVITE_FAILED_TO_CHECK_USER",
+  INVITE_FAILED_TO_CREATE: "ORG_INVITE_FAILED_TO_CREATE",
+  INVITE_UNAUTHORIZED: "ORG_INVITE_UNAUTHORIZED",
+  INVITE_NOT_FOUND: "ORG_INVITE_NOT_FOUND",
+  INVITE_INVALID_EMAIL: "ORG_INVITE_INVALID_EMAIL",
+  INVITE_ALREADY_MEMBER: "ORG_INVITE_ALREADY_MEMBER",
+  INVITE_EXPIRED: "ORG_INVITE_EXPIRED",
+  INVITE_REVOKED: "ORG_INVITE_REVOKED",
+  INVITE_FAILED_TO_SEND: "ORG_INVITE_FAILED_TO_SEND",
 } as const;
 
-export const OrgMemberErrors = {
-  failedToLoad: "org.members.failedToLoad",
-  failedToUpdate: "org.members.failedToUpdate",
-  failedToRemove: "org.members.failedToRemove",
-  failedToAdd: "org.member.failedToAdd",
-  unauthorized: "org.members.unauthorized",
-  insufficientPermissions: "org.members.insufficientPermissions",
-  loadError: "org.members.errors.loadError",
-  alreadyMember: "org.member.alreadyMember",
-} as const;
-
-export const OrgLeaveErrors = {
-  failedToCheckMembership: "org.leave.failedToCheckMembership",
-  failedToLeave: "org.leave.failedToLeave",
-  notMember: "org.leave.notMember",
-  unauthorized: "org.leave.unauthorized",
-} as const;
-
-export const OrgInviteErrors = {
-  failedToLoad: "org.invite.failedToLoad",
-  failedToLoadUserInvites: "org.invite.failedToLoadUserInvites",
-  failedToUpdate: "org.invite.failedToUpdate",
-  failedToUpdateUserInvite: "org.invite.failedToUpdateUserInvite",
-  failedToInsert: "org.invite.failedToInsert",
-  failedToCheckUser: "org.invite.failedToCheckUser",
-  failedToCreate: "org.invite.failedToCreate",
-  unauthorized: "org.invite.unauthorized",
-  notFound: "org.invite.notFound",
-  invalidEmail: "org.invite.invalidEmail",
-  alreadyMember: "org.invite.alreadyMember",
-  expired: "org.invite.expired",
-  revoked: "org.invite.revoked",
-} as const;
-
-export type OrgError = (typeof OrgErrors)[keyof typeof OrgErrors];
-export type OrgMemberError =
-  (typeof OrgMemberErrors)[keyof typeof OrgMemberErrors];
-export type OrgLeaveError =
-  (typeof OrgLeaveErrors)[keyof typeof OrgLeaveErrors];
-export type OrgInviteError =
-  (typeof OrgInviteErrors)[keyof typeof OrgInviteErrors];
-
-export type OrganizationError =
-  | OrgError
-  | OrgMemberError
-  | OrgLeaveError
-  | OrgInviteError;
+export type OrgErrorCode = (typeof OrgErrorCode)[keyof typeof OrgErrorCode];

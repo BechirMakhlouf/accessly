@@ -1,14 +1,18 @@
-'use client';
+"use client";
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  OrgErrorCode,
+  type OrgErrorCode as OrgErrorCodeType,
+} from "@accessly/core";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getOrganizationInvitesQueryOptions,
   inviteMemberMutationOptions,
   revokeInviteMutationOptions,
   updateInviteStatusMutationOptions,
-} from '../queries';
-import type { Invite, InviteStatus, OrgRole } from '../types';
-import type { ServiceResult } from '@/lib/types';
+} from "../queries";
+import type { Invite, InviteStatus, OrgRole } from "../types";
+import type { ServiceResult } from "@/lib/types";
 
 interface UseOrgInviteOptions {
   organization: { id: string; name: string } | null | undefined;
@@ -25,7 +29,7 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
     error: invitesError,
     refetch: refetchInvites,
   } = useQuery({
-    ...getOrganizationInvitesQueryOptions(organization?.id || ''),
+    ...getOrganizationInvitesQueryOptions(organization?.id || ""),
     enabled: !!organization?.id,
   });
 
@@ -47,24 +51,26 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
   // Client-side check to prevent inviting existing members
   const isEmailAlreadyMember = (email: string): boolean => {
     return members.some(
-      member => member.email?.toLowerCase() === email.toLowerCase()
+      (member) => member.email?.toLowerCase() === email.toLowerCase(),
     );
   };
 
   // Actions
   const inviteMember = async (
     email: string,
-    role: OrgRole
-  ): Promise<ServiceResult<{ success: boolean; invite?: Invite }>> => {
-    console.log('inviting member: ', email, role);
+    role: OrgRole,
+  ): Promise<
+    ServiceResult<{ success: boolean; invite?: Invite }, OrgErrorCodeType>
+  > => {
+    console.log("inviting member: ", email, role);
 
     if (!organization?.id) {
-      return { error: 'org.invite.notFound' };
+      return { error: OrgErrorCode.NO_ORG_SELECTED };
     }
 
     // Client-side validation to prevent inviting existing members
     if (isEmailAlreadyMember(email)) {
-      return { error: 'org.invite.alreadyMember' };
+      return { error: OrgErrorCode.INVITE_ALREADY_MEMBER };
     }
 
     try {
@@ -75,13 +81,13 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
       });
       return { data: { success: true, invite: result.invite } };
     } catch {
-      return { error: 'org.invite.failedToSend' };
+      return { error: OrgErrorCode.INVITE_FAILED_TO_SEND };
     }
   };
 
   const updateInviteStatus = async (inviteId: string, status: InviteStatus) => {
     if (!organization?.id) {
-      return { error: 'org.invite.noOrganizationSelected' };
+      return { error: OrgErrorCode.NO_ORG_SELECTED };
     }
 
     try {
@@ -91,13 +97,13 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
       });
       return { success: true };
     } catch {
-      return { error: 'org.invite.failedToUpdate' };
+      return { error: OrgErrorCode.INVITE_FAILED_TO_UPDATE };
     }
   };
 
   const revokeInvite = async (inviteId: string) => {
     if (!organization?.id) {
-      return { error: 'org.invite.noOrganizationSelected' };
+      return { error: OrgErrorCode.NO_ORG_SELECTED };
     }
 
     try {
@@ -106,7 +112,7 @@ export function useOrgInvite({ organization, members }: UseOrgInviteOptions) {
       });
       return { success: true };
     } catch {
-      return { error: 'org.invite.failedToUpdate' };
+      return { error: OrgErrorCode.INVITE_FAILED_TO_UPDATE };
     }
   };
 

@@ -1,4 +1,7 @@
-export type { ServiceResult } from "./service-result";
+export { ok, err } from "./result";
+export type { Ok, Err, Result, InferErrors, InferData } from "./result";
+export { CommonErrors } from "./errors";
+export type { CommonError } from "./errors";
 export type {
   Prettify,
   WithOptional,

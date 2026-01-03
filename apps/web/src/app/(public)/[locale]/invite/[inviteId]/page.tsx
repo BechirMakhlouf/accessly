@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { OrgErrorCode } from '@accessly/core';
 import {
   getPublicInviteById,
   updateUserOwnInvite,
@@ -35,13 +36,10 @@ export default async function InvitePage({
   const { action } = await searchParams;
   const t = await getTranslations('invitePage');
 
-  // Check if user is authenticated
   const isUserAuthenticated = await isAuthenticated();
 
-  // Get invite details
   const inviteResult = await getPublicInviteById(inviteId);
 
-  // Check for email mismatch if user is authenticated
   if (isUserAuthenticated && inviteResult.data) {
     const currentUserEmailResult = await getUserEmail();
     const currentUserEmail = currentUserEmailResult.data;
@@ -89,15 +87,13 @@ export default async function InvitePage({
   }
 
   if (inviteResult.error) {
-    if (inviteResult.error === 'org.invite.notFound') {
+    if (inviteResult.error === OrgErrorCode.INVITE_NOT_FOUND) {
       notFound();
     }
-    // For other errors, we'll show a generic error
   }
 
   const invite = inviteResult.data;
 
-  // Check if invite is expired or revoked
   if (invite) {
     const now = new Date();
     const expiresAt = new Date(invite.expires_at);
@@ -149,12 +145,10 @@ export default async function InvitePage({
     }
   }
 
-  // Handle accept/decline actions if user is authenticated
   if (isUserAuthenticated && action && invite) {
     if (action === 'accept') {
       const result = await updateUserOwnInvite(inviteId, 'accepted');
       if (result.error) {
-        // Show error state
         return (
           <div className='min-h-screen flex items-center justify-center bg-background'>
             <div className='max-w-md w-full mx-auto p-6'>
@@ -186,13 +180,11 @@ export default async function InvitePage({
           </div>
         );
       } else {
-        // Success - redirect to dashboard
         redirect(routes.protected.dashboard.root);
       }
     } else if (action === 'decline') {
       const result = await updateUserOwnInvite(inviteId, 'rejected');
       if (result.error) {
-        // Show error state
         return (
           <div className='min-h-screen flex items-center justify-center bg-background'>
             <div className='max-w-md w-full mx-auto p-6'>
@@ -224,7 +216,6 @@ export default async function InvitePage({
           </div>
         );
       } else {
-        // Success - redirect to home
         redirect(routes.landingPage);
       }
     }

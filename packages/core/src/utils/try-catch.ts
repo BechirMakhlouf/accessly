@@ -1,16 +1,6 @@
-export type Ok<T> = {
-  data: T;
-  error: null;
-};
+import type { Result } from "../types/result";
 
-export type Err<E> = {
-  data: null;
-  error: E;
-};
-
-export type Result<T, E = Error> = Ok<T> | Err<E>;
-
-export async function tryCatch<T, E = Error>(
+export async function tryCatch<T, E extends string = string>(
   promise: Promise<T>,
 ): Promise<Result<T, E>> {
   try {

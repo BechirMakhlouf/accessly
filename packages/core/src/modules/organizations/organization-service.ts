@@ -5,30 +5,22 @@ import type { KyselifyDatabase } from "kysely-supabase";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 
 type KyselyDatabase = KyselifyDatabase<SupabaseDatabase>;
-import type { ServiceResult } from "@/types/service-result";
-import type { EmailService } from "@/types/email";
-import { tryCatch } from "@/utils";
-import { eventBus } from "@/event-bus";
+import type { EmailService } from "../../types/email";
+import { ok, err } from "../../types/result";
+import { tryCatch } from "../../utils";
+import { eventBus } from "../../lib/event-bus";
 import {
   isDuplicateKeyError,
   isNullOrUndefined,
   isRlsError,
-} from "@/utils/supabase";
-import {
-  OrgErrors,
-  OrgMemberErrors,
-  OrgLeaveErrors,
-  OrgInviteErrors,
-} from "./errors";
+} from "../../utils/supabase";
+import { OrgErrorCode } from "./errors";
 import type {
-  Organization,
   OrgInput,
   OrgUpdate,
   OrgRole,
-  OrgMember,
   OrgWithMembers,
   OrgMemberWithProfile,
-  Invite,
   InviteStatus,
   InviteWithInviter,
   InviteWithOrgAndInviter,
@@ -74,9 +66,9 @@ export class OrganizationService {
     this.getInviteUrl = deps.getInviteUrl;
   }
 
-  async getBySlug(slug: string): Promise<ServiceResult<Organization>> {
+  async getBySlug(slug: string) {
     if (!slug) {
-      return { error: OrgErrors.notFound };
+      return err(OrgErrorCode.NOT_FOUND);
     }
 
     const { data, error } = await this.supabase
@@ -88,17 +80,17 @@ export class OrganizationService {
 
     if (error) {
       console.error("Failed to get organization by slug:", error);
-      return { error: OrgErrors.failedToLoad };
+      return err(OrgErrorCode.FAILED_TO_LOAD);
     }
 
     if (!data) {
-      return { error: OrgErrors.notFound };
+      return err(OrgErrorCode.NOT_FOUND);
     }
 
-    return { data };
+    return ok(data);
   }
 
-  async getById(orgId: string): Promise<ServiceResult<Organization>> {
+  async getById(orgId: string) {
     const { data, error } = await this.supabase
       .from("organizations")
       .select(`*`)
@@ -109,15 +101,15 @@ export class OrganizationService {
       console.error("Failed to get organization by ID:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgErrors.unauthorized };
+        return err(OrgErrorCode.UNAUTHORIZED);
       }
-      return { error: OrgErrors.failedToLoad };
+      return err(OrgErrorCode.FAILED_TO_LOAD);
     }
 
-    return { data };
+    return ok(data);
   }
 
-  async create(newOrg: OrgInput): Promise<ServiceResult<Organization>> {
+  async create(newOrg: OrgInput) {
     let slug = newOrg.slug ?? (await this.generateUniqueSlug(newOrg.name));
 
     if (newOrg.slug && (await this.isSlugUnique(newOrg.slug))) {
@@ -126,7 +118,7 @@ export class OrganizationService {
 
     if (isNullOrUndefined(slug)) {
       console.error("Error while generating slug");
-      return { error: OrgErrors.failedToCreate };
+      return err(OrgErrorCode.FAILED_TO_CREATE);
     }
 
     const { error } = await this.supabase
@@ -135,7 +127,7 @@ export class OrganizationService {
 
     if (error) {
       console.error("Error while creating organization:", error);
-      return { error: OrgErrors.failedToCreate };
+      return err(OrgErrorCode.FAILED_TO_CREATE);
     }
 
     const message = newOrg.name + " organization created successfully.";
@@ -148,18 +140,15 @@ export class OrganizationService {
     return this.getBySlug(slug);
   }
 
-  async update(
-    orgId: string,
-    updates: OrgUpdate,
-  ): Promise<ServiceResult<Organization>> {
+  async update(orgId: string, updates: OrgUpdate) {
     if (!this.userId) {
-      return { error: OrgErrors.unauthorized };
+      return err(OrgErrorCode.UNAUTHORIZED);
     }
 
     if (updates.slug) {
       const isUnique = await this.isSlugUnique(updates.slug);
       if (!isUnique) {
-        return { error: OrgErrors.slugAlreadyExists };
+        return err(OrgErrorCode.SLUG_ALREADY_EXISTS);
       }
     }
 
@@ -174,17 +163,17 @@ export class OrganizationService {
       console.error("Failed to update organization:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgErrors.unauthorized };
+        return err(OrgErrorCode.UNAUTHORIZED);
       }
-      return { error: OrgErrors.failedToUpdate };
+      return err(OrgErrorCode.FAILED_TO_UPDATE);
     }
 
-    return { data };
+    return ok(data);
   }
 
-  async delete(orgId: string): Promise<ServiceResult<{ success: true }>> {
+  async delete(orgId: string) {
     if (!this.supabaseAdmin) {
-      return { error: OrgErrors.unauthorized };
+      return err(OrgErrorCode.UNAUTHORIZED);
     }
 
     const { error } = await this.supabaseAdmin
@@ -197,16 +186,16 @@ export class OrganizationService {
       const rlsInfo = isRlsError(error);
 
       if (rlsInfo.isRls) {
-        return { error: OrgErrors.unauthorized };
+        return err(OrgErrorCode.UNAUTHORIZED);
       }
 
-      return { error: OrgErrors.failedToDelete };
+      return err(OrgErrorCode.FAILED_TO_DELETE);
     }
 
-    return { data: { success: true } };
+    return ok({ success: true as const });
   }
 
-  async getUserOrgs(): Promise<ServiceResult<OrgWithMembers[]>> {
+  async getUserOrgs() {
     const result = await tryCatch(
       this.db
         .selectFrom("organizations as o")
@@ -232,13 +221,13 @@ export class OrganizationService {
 
     if (result.error) {
       console.error("Failed to load organizations:", result.error);
-      return { error: OrgErrors.failedToLoad };
+      return err(OrgErrorCode.FAILED_TO_LOAD);
     }
 
-    return { data: result.data };
+    return ok(result.data as OrgWithMembers[]);
   }
 
-  async isSlugUnique(slug: string): Promise<ServiceResult<boolean>> {
+  async isSlugUnique(slug: string) {
     const { data, error } = await this.supabase.rpc(
       "is_organization_slugunique",
       { p_slug: slug },
@@ -246,10 +235,10 @@ export class OrganizationService {
 
     if (error) {
       console.error("Error while checking slug uniqueness:", error);
-      return { error: OrgErrors.failedToLoad };
+      return err(OrgErrorCode.FAILED_TO_LOAD);
     }
 
-    return { data: !!data };
+    return ok(!!data);
   }
 
   async generateUniqueSlug(name: string): Promise<string | null> {
@@ -266,9 +255,7 @@ export class OrganizationService {
     return data;
   }
 
-  async getMembers(
-    orgId: string,
-  ): Promise<ServiceResult<OrgMemberWithProfile[]>> {
+  async getMembers(orgId: string) {
     const { data, error } = await this.supabase
       .from("organization_members")
       .select(
@@ -285,19 +272,15 @@ export class OrganizationService {
       console.error("Failed to load organization members:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgMemberErrors.unauthorized };
+        return err(OrgErrorCode.MEMBER_UNAUTHORIZED);
       }
-      return { error: OrgMemberErrors.failedToLoad };
+      return err(OrgErrorCode.MEMBER_FAILED_TO_LOAD);
     }
 
-    return { data };
+    return ok(data as OrgMemberWithProfile[]);
   }
 
-  async updateMemberRole(
-    orgId: string,
-    memberId: string,
-    newRole: OrgRole,
-  ): Promise<ServiceResult<OrgMember>> {
+  async updateMemberRole(orgId: string, memberId: string, newRole: OrgRole) {
     const { data: currentUserMembership, error: currentUserMembershipError } =
       await this.supabaseAdmin
         .from("organization_members")
@@ -311,11 +294,11 @@ export class OrganizationService {
         "Failed to check current user membership:",
         currentUserMembershipError,
       );
-      return { error: OrgMemberErrors.loadError };
+      return err(OrgErrorCode.MEMBER_LOAD_ERROR);
     }
 
     if (currentUserMembership?.role !== "admin") {
-      return { error: OrgMemberErrors.insufficientPermissions };
+      return err(OrgErrorCode.MEMBER_INSUFFICIENT_PERMISSIONS);
     }
 
     const { data: updatedMember, error: updatedMemberError } =
@@ -331,18 +314,15 @@ export class OrganizationService {
       console.error("Failed to update member role:", updatedMemberError);
       const rlsInfo = isRlsError(updatedMemberError);
       if (rlsInfo.isRls) {
-        return { error: OrgMemberErrors.unauthorized };
+        return err(OrgErrorCode.MEMBER_UNAUTHORIZED);
       }
-      return { error: OrgMemberErrors.failedToUpdate };
+      return err(OrgErrorCode.MEMBER_FAILED_TO_UPDATE);
     }
 
-    return { data: updatedMember };
+    return ok(updatedMember);
   }
 
-  async removeMember(
-    orgId: string,
-    memberId: string,
-  ): Promise<ServiceResult<{ success: true }>> {
+  async removeMember(orgId: string, memberId: string) {
     const { error } = await this.supabase
       .from("organization_members")
       .delete()
@@ -353,17 +333,15 @@ export class OrganizationService {
       console.error("Failed to remove member:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgMemberErrors.unauthorized };
+        return err(OrgErrorCode.MEMBER_UNAUTHORIZED);
       }
-      return { error: OrgMemberErrors.failedToRemove };
+      return err(OrgErrorCode.MEMBER_FAILED_TO_REMOVE);
     }
 
-    return { data: { success: true } };
+    return ok({ success: true as const });
   }
 
-  async leaveOrganization(
-    orgId: string,
-  ): Promise<ServiceResult<{ success: true }>> {
+  async leaveOrganization(orgId: string) {
     const { data: membership, error: membershipError } = await this.supabase
       .from("organization_members")
       .select("role")
@@ -375,13 +353,13 @@ export class OrganizationService {
       console.error("Failed to check membership:", membershipError);
       const rlsInfo = isRlsError(membershipError);
       if (rlsInfo.isRls) {
-        return { error: OrgLeaveErrors.unauthorized };
+        return err(OrgErrorCode.LEAVE_UNAUTHORIZED);
       }
-      return { error: OrgLeaveErrors.failedToCheckMembership };
+      return err(OrgErrorCode.LEAVE_FAILED_TO_CHECK_MEMBERSHIP);
     }
 
     if (!membership) {
-      return { error: OrgLeaveErrors.notMember };
+      return err(OrgErrorCode.LEAVE_NOT_MEMBER);
     }
 
     const { error } = await this.supabase
@@ -394,22 +372,18 @@ export class OrganizationService {
       console.error("Failed to leave organization:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgLeaveErrors.unauthorized };
+        return err(OrgErrorCode.LEAVE_UNAUTHORIZED);
       }
-      return { error: OrgLeaveErrors.failedToLeave };
+      return err(OrgErrorCode.LEAVE_FAILED);
     }
 
-    return { data: { success: true } };
+    return ok({ success: true as const });
   }
 
-  async inviteMember(
-    orgId: string,
-    role: OrgRole,
-    email: string,
-  ): Promise<ServiceResult<{ success: true; invite: Invite }>> {
+  async inviteMember(orgId: string, role: OrgRole, email: string) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return { error: OrgInviteErrors.invalidEmail };
+      return err(OrgErrorCode.INVITE_INVALID_EMAIL);
     }
 
     const { data: invitee, error: userError } = await this.supabaseAdmin.rpc(
@@ -429,12 +403,12 @@ export class OrganizationService {
       )?.data;
 
     if (isInviteeAlreadyMember) {
-      return { error: OrgInviteErrors.alreadyMember };
+      return err(OrgErrorCode.INVITE_ALREADY_MEMBER);
     }
 
     if (userError) {
       console.error("Failed to check user:", userError);
-      return { error: OrgInviteErrors.failedToCheckUser };
+      return err(OrgErrorCode.INVITE_FAILED_TO_CHECK_USER);
     }
 
     const { data: inviteData, error: inviteInsertError } =
@@ -451,7 +425,7 @@ export class OrganizationService {
 
     if (inviteInsertError || isNullOrUndefined(inviteData)) {
       console.error("Failed to insert invite:", inviteInsertError);
-      return { error: OrgInviteErrors.failedToInsert };
+      return err(OrgErrorCode.INVITE_FAILED_TO_INSERT);
     }
 
     try {
@@ -463,7 +437,7 @@ export class OrganizationService {
 
       if (orgError || !organization) {
         console.error("Failed to get organization:", orgError);
-        return { error: OrgInviteErrors.failedToCreate };
+        return err(OrgErrorCode.INVITE_FAILED_TO_CREATE);
       }
 
       const { data: inviterProfile, error: inviterError } =
@@ -475,7 +449,7 @@ export class OrganizationService {
 
       if (inviterError || !inviterProfile) {
         console.error("Failed to get inviter profile:", inviterError);
-        return { error: OrgInviteErrors.failedToCreate };
+        return err(OrgErrorCode.INVITE_FAILED_TO_CREATE);
       }
 
       const inviteUrl = this.getInviteUrl(inviteData.id);
@@ -498,13 +472,10 @@ export class OrganizationService {
       console.warn("Invite created but email failed to send");
     }
 
-    return { data: { success: true, invite: inviteData } };
+    return ok({ success: true as const, invite: inviteData });
   }
 
-  async addMemberToOrg(
-    orgId: string,
-    role: OrgRole,
-  ): Promise<ServiceResult<{ success: true }>> {
+  async addMemberToOrg(orgId: string, role: OrgRole) {
     const isAdmin = await this.supabaseAdmin
       .from("organization_members")
       .select("role")
@@ -513,7 +484,7 @@ export class OrganizationService {
       .maybeSingle();
 
     if (isAdmin.data?.role !== "admin") {
-      return { error: OrgMemberErrors.insufficientPermissions };
+      return err(OrgErrorCode.MEMBER_INSUFFICIENT_PERMISSIONS);
     }
 
     const { data: existingMember } = await this.supabaseAdmin
@@ -524,7 +495,7 @@ export class OrganizationService {
       .maybeSingle();
 
     if (existingMember) {
-      return { error: OrgMemberErrors.alreadyMember };
+      return err(OrgErrorCode.MEMBER_ALREADY_MEMBER);
     }
 
     const { error } = await this.supabaseAdmin
@@ -537,23 +508,20 @@ export class OrganizationService {
 
     if (error) {
       if (isRlsError(error)) {
-        return { error: OrgMemberErrors.insufficientPermissions };
+        return err(OrgErrorCode.MEMBER_INSUFFICIENT_PERMISSIONS);
       }
       if (isDuplicateKeyError(error)) {
-        return { error: OrgMemberErrors.alreadyMember };
+        return err(OrgErrorCode.MEMBER_ALREADY_MEMBER);
       }
-      return { error: OrgMemberErrors.failedToAdd };
+      return err(OrgErrorCode.MEMBER_FAILED_TO_ADD);
     }
 
-    return { data: { success: true } };
+    return ok({ success: true as const });
   }
 
-  async removeInvitation(
-    orgId: string,
-    invitationId: string,
-  ): Promise<ServiceResult<{ success: true }>> {
+  async removeInvitation(orgId: string, invitationId: string) {
     if (!this.userId) {
-      return { error: OrgInviteErrors.unauthorized };
+      return err(OrgErrorCode.INVITE_UNAUTHORIZED);
     }
 
     console.log(
@@ -562,14 +530,12 @@ export class OrganizationService {
       "invitation:",
       invitationId,
     );
-    return { data: { success: true } };
+    return ok({ success: true as const });
   }
 
-  async getOrgInvites(
-    orgId: string,
-  ): Promise<ServiceResult<InviteWithInviter[]>> {
+  async getOrgInvites(orgId: string) {
     if (!this.userId) {
-      return { error: OrgInviteErrors.unauthorized };
+      return err(OrgErrorCode.INVITE_UNAUTHORIZED);
     }
 
     const { data, error } = await this.supabase
@@ -588,18 +554,15 @@ export class OrganizationService {
       console.error("Failed to load organization invites:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgInviteErrors.unauthorized };
+        return err(OrgErrorCode.INVITE_UNAUTHORIZED);
       }
-      return { error: OrgInviteErrors.failedToLoad };
+      return err(OrgErrorCode.INVITE_FAILED_TO_LOAD);
     }
 
-    return { data: data || [] };
+    return ok((data || []) as InviteWithInviter[]);
   }
 
-  async updateInviteStatus(
-    inviteId: string,
-    status: InviteStatus,
-  ): Promise<ServiceResult<Invite>> {
+  async updateInviteStatus(inviteId: string, status: InviteStatus) {
     const { data, error } = await this.supabaseAdmin
       .from("invites")
       .update({
@@ -613,24 +576,24 @@ export class OrganizationService {
       console.error("Failed to update invite status:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgInviteErrors.unauthorized };
+        return err(OrgErrorCode.INVITE_UNAUTHORIZED);
       }
-      return { error: OrgInviteErrors.failedToUpdate };
+      return err(OrgErrorCode.INVITE_FAILED_TO_UPDATE);
     }
 
-    return { data };
+    return ok(data);
   }
 
-  async getUserInvites(): Promise<ServiceResult<InviteWithOrgAndInviter[]>> {
+  async getUserInvites() {
     if (!this.userId) {
-      return { error: OrgInviteErrors.unauthorized };
+      return err(OrgErrorCode.INVITE_UNAUTHORIZED);
     }
 
     const {
       data: { user },
     } = await this.supabase.auth.getUser();
     if (!user?.email) {
-      return { error: OrgInviteErrors.unauthorized };
+      return err(OrgErrorCode.INVITE_UNAUTHORIZED);
     }
 
     const { data, error } = await this.supabase
@@ -654,18 +617,15 @@ export class OrganizationService {
       console.error("Failed to load user invites:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgInviteErrors.unauthorized };
+        return err(OrgErrorCode.INVITE_UNAUTHORIZED);
       }
-      return { error: OrgInviteErrors.failedToLoadUserInvites };
+      return err(OrgErrorCode.INVITE_FAILED_TO_LOAD_USER_INVITES);
     }
 
-    return { data: data || [] };
+    return ok((data || []) as InviteWithOrgAndInviter[]);
   }
 
-  async updateUserOwnInvite(
-    inviteId: string,
-    status: "accepted" | "rejected",
-  ): Promise<ServiceResult<Invite>> {
+  async updateUserOwnInvite(inviteId: string, status: "accepted" | "rejected") {
     const { data: invite, error: fetchInviteError } = await this.supabaseAdmin
       .from("invites")
       .select("*")
@@ -674,17 +634,17 @@ export class OrganizationService {
 
     if (fetchInviteError || !invite) {
       console.error("Failed to fetch invite:", fetchInviteError);
-      return { error: OrgInviteErrors.notFound };
+      return err(OrgErrorCode.INVITE_NOT_FOUND);
     }
 
     const now = new Date();
     const expiresAt = new Date(invite.expires_at);
 
     if (now > expiresAt) {
-      return { error: OrgInviteErrors.expired };
+      return err(OrgErrorCode.INVITE_EXPIRED);
     }
     if (invite.status === "revoked") {
-      return { error: OrgInviteErrors.revoked };
+      return err(OrgErrorCode.INVITE_REVOKED);
     }
 
     const {
@@ -692,7 +652,7 @@ export class OrganizationService {
     } = await this.supabase.auth.getUser();
 
     if (!user?.email || user.email !== invite.email) {
-      return { error: OrgInviteErrors.unauthorized };
+      return err(OrgErrorCode.INVITE_UNAUTHORIZED);
     }
 
     const { data: updateInviteData, error: updateInviteError } =
@@ -709,9 +669,9 @@ export class OrganizationService {
       console.error("Failed to update user invite:", updateInviteError);
       const rlsInfo = isRlsError(updateInviteError);
       if (rlsInfo.isRls) {
-        return { error: OrgInviteErrors.unauthorized };
+        return err(OrgErrorCode.INVITE_UNAUTHORIZED);
       }
-      return { error: OrgInviteErrors.failedToUpdateUserInvite };
+      return err(OrgErrorCode.INVITE_FAILED_TO_UPDATE_USER_INVITE);
     }
 
     if (status === "accepted") {
@@ -733,16 +693,14 @@ export class OrganizationService {
           })
           .eq("id", inviteId);
 
-        return { error: OrgMemberErrors.failedToAdd };
+        return err(OrgErrorCode.MEMBER_FAILED_TO_ADD);
       }
     }
 
-    return { data: updateInviteData };
+    return ok(updateInviteData);
   }
 
-  async getInviteById(
-    inviteId: string,
-  ): Promise<ServiceResult<InviteWithOrgAndInviter>> {
+  async getInviteById(inviteId: string) {
     const { data, error } = await this.supabaseAdmin
       .from("invites")
       .select(
@@ -762,26 +720,24 @@ export class OrganizationService {
     if (error) {
       console.error("Failed to load invite:", error);
       if (error.code === "PGRST116") {
-        return { error: OrgInviteErrors.notFound };
+        return err(OrgErrorCode.INVITE_NOT_FOUND);
       }
-      return { error: OrgInviteErrors.failedToLoad };
+      return err(OrgErrorCode.INVITE_FAILED_TO_LOAD);
     }
 
-    return { data };
+    return ok(data as InviteWithOrgAndInviter);
   }
 
-  async getUserInvitesWithOrganizations(): Promise<
-    ServiceResult<InviteWithOrgAndInviter[]>
-  > {
+  async getUserInvitesWithOrganizations() {
     if (!this.userId) {
-      return { error: OrgInviteErrors.unauthorized };
+      return err(OrgErrorCode.INVITE_UNAUTHORIZED);
     }
 
     const {
       data: { user },
     } = await this.supabase.auth.getUser();
     if (!user?.email) {
-      return { error: OrgInviteErrors.unauthorized };
+      return err(OrgErrorCode.INVITE_UNAUTHORIZED);
     }
 
     const { data, error } = await this.supabaseAdmin
@@ -805,11 +761,11 @@ export class OrganizationService {
       console.error("Failed to load user invites with organizations:", error);
       const rlsInfo = isRlsError(error);
       if (rlsInfo.isRls) {
-        return { error: OrgInviteErrors.unauthorized };
+        return err(OrgErrorCode.INVITE_UNAUTHORIZED);
       }
-      return { error: OrgInviteErrors.failedToLoadUserInvites };
+      return err(OrgErrorCode.INVITE_FAILED_TO_LOAD_USER_INVITES);
     }
 
-    return { data: data };
+    return ok(data as InviteWithOrgAndInviter[]);
   }
 }

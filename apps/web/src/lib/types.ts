@@ -1,13 +1,13 @@
-import { I18nMessageKey } from './i18n';
+import { I18nMessageKey } from "./i18n";
 
-export type ServiceResult<T> =
+export type ServiceResult<T, E extends string = I18nMessageKey> =
   | {
       data: T;
       error?: null;
     }
   | {
       data?: null;
-      error: I18nMessageKey;
+      error: E;
     };
 
 /**

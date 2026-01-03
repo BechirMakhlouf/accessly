@@ -17,9 +17,9 @@
       "types": "./src/modules/*/index.ts",
       "default": "./src/modules/*/index.ts"
     },
-    "./event-bus": {
-      "types": "./src/event-bus/index.ts",
-      "default": "./src/event-bus/index.ts"
+    "./lib/*": {
+      "types": "./src/lib/*/index.ts",
+      "default": "./src/lib/*/index.ts"
     },
     "./types": {
       "types": "./src/types/index.ts",
