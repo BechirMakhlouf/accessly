@@ -1,11 +1,6 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  type UseQueryOptions,
-} from "@tanstack/react-query";
-import type { ServiceResult } from "@/lib/types";
-import type { Accessable, AccessableInsert, AccessableUpdate } from "./types";
+'use client';
+
+import { useQueryClient } from '@tanstack/react-query';
 import {
   getAccessableById,
   getAccessablesByBoardId,
@@ -13,247 +8,159 @@ import {
   createAccessable,
   updateAccessable,
   deleteAccessable,
-} from "./actions";
+} from './actions';
+import type { Accessable, AccessableInsert, AccessableUpdate } from './types';
 
-type AccessablesListResult = ServiceResult<Accessable[]>;
+export const ACCESSABLES_KEY = 'accessables';
+export const ACCESSABLE_KEY = 'accessable';
+export const ORG_ACCESSABLES_KEY = (orgId: string) =>
+  [ACCESSABLES_KEY, 'org', orgId] as const;
+export const BOARD_ACCESSABLES_KEY = (boardId: string) =>
+  [ACCESSABLES_KEY, 'board', boardId] as const;
+export const ACCESSABLE_BY_ID_KEY = (id: string) =>
+  [ACCESSABLE_KEY, 'id', id] as const;
 
-export const accessablesKeys = {
-  all: ["accessables"] as const,
-  byId: (id: string) => [...accessablesKeys.all, "byId", id] as const,
-  byBoard: (boardId: string) =>
-    [...accessablesKeys.all, "byBoard", boardId] as const,
-  byOrganization: (organizationId: string) =>
-    [...accessablesKeys.all, "byOrganization", organizationId] as const,
-};
+export function getAccessableByIdQueryOptions(id: string) {
+  return {
+    queryKey: ACCESSABLE_BY_ID_KEY(id),
+    queryFn: async (): Promise<Accessable> => {
+      const result = await getAccessableById(id);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      if (!result.data) {
+        throw new Error('Accessable not found');
+      }
+      return result.data;
+    },
+    enabled: !!id,
+  };
+}
 
-export function useAccessable(
-  id: string,
-  options?: Omit<
-    UseQueryOptions<ServiceResult<Accessable>>,
-    "queryKey" | "queryFn"
-  >,
+export function getBoardAccessablesQueryOptions(boardId: string) {
+  return {
+    queryKey: BOARD_ACCESSABLES_KEY(boardId),
+    queryFn: async (): Promise<Accessable[]> => {
+      const result = await getAccessablesByBoardId(boardId);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return result.data || [];
+    },
+    enabled: !!boardId,
+  };
+}
+
+export function getOrgAccessablesQueryOptions(orgId: string) {
+  return {
+    queryKey: ORG_ACCESSABLES_KEY(orgId),
+    queryFn: async (): Promise<Accessable[]> => {
+      const result = await getAccessablesByOrganizationId(orgId);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return result.data || [];
+    },
+    enabled: !!orgId,
+  };
+}
+
+export function createAccessableMutationOptions(
+  queryClient: ReturnType<typeof useQueryClient>
 ) {
-  return useQuery({
-    queryKey: accessablesKeys.byId(id),
-    queryFn: () => getAccessableById(id),
-    ...options,
-  });
-}
-
-export function useBoardAccessables(
-  boardId: string,
-  options?: Omit<
-    UseQueryOptions<ServiceResult<Accessable[]>>,
-    "queryKey" | "queryFn"
-  >,
-) {
-  return useQuery({
-    queryKey: accessablesKeys.byBoard(boardId),
-    queryFn: () => getAccessablesByBoardId(boardId),
-    ...options,
-  });
-}
-
-export function useOrganizationAccessables(
-  organizationId: string,
-  options?: Omit<
-    UseQueryOptions<ServiceResult<Accessable[]>>,
-    "queryKey" | "queryFn"
-  >,
-) {
-  return useQuery({
-    queryKey: accessablesKeys.byOrganization(organizationId),
-    queryFn: () => getAccessablesByOrganizationId(organizationId),
-    ...options,
-  });
-}
-
-export function useCreateAccessable() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (input: AccessableInsert) => createAccessable(input),
-    onMutate: async (newAccessable) => {
-      const orgKey = accessablesKeys.byOrganization(
-        newAccessable.organization_id,
-      );
-      const boardKey = newAccessable.board_id
-        ? accessablesKeys.byBoard(newAccessable.board_id)
-        : null;
-
-      await queryClient.cancelQueries({ queryKey: orgKey });
-      if (boardKey) {
-        await queryClient.cancelQueries({ queryKey: boardKey });
+  return {
+    mutationFn: async (input: AccessableInsert): Promise<Accessable> => {
+      const result = await createAccessable(input);
+      if (result.error) {
+        throw new Error(result.error);
       }
-
-      const previousOrgAccessables =
-        queryClient.getQueryData<AccessablesListResult>(orgKey);
-      const previousBoardAccessables = boardKey
-        ? queryClient.getQueryData<AccessablesListResult>(boardKey)
-        : null;
-
-      const optimisticAccessable: Accessable = {
-        id: `temp-${Date.now()}`,
-        organization_id: newAccessable.organization_id,
-        board_id: newAccessable.board_id ?? null,
-        user_id: newAccessable.user_id ?? "",
-        name: newAccessable.name ?? "",
-        type: newAccessable.type ?? "",
-        description: newAccessable.description ?? null,
-        url: newAccessable.url ?? null,
-        owner_user_id: null,
-        metadata: newAccessable.metadata ?? null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      queryClient.setQueryData<AccessablesListResult>(orgKey, (old) => ({
-        data: [optimisticAccessable, ...(old?.data ?? [])],
-      }));
-
-      if (boardKey) {
-        queryClient.setQueryData<AccessablesListResult>(boardKey, (old) => ({
-          data: [optimisticAccessable, ...(old?.data ?? [])],
-        }));
+      if (!result.data) {
+        throw new Error('Failed to create accessable');
       }
-
-      return { previousOrgAccessables, previousBoardAccessables, boardKey };
+      return result.data;
     },
-    onError: (_err, newAccessable, context) => {
-      if (context?.previousOrgAccessables) {
-        queryClient.setQueryData(
-          accessablesKeys.byOrganization(newAccessable.organization_id),
-          context.previousOrgAccessables,
-        );
-      }
-      if (context?.boardKey && context?.previousBoardAccessables) {
-        queryClient.setQueryData(
-          context.boardKey,
-          context.previousBoardAccessables,
-        );
-      }
-    },
-    onSettled: (result) => {
-      if (result?.data) {
-        if (result.data.board_id) {
-          queryClient.invalidateQueries({
-            queryKey: accessablesKeys.byBoard(result.data.board_id),
-          });
-        }
-        queryClient.invalidateQueries({
-          queryKey: accessablesKeys.byOrganization(result.data.organization_id),
-        });
-      }
-    },
-  });
-}
-
-export function useUpdateAccessable() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: AccessableUpdate }) =>
-      updateAccessable(id, updates),
-    onMutate: async ({ id, updates }) => {
-      await queryClient.cancelQueries({ queryKey: accessablesKeys.all });
-
-      const previousById = queryClient.getQueryData<ServiceResult<Accessable>>(
-        accessablesKeys.byId(id),
-      );
-
-      if (previousById?.data) {
-        queryClient.setQueryData<ServiceResult<Accessable>>(
-          accessablesKeys.byId(id),
-          {
-            data: { ...previousById.data, ...updates },
-          },
-        );
-      }
-
-      return { previousById };
-    },
-    onError: (_err, { id }, context) => {
-      if (context?.previousById) {
-        queryClient.setQueryData(
-          accessablesKeys.byId(id),
-          context.previousById,
-        );
-      }
-    },
-    onSettled: (result, _error, variables) => {
+    onSuccess: (newAccessable: Accessable) => {
       queryClient.invalidateQueries({
-        queryKey: accessablesKeys.byId(variables.id),
+        queryKey: ORG_ACCESSABLES_KEY(newAccessable.organization_id),
       });
-      if (result?.data) {
-        if (result.data.board_id) {
-          queryClient.invalidateQueries({
-            queryKey: accessablesKeys.byBoard(result.data.board_id),
-          });
-        }
+      if (newAccessable.board_id) {
         queryClient.invalidateQueries({
-          queryKey: accessablesKeys.byOrganization(result.data.organization_id),
+          queryKey: BOARD_ACCESSABLES_KEY(newAccessable.board_id),
         });
       }
     },
-  });
+  };
 }
 
-export function useDeleteAccessable() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
+export function updateAccessableMutationOptions(
+  queryClient: ReturnType<typeof useQueryClient>
+) {
+  return {
+    mutationFn: async ({
       id,
+      updates,
+    }: {
+      id: string;
+      updates: AccessableUpdate;
+    }): Promise<Accessable> => {
+      const result = await updateAccessable(id, updates);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      if (!result.data) {
+        throw new Error('Failed to update accessable');
+      }
+      return result.data;
+    },
+    onSuccess: (updatedAccessable: Accessable) => {
+      queryClient.invalidateQueries({
+        queryKey: ACCESSABLE_BY_ID_KEY(updatedAccessable.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ORG_ACCESSABLES_KEY(updatedAccessable.organization_id),
+      });
+      if (updatedAccessable.board_id) {
+        queryClient.invalidateQueries({
+          queryKey: BOARD_ACCESSABLES_KEY(updatedAccessable.board_id),
+        });
+      }
+    },
+  };
+}
+
+export function deleteAccessableMutationOptions(
+  queryClient: ReturnType<typeof useQueryClient>
+) {
+  return {
+    mutationFn: async ({
+      id,
+      organizationId: _organizationId,
+      boardId: _boardId,
     }: {
       id: string;
       organizationId: string;
       boardId: string | null;
-    }) => deleteAccessable(id),
-    onMutate: async ({ id, organizationId, boardId }) => {
-      const orgKey = accessablesKeys.byOrganization(organizationId);
-      const boardKey = boardId ? accessablesKeys.byBoard(boardId) : null;
-
-      await queryClient.cancelQueries({ queryKey: orgKey });
-      if (boardKey) {
-        await queryClient.cancelQueries({ queryKey: boardKey });
-      }
-
-      const previousOrgAccessables =
-        queryClient.getQueryData<AccessablesListResult>(orgKey);
-      const previousBoardAccessables = boardKey
-        ? queryClient.getQueryData<AccessablesListResult>(boardKey)
-        : null;
-
-      queryClient.setQueryData<AccessablesListResult>(orgKey, (old) => ({
-        data: (old?.data ?? []).filter((a) => a.id !== id),
-      }));
-
-      if (boardKey) {
-        queryClient.setQueryData<AccessablesListResult>(boardKey, (old) => ({
-          data: (old?.data ?? []).filter((a) => a.id !== id),
-        }));
-      }
-
-      return { previousOrgAccessables, previousBoardAccessables, boardKey };
-    },
-    onError: (_err, { organizationId }, context) => {
-      if (context?.previousOrgAccessables) {
-        queryClient.setQueryData(
-          accessablesKeys.byOrganization(organizationId),
-          context.previousOrgAccessables,
-        );
-      }
-      if (context?.boardKey && context?.previousBoardAccessables) {
-        queryClient.setQueryData(
-          context.boardKey,
-          context.previousBoardAccessables,
-        );
+    }): Promise<void> => {
+      const result = await deleteAccessable(id);
+      if (result.error) {
+        throw new Error(result.error);
       }
     },
-    onSettled: () => {
+    onSuccess: (
+      _: void,
+      variables: { id: string; organizationId: string; boardId: string | null }
+    ) => {
       queryClient.invalidateQueries({
-        queryKey: accessablesKeys.all,
+        queryKey: ACCESSABLE_BY_ID_KEY(variables.id),
       });
+      queryClient.invalidateQueries({
+        queryKey: ORG_ACCESSABLES_KEY(variables.organizationId),
+      });
+      if (variables.boardId) {
+        queryClient.invalidateQueries({
+          queryKey: BOARD_ACCESSABLES_KEY(variables.boardId),
+        });
+      }
     },
-  });
+  };
 }

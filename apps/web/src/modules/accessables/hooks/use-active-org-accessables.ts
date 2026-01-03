@@ -1,37 +1,48 @@
-"use client";
+'use client';
 
-import { useActiveOrg } from "@/modules/organizations";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useActiveOrg } from '@/modules/organizations';
 import {
-  useOrganizationAccessables,
-  useCreateAccessable,
-  useUpdateAccessable,
-  useDeleteAccessable,
-} from "../queries";
-import type { Accessable, AccessableInsert, AccessableUpdate } from "../types";
+  getOrgAccessablesQueryOptions,
+  createAccessableMutationOptions,
+  updateAccessableMutationOptions,
+  deleteAccessableMutationOptions,
+} from '../queries';
+import type { Accessable, AccessableInsert, AccessableUpdate } from '../types';
 
 export function useActiveOrgAccessables() {
   const { organization, isLoading: orgLoading } = useActiveOrg();
+  const queryClient = useQueryClient();
 
   const {
-    data: accessablesResult,
+    data: allAccessables,
     isLoading: accessablesLoading,
     error: accessablesError,
     refetch,
-  } = useOrganizationAccessables(organization?.id ?? "", {
+  } = useQuery({
+    ...getOrgAccessablesQueryOptions(organization?.id ?? ''),
     enabled: !!organization?.id,
   });
 
-  const createMutation = useCreateAccessable();
-  const updateMutation = useUpdateAccessable();
-  const deleteMutation = useDeleteAccessable();
+  const createMutation = useMutation(
+    createAccessableMutationOptions(queryClient)
+  );
+  const updateMutation = useMutation(
+    updateAccessableMutationOptions(queryClient)
+  );
+  const deleteMutation = useMutation(
+    deleteAccessableMutationOptions(queryClient)
+  );
 
-  const allAccessables = accessablesResult?.data ?? [];
-  const orgLevelAccessables = allAccessables.filter((a) => a.board_id === null);
+  const accessablesList = allAccessables ?? [];
+  const orgLevelAccessables = accessablesList.filter(
+    (a: Accessable) => a.board_id === null
+  );
 
   const createAccessable = async (
-    input: Omit<AccessableInsert, "organization_id">,
+    input: Omit<AccessableInsert, 'organization_id'>
   ) => {
-    if (!organization?.id) throw new Error("No active organization");
+    if (!organization?.id) throw new Error('No active organization');
 
     return createMutation.mutateAsync({
       ...input,
@@ -45,9 +56,9 @@ export function useActiveOrgAccessables() {
 
   const deleteAccessable = async (
     id: string,
-    boardId: string | null = null,
+    boardId: string | null = null
   ) => {
-    if (!organization?.id) throw new Error("No active organization");
+    if (!organization?.id) throw new Error('No active organization');
 
     return deleteMutation.mutateAsync({
       id,
@@ -57,12 +68,12 @@ export function useActiveOrgAccessables() {
   };
 
   const getAccessableById = (id: string): Accessable | undefined => {
-    return allAccessables.find((a) => a.id === id);
+    return accessablesList.find((a: Accessable) => a.id === id);
   };
 
   return {
     organization,
-    allAccessables,
+    allAccessables: accessablesList,
     orgLevelAccessables,
 
     isLoading: orgLoading || accessablesLoading,

@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  useBoardAccessables as useBoardAccessablesQuery,
-  useCreateAccessable,
-  useUpdateAccessable,
-  useDeleteAccessable,
-} from "../queries";
-import type { Accessable, AccessableInsert, AccessableUpdate } from "../types";
+  getBoardAccessablesQueryOptions,
+  createAccessableMutationOptions,
+  updateAccessableMutationOptions,
+  deleteAccessableMutationOptions,
+} from '../queries';
+import type { Accessable, AccessableInsert, AccessableUpdate } from '../types';
 
 interface UseBoardAccessablesOptions {
   boardId: string;
@@ -17,23 +18,32 @@ export function useBoardAccessablesHook({
   boardId,
   organizationId,
 }: UseBoardAccessablesOptions) {
+  const queryClient = useQueryClient();
+
   const {
-    data: accessablesResult,
+    data: accessables,
     isLoading,
     error,
     refetch,
-  } = useBoardAccessablesQuery(boardId, {
+  } = useQuery({
+    ...getBoardAccessablesQueryOptions(boardId),
     enabled: !!boardId,
   });
 
-  const createMutation = useCreateAccessable();
-  const updateMutation = useUpdateAccessable();
-  const deleteMutation = useDeleteAccessable();
+  const createMutation = useMutation(
+    createAccessableMutationOptions(queryClient)
+  );
+  const updateMutation = useMutation(
+    updateAccessableMutationOptions(queryClient)
+  );
+  const deleteMutation = useMutation(
+    deleteAccessableMutationOptions(queryClient)
+  );
 
-  const accessables = accessablesResult?.data ?? [];
+  const accessablesList = accessables ?? [];
 
   const createAccessable = async (
-    input: Omit<AccessableInsert, "organization_id" | "board_id">,
+    input: Omit<AccessableInsert, 'organization_id' | 'board_id'>
   ) => {
     return createMutation.mutateAsync({
       ...input,
@@ -55,11 +65,11 @@ export function useBoardAccessablesHook({
   };
 
   const getAccessableById = (id: string): Accessable | undefined => {
-    return accessables.find((a) => a.id === id);
+    return accessablesList.find((a: Accessable) => a.id === id);
   };
 
   return {
-    accessables,
+    accessables: accessablesList,
     boardId,
     organizationId,
 
