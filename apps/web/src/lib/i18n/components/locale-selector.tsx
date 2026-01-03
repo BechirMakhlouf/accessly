@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import * as Select from '@radix-ui/react-select';
-import clsx from 'clsx';
-import { useTransition } from 'react';
-import type { Locale } from '../config';
-import { setAppLocale } from '../actions';
-import { LanguagesIcon, Check } from 'lucide-react';
+import { Select } from "radix-ui";
+import clsx from "clsx";
+import { useTransition } from "react";
+import type { Locale } from "../config";
+import { setAppLocale } from "../actions";
+import { LanguagesIcon, Check } from "lucide-react";
 
 type Props = {
   defaultValue: string;
@@ -24,42 +24,42 @@ export function LocaleSwitcher({ defaultValue, items, label }: Props) {
   }
 
   return (
-    <div className='relative'>
+    <div className="relative">
       <Select.Root defaultValue={defaultValue} onValueChange={onChange}>
         <Select.Trigger
           aria-label={label}
           className={clsx(
-            'rounded-sm p-2 transition-colors hover:bg-slate-200',
-            isPending && 'pointer-events-none opacity-60'
+            "rounded-sm p-2 transition-colors hover:bg-slate-200",
+            isPending && "pointer-events-none opacity-60",
           )}
         >
           <Select.Icon>
-            <LanguagesIcon className='h-6 w-6 text-slate-600 transition-colors group-hover:text-slate-900' />
+            <LanguagesIcon className="h-6 w-6 text-slate-600 transition-colors group-hover:text-slate-900" />
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>
           <Select.Content
-            align='end'
-            className='min-w-[8rem] overflow-hidden rounded-sm bg-foreground py-1 shadow-md'
-            position='popper'
+            align="end"
+            className="min-w-[8rem] overflow-hidden rounded-sm bg-foreground py-1 shadow-md"
+            position="popper"
           >
             <Select.Viewport>
-              {items.map(item => (
+              {items.map((item) => (
                 <Select.Item
                   key={item.value}
-                  className='flex cursor-default items-center px-3 py-2 text-base data-[highlighted]:bg-slate-100'
+                  className="flex cursor-default items-center px-3 py-2 text-base data-[highlighted]:bg-slate-100"
                   value={item.value}
                 >
-                  <div className='mr-2 w-[1rem]'>
+                  <div className="mr-2 w-[1rem]">
                     {item.value === defaultValue && (
-                      <Check className='h-5 w-5 text-slate-600' />
+                      <Check className="h-5 w-5 text-slate-600" />
                     )}
                   </div>
-                  <span className='text-slate-900'>{item.label}</span>
+                  <span className="text-slate-900">{item.label}</span>
                 </Select.Item>
               ))}
             </Select.Viewport>
-            <Select.Arrow className='fill-white text-white' />
+            <Select.Arrow className="fill-white text-white" />
           </Select.Content>
         </Select.Portal>
       </Select.Root>
