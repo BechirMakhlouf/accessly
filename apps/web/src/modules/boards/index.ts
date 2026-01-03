@@ -1,5 +1,17 @@
 // Types
-export * from './types';
+export type {
+  Board,
+  BoardInput,
+  BoardInsert,
+  BoardUpdate,
+  BoardMember,
+  BoardRole,
+  BoardVisibility,
+  BoardAdminRole,
+  BoardWithMembers,
+  BoardMemberWithProfile,
+  BoardMembership,
+} from '@accessly/core';
 
 // Hooks
 export { useActiveBoard } from './hooks/useActiveBoard';

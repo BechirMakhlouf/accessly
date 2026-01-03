@@ -16,7 +16,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { routes } from '@/lib/routes';
 import { useActiveOrg } from '@/modules/organizations/hooks/use-active-org';
-import type { BoardVisibility } from '@/modules/boards/types';
+import type { BoardVisibility } from '@/modules/boards';
 
 export default function BoardsPage() {
   const t = useTranslations('boards');

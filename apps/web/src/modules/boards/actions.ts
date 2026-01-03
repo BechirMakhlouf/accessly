@@ -1,36 +1,36 @@
 'use server';
 
 import { createBoardService } from './board-factory';
-import type { BoardInput, BoardRole, BoardUpdate } from './types';
+import type { BoardInput, BoardRole, BoardUpdate } from '@accessly/core';
 
 export async function getBoardBySlug(slug: string) {
   const service = await createBoardService();
-  return service.getBoardBySlug(slug);
+  return service.getBySlug(slug);
 }
 
 export async function getBoardById(boardId: string) {
   const service = await createBoardService();
-  return service.getBoardById(boardId);
+  return service.getById(boardId);
 }
 
 export async function getBoardsByOrganizationId(orgId: string) {
   const service = await createBoardService();
-  return service.getBoardsByOrganizationId(orgId);
+  return service.getByOrganizationId(orgId);
 }
 
 export async function createBoard(input: BoardInput) {
   const service = await createBoardService();
-  return service.createBoard(input);
+  return service.create(input);
 }
 
 export async function updateBoard(boardId: string, updates: BoardUpdate) {
   const service = await createBoardService();
-  return service.updateBoard(boardId, updates);
+  return service.update(boardId, updates);
 }
 
 export async function deleteBoard(boardId: string) {
   const service = await createBoardService();
-  return service.deleteBoard(boardId);
+  return service.delete(boardId);
 }
 
 export async function updateBoardMemberRole(
@@ -42,17 +42,17 @@ export async function updateBoardMemberRole(
   return service.updateMemberRole(boardId, memberId, newRole);
 }
 
-// Hard delete (admin)
 export async function hardDeleteBoard(boardId: string) {
   const service = await createBoardService();
-  return service.delete(boardId);
+  return service.hardDelete(boardId);
 }
 
-export async function getBoardMembership(userId: string, boardId: string) {
+export async function getBoardMembership(boardId: string) {
   const service = await createBoardService();
-  return service.getMyBoardMembership(userId, boardId);
+  return service.getMyMembership(boardId);
 }
+
 export async function getBoardMembers(boardId: string) {
   const service = await createBoardService();
-  return service.getBoardMembers(boardId);
+  return service.getMembers(boardId);
 }

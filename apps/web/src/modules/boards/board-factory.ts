@@ -1,14 +1,15 @@
 import { createSSRClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/adminClient';
-import { BoardsService } from './boards-service';
+import { BoardService } from '@accessly/core';
 import { assertSignedInAndGetUserId } from '@/lib/auth/server';
 
-/**
- * Factory function to create a BoardsService instance with user + admin clients.
- */
-export async function createBoardService(): Promise<BoardsService> {
+export async function createBoardService(): Promise<BoardService> {
   const adminSupabase = await createAdminClient();
   const supabase = await createSSRClient();
   const userId = await assertSignedInAndGetUserId();
-  return new BoardsService(supabase, adminSupabase, userId);
+  return new BoardService({
+    supabase,
+    adminSupabase,
+    userId,
+  });
 }

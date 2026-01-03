@@ -8,7 +8,7 @@ import {
   updateBoardMutationOptions,
   deleteBoardMutationOptions,
 } from '../queries';
-import type { BoardInput, BoardUpdate } from '../types';
+import type { BoardInput, BoardUpdate } from '@accessly/core';
 
 /**
  * Hook that provides access to boards for the current active organization.

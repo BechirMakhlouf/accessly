@@ -10,7 +10,7 @@ import {
   updateBoard as updateBoardAction,
   updateBoardMemberRole as updateBoardMemberRoleAction,
 } from './actions';
-import type { Board, BoardInput, BoardRole, BoardUpdate } from './types';
+import type { Board, BoardInput, BoardRole, BoardUpdate } from '@accessly/core';
 
 // Query Keys
 export const BOARDS_KEY = 'boards';
