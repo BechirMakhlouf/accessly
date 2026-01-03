@@ -1,31 +1,20 @@
-'use client';
+"use client";
 
-import { useMemo, useState, useEffect } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { routes } from '@/lib/routes';
-import { useUserOrgs } from './use-user-orgs';
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryState, parseAsString } from "nuqs";
+import { routes } from "@/lib/routes";
+import { useUserOrgs } from "./use-user-orgs";
 
 export function useOrganizationsPage() {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const { organizations, isLoading, error, createOrganization } = useUserOrgs();
 
-  const initialQuery = searchParams.get('search') ?? '';
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (searchQuery) {
-      params.set('search', searchQuery);
-    } else {
-      params.delete('search');
-    }
-
-    router.replace(`${pathname}?${params.toString()}`);
-  }, [searchQuery, pathname, router, searchParams]);
+  const [searchQuery, setSearchQuery] = useQueryState(
+    "search",
+    parseAsString.withDefault(""),
+  );
 
   const filteredOrganizations = useMemo(() => {
     if (!organizations) return [];
@@ -33,10 +22,10 @@ export function useOrganizationsPage() {
     if (!query) return organizations;
 
     return organizations.filter(
-      org =>
+      (org) =>
         org.name.toLowerCase().includes(query) ||
         org.description?.toLowerCase().includes(query) ||
-        org.slug.toLowerCase().includes(query)
+        org.slug.toLowerCase().includes(query),
     );
   }, [organizations, searchQuery]);
 
@@ -44,7 +33,7 @@ export function useOrganizationsPage() {
     router.push(routes.protected.dashboard.organizations.new);
   };
 
-  const handleClearSearch = () => setSearchQuery('');
+  const handleClearSearch = () => setSearchQuery("");
 
   return {
     organizations: filteredOrganizations,

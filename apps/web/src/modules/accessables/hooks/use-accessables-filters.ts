@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useCallback } from "react";
+import { useQueryState, parseAsString, parseAsStringLiteral } from "nuqs";
 import type { Accessable, AccessableType } from "../types";
 import { ACCESSABLE_TYPES } from "../types";
 
@@ -11,34 +11,17 @@ export type AccessablesFilters = {
 };
 
 export function useAccessablesFilters(accessables: Accessable[]) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [search, setSearch] = useQueryState(
+    "search",
+    parseAsString.withDefault(""),
+  );
 
-  const initialSearch = searchParams.get("search") ?? "";
-  const initialType = searchParams.get("type") as AccessableType | null;
-  const validInitialType =
-    initialType && ACCESSABLE_TYPES.includes(initialType) ? initialType : null;
-
-  const [search, setSearch] = useState(initialSearch);
-  const [type, setType] = useState<AccessableType | null>(validInitialType);
-
-  useEffect(() => {
-    const params = new URLSearchParams();
-
-    if (search) {
-      params.set("search", search);
-    }
-
-    if (type) {
-      params.set("type", type);
-    }
-
-    const newUrl = params.toString()
-      ? `${pathname}?${params.toString()}`
-      : pathname;
-    router.replace(newUrl, { scroll: false });
-  }, [search, type, pathname, router]);
+  const [type, setType] = useQueryState(
+    "type",
+    parseAsStringLiteral(ACCESSABLE_TYPES).withDefault(
+      null as unknown as AccessableType,
+    ),
+  );
 
   const filteredAccessables = useMemo(() => {
     let result = accessables;

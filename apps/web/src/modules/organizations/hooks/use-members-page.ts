@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useQueryState, parseAsString } from "nuqs";
 import type { Organization, OrgMember, OrgRole } from "@/modules/organizations";
 import { canManageMembers, useActiveOrg } from "@/modules/organizations";
 import { useOrgInvite } from "./use-org-invite";
 import { routes } from "@/lib/routes";
-import { getOrgErrorMessage } from "../error-messages";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -37,22 +37,12 @@ export const useMembersPage = () => {
   });
 
   const t = useTranslations("org.members");
-  const rootT = useTranslations();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const initialQuery = searchParams.get("search") ?? "";
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (searchQuery.trim() !== "") {
-      params.set("search", searchQuery);
-    } else {
-      params.delete("search");
-    }
-    router.replace(`?${params.toString()}`);
-  }, [searchQuery, router, searchParams]);
+  const [searchQuery, setSearchQuery] = useQueryState(
+    "search",
+    parseAsString.withDefault(""),
+  );
 
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -170,9 +160,9 @@ export const useMembersPage = () => {
 
     try {
       const result = await inviteMember(inviteEmail.trim(), inviteRole);
-      console.log("invite result: ", result);
       if (result?.error) {
-        toast.error(rootT(getOrgErrorMessage(result.error)));
+        toast.error(t('actions.invitationError'));
+        return;
       }
       toast.success(t("actions.invitationSent"));
       // Reset form
