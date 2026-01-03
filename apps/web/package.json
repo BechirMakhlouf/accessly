@@ -8,11 +8,12 @@
     "dev": "next dev --turbopack",
     "devs": "next dev --turbopack --experimental-https",
     "build": "next build",
-    "build:no-lint": "next build --no-lint",
+    "build:no-lint": "next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
+    "test": "vitest run",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "rm -rf .next dist"

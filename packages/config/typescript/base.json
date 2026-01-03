@@ -1,4 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "compilerOptions": {}
+  "display": "Accessly Base",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  }
 }

@@ -3,28 +3,21 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "dist/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "dev": {
       "persistent": true,
       "cache": false
     },
     "lint": {
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^lint"]
+    },
+    "lint:fix": {
+      "cache": false
     },
     "type-check": {
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^type-check"]
     },
     "format": {
       "cache": false

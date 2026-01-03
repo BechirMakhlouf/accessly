@@ -8,6 +8,7 @@
     "apps/*",
     "packages/*"
   ],
+  "prettier": "@accessly/config/prettier",
   "scripts": {
     "init-local": "turbo run init-local",
     "build": "turbo run build",
@@ -18,10 +19,6 @@
     "clean": "turbo run clean",
     "format": "turbo run format",
     "format:check": "turbo run format:check",
-    "lint:root": "eslint .",
-    "lint:root:fix": "eslint . --fix",
-    "format:root": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:root:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "-- WEB --": "",
     "web:install": "pnpm install --filter=@accessly/web --frozen-lockfile",
     "web:build": "turbo run build --filter=@accessly/web",

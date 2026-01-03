@@ -1,22 +1,15 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Accessly Web App",
+  "display": "Accessly Next.js",
   "extends": "./base.json",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [{ "name": "next" }]
   }
 }

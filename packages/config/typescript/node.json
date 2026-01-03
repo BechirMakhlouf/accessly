@@ -1,1 +1,10 @@
-{}
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Accessly Node",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "moduleResolution": "node",
+    "types": ["node"]
+  }
+}
