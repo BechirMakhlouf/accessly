@@ -10,9 +10,13 @@ import {
   checkSlugUniquenessMutationOptions,
   deleteOrganizationMutationOptions,
 } from '../queries';
-import type { OrgUpdate, OrgInput } from '../types';
+import type { OrgInput, OrgUpdate, OrgWithMembers } from '../types';
 
-export function useUserOrgs() {
+type UseUserOrgsOptions = {
+  initialData?: OrgWithMembers[] | null;
+};
+
+export function useUserOrgs(options: UseUserOrgsOptions = {}) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -25,6 +29,7 @@ export function useUserOrgs() {
   } = useQuery({
     ...getUserOrganizationsQueryOptions(),
     enabled: !!user,
+    initialData: options.initialData,
   });
 
   // Create organization mutation

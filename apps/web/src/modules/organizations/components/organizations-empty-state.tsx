@@ -1,21 +1,20 @@
 import { Plus, Users } from 'lucide-react';
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+
 import { Button } from '@/components/ui/button';
-import { useTranslations } from 'next-intl';
+import { routes } from '@/lib/routes';
+import { ClearSearchButton } from './clear-search-button';
 
-interface OrganizationsEmptyStateProps {
-  hasSearchQuery: boolean;
-  searchQuery: string;
-  onClearSearch: () => void;
-  onCreateOrganization: () => void;
-}
+type OrganizationsEmptyStateProps = {
+  searchQuery?: string;
+};
 
-export function OrganizationsEmptyState({
-  hasSearchQuery,
+export async function OrganizationsEmptyState({
   searchQuery,
-  onClearSearch,
-  onCreateOrganization,
 }: OrganizationsEmptyStateProps) {
-  const t = useTranslations('organizations');
+  const t = await getTranslations('organizations');
+  const hasSearchQuery = !!searchQuery?.trim();
 
   return (
     <div className='text-center py-12'>
@@ -29,11 +28,9 @@ export function OrganizationsEmptyState({
               {t('search.noResults.title')}
             </h3>
             <p className='text-muted-foreground mb-4'>
-              {t('search.noResults.description', { query: searchQuery })}
+              {t('search.noResults.description', { query: searchQuery ?? '' })}
             </p>
-            <Button variant='outline' onClick={onClearSearch}>
-              {t('search.clear')}
-            </Button>
+            <ClearSearchButton label={t('search.clear')} />
           </>
         ) : (
           <>
@@ -41,9 +38,11 @@ export function OrganizationsEmptyState({
             <p className='text-muted-foreground mb-4'>
               {t('empty.description')}
             </p>
-            <Button onClick={onCreateOrganization}>
-              <Plus className='mr-2 h-4 w-4' />
-              {t('actions.create')}
+            <Button asChild>
+              <Link href={routes.protected.dashboard.organizations.new}>
+                <Plus className='mr-2 h-4 w-4' />
+                {t('actions.create')}
+              </Link>
             </Button>
           </>
         )}

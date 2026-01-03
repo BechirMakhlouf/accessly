@@ -5,6 +5,8 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 
 const jiti = createJiti(import.meta.url);
 
+const enableCacheComponents = process.env.NEXT_CACHE_COMPONENTS === 'true';
+
 // Import env here to validate during build. Using jiti@^1 we can import .ts files :)
 await jiti.import('./src/lib/env');
 
@@ -25,9 +27,7 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    // cacheComponents: true,
-  },
+  cacheComponents: enableCacheComponents,
 };
 
 export default withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })(

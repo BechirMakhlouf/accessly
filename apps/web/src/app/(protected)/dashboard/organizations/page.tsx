@@ -1,53 +1,36 @@
-'use client';
+import { Suspense } from 'react';
 
-import { useEffect, useState } from 'react';
-import { OrganizationsHeader } from '@/modules/organizations/components/organizations-header';
+import { OrganizationsPageHeader } from '@/modules/organizations/components/organizations-page-header';
 import { OrganizationsGrid } from '@/modules/organizations/components/organizations-grid';
 import { OrganizationsEmptyState } from '@/modules/organizations/components/organizations-empty-state';
 import { OrganizationsLoadingState } from '@/modules/organizations/components/organizations-loading-state';
-import { useOrganizationsPage } from '@/modules/organizations';
+import { getUserOrganizations } from '@/modules/organizations/data/get-user-organizations';
 
-export default function OrganizationsPage() {
-  const [isHydrated, setIsHydrated] = useState(false);
-  const {
-    organizations,
-    searchQuery,
-    setSearchQuery,
-    isLoading,
-    handleCreateOrganization,
-    handleClearSearch,
-  } = useOrganizationsPage();
+type OrganizationsPageProps = {
+  searchParams: Promise<{ search?: string }>;
+};
 
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
+async function OrganizationsList({ search }: { search?: string }) {
+  const organizations = await getUserOrganizations({ search });
 
-  if (!isHydrated || isLoading) {
-    return <OrganizationsLoadingState />;
+  if (organizations.length === 0) {
+    return <OrganizationsEmptyState searchQuery={search} />;
   }
 
+  return <OrganizationsGrid organizations={organizations} />;
+}
+
+export default async function OrganizationsPage({
+  searchParams,
+}: OrganizationsPageProps) {
+  const { search } = await searchParams;
+
   return (
-    <div className='flex justify-center'>
-      <div className='min-h-screen bg-background'>
-        <main className='container py-8'>
-          <OrganizationsHeader
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onCreateOrganization={handleCreateOrganization}
-          />
-
-          <OrganizationsGrid organizations={organizations} />
-
-          {organizations.length === 0 && (
-            <OrganizationsEmptyState
-              hasSearchQuery={!!searchQuery}
-              searchQuery={searchQuery}
-              onClearSearch={handleClearSearch}
-              onCreateOrganization={handleCreateOrganization}
-            />
-          )}
-        </main>
-      </div>
+    <div className='container mx-auto py-8'>
+      <OrganizationsPageHeader />
+      <Suspense key={search} fallback={<OrganizationsLoadingState />}>
+        <OrganizationsList search={search} />
+      </Suspense>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import type { TypedSupabaseClient } from "@/lib/supabase/type";
+import type { TypedSupabaseClient } from '@/lib/supabase/type';
 import type {
   Invite,
   InviteStatus,
@@ -9,9 +9,12 @@ import type {
   OrgRole,
   OrgUpdate,
   OrgWithMembers,
-} from "./types";
-import type { UndefinedInitialDataOptions } from "@tanstack/react-query";
-import { QueryClient } from "@tanstack/react-query";
+} from './types';
+import type {
+  UndefinedInitialDataOptions,
+  UseQueryOptions,
+} from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import {
   createOrg,
   deleteOrganization,
@@ -28,26 +31,29 @@ import {
   updateMemberRole,
   updateOrganization,
   updateUserOwnInvite,
-} from "./actions";
-import { isNullOrUndefined } from "@/lib/utils";
+} from './actions';
+import { isNullOrUndefined } from '@/lib/utils';
 
 // Query keys
-export const USER_ORGANIZATIONS_KEY = ["user-organizations"] as const;
+export const USER_ORGANIZATIONS_KEY = ['user-organizations'] as const;
 export const ORGANIZATION_KEY = (orgId: string) =>
-  ["organization", orgId] as const;
+  ['organization', orgId] as const;
 export const ORGANIZATION_BY_SLUG_KEY = (slug: string) =>
-  ["organization-by-slug", slug] as const;
+  ['organization-by-slug', slug] as const;
 export const ORGANIZATION_MEMBERS_KEY = (orgId: string) =>
-  ["organization-members", orgId] as const;
+  ['organization-members', orgId] as const;
 export const ORGANIZATION_INVITES_KEY = (orgId: string) =>
-  ["organization-invites", orgId] as const;
-export const USER_INVITES_KEY = ["user-invites"] as const;
+  ['organization-invites', orgId] as const;
+export const USER_INVITES_KEY = ['user-invites'] as const;
 
 //TODO: rely on useReactQuery for queries options like staleTime gcTime an other generic caching options
 
 // Get user organizations query
-export const getUserOrganizationsQueryOptions: () => UndefinedInitialDataOptions<
-  OrgWithMembers[] | null
+export const getUserOrganizationsQueryOptions: () => UseQueryOptions<
+  OrgWithMembers[] | null,
+  Error,
+  OrgWithMembers[] | null,
+  typeof USER_ORGANIZATIONS_KEY
 > = () => ({
   queryKey: USER_ORGANIZATIONS_KEY,
   queryFn: async () => {
@@ -63,7 +69,7 @@ export const getUserOrganizationsQueryOptions: () => UndefinedInitialDataOptions
 
 // Get organization by ID query
 export const getOrganizationQueryOptions = (
-  orgId: string,
+  orgId: string
 ): UndefinedInitialDataOptions<OrgWithMembers | null> => ({
   queryKey: ORGANIZATION_KEY(orgId),
   queryFn: async () => {
@@ -75,14 +81,14 @@ export const getOrganizationQueryOptions = (
       return null;
     }
 
-    return result.find((org) => org.id === orgId) || null;
+    return result.find(org => org.id === orgId) || null;
   },
   enabled: !!orgId,
 });
 
 // Get organization by slug query
 export const getOrganizationBySlugQueryOptions = (
-  slug: string,
+  slug: string
 ): UndefinedInitialDataOptions<Organization | null> => ({
   queryKey: ORGANIZATION_BY_SLUG_KEY(slug),
   queryFn: async () => {
@@ -90,7 +96,7 @@ export const getOrganizationBySlugQueryOptions = (
 
     if (result?.error) {
       throw new Error(
-        typeof result.error === "string" ? result.error : "Unknown error",
+        typeof result.error === 'string' ? result.error : 'Unknown error'
       );
     }
 
@@ -101,7 +107,7 @@ export const getOrganizationBySlugQueryOptions = (
 
 // Get organization members query
 export const getOrganizationMembersQueryOptions = (
-  orgId: string,
+  orgId: string
 ): UndefinedInitialDataOptions<OrgMemberWithProfile[] | null> => ({
   queryKey: ORGANIZATION_MEMBERS_KEY(orgId),
   queryFn: async () => {
@@ -109,7 +115,7 @@ export const getOrganizationMembersQueryOptions = (
 
     if (result?.error) {
       throw new Error(
-        typeof result.error === "string" ? result.error : "Unknown error",
+        typeof result.error === 'string' ? result.error : 'Unknown error'
       );
     }
 
@@ -120,7 +126,7 @@ export const getOrganizationMembersQueryOptions = (
 
 // Create organization mutation
 export const createOrganizationMutationOptions = (
-  queryClient: QueryClient,
+  queryClient: QueryClient
 ) => ({
   mutationFn: async (newOrg: Parameters<typeof createOrg>[0]) =>
     await createOrg(newOrg),
@@ -131,7 +137,7 @@ export const createOrganizationMutationOptions = (
 
 // Update organization mutation
 export const updateOrganizationMutationOptions = (
-  queryClient: QueryClient,
+  queryClient: QueryClient
 ) => ({
   mutationFn: async ({
     orgId,
@@ -142,7 +148,7 @@ export const updateOrganizationMutationOptions = (
   }) => await updateOrganization(orgId, updates),
   onSuccess: (
     data: { data?: unknown; error?: string } | null,
-    { orgId, updates }: { orgId: string; updates: OrgUpdate },
+    { orgId, updates }: { orgId: string; updates: OrgUpdate }
   ) => {
     if (!data?.error && data?.data) {
       queryClient.invalidateQueries({ queryKey: ORGANIZATION_KEY(orgId) });
@@ -152,8 +158,8 @@ export const updateOrganizationMutationOptions = (
       // TODO: the check doesn't look right
       if (
         updates.slug &&
-        typeof data.data === "object" &&
-        "slug" in data.data
+        typeof data.data === 'object' &&
+        'slug' in data.data
       ) {
         const oldSlug = (data.data as { slug: string }).slug;
         queryClient.invalidateQueries({
@@ -177,7 +183,7 @@ export const updateMemberRoleMutationOptions = (queryClient: QueryClient) => ({
   }) => await updateMemberRole(orgId, memberId, newRole),
   onSuccess: (
     data: { data?: unknown; error?: string } | null,
-    { orgId }: { orgId: string },
+    { orgId }: { orgId: string }
   ) => {
     if (!data?.error) {
       queryClient.invalidateQueries({
@@ -198,7 +204,7 @@ export const removeMemberMutationOptions = (queryClient: QueryClient) => ({
   }) => await removeMember(orgId, memberId),
   onSuccess: (
     data: { success?: boolean; error?: string } | null,
-    { orgId }: { orgId: string },
+    { orgId }: { orgId: string }
   ) => {
     if (!data?.error) {
       queryClient.invalidateQueries({
@@ -232,13 +238,13 @@ export const inviteMemberMutationOptions = (queryClient: QueryClient) => ({
   }): Promise<{ success: true; invite: Invite }> => {
     const result = await inviteMember(orgId, email, role);
     if (result.error || !result.data) {
-      throw new Error(result.error ?? "Failed to invite member");
+      throw new Error(result.error ?? 'Failed to invite member');
     }
     return result.data;
   },
   onSuccess: (
     data: { success: true; invite: Invite },
-    { orgId }: { orgId: string },
+    { orgId }: { orgId: string }
   ) => {
     queryClient.invalidateQueries({
       queryKey: ORGANIZATION_INVITES_KEY(orgId),
@@ -253,7 +259,7 @@ export const checkSlugUniquenessMutationOptions = () => ({
 
 // Delete organization mutation
 export const deleteOrganizationMutationOptions = (
-  queryClient: QueryClient,
+  queryClient: QueryClient
 ) => ({
   mutationFn: async (orgId: string) => await deleteOrganization(orgId),
   onSuccess: () => {
@@ -263,7 +269,7 @@ export const deleteOrganizationMutationOptions = (
 
 // Get organization invites query
 export const getOrganizationInvitesQueryOptions = (
-  orgId: string,
+  orgId: string
 ): UndefinedInitialDataOptions<InviteWithInviter[] | null> => ({
   queryKey: ORGANIZATION_INVITES_KEY(orgId),
   queryFn: async () => {
@@ -271,7 +277,7 @@ export const getOrganizationInvitesQueryOptions = (
 
     if (result?.error) {
       throw new Error(
-        typeof result.error === "string" ? result.error : "Unknown error",
+        typeof result.error === 'string' ? result.error : 'Unknown error'
       );
     }
 
@@ -282,7 +288,7 @@ export const getOrganizationInvitesQueryOptions = (
 
 // Update invite status mutation
 export const updateInviteStatusMutationOptions = (
-  queryClient: QueryClient,
+  queryClient: QueryClient
 ) => ({
   mutationFn: async ({
     inviteId,
@@ -293,7 +299,7 @@ export const updateInviteStatusMutationOptions = (
   }): Promise<Invite> => {
     const result = await updateInviteStatus(inviteId, status);
     if (result.error || !result.data) {
-      throw new Error(result.error ?? "Failed to update invite status");
+      throw new Error(result.error ?? 'Failed to update invite status');
     }
     return result.data;
   },
@@ -308,9 +314,9 @@ export const updateInviteStatusMutationOptions = (
 // Revoke invite mutation (convenience wrapper for updateInviteStatus with "revoked" status)
 export const revokeInviteMutationOptions = (queryClient: QueryClient) => ({
   mutationFn: async ({ inviteId }: { inviteId: string }): Promise<Invite> => {
-    const result = await updateInviteStatus(inviteId, "revoked");
+    const result = await updateInviteStatus(inviteId, 'revoked');
     if (result.error || !result.data) {
-      throw new Error(result.error ?? "Failed to revoke invite");
+      throw new Error(result.error ?? 'Failed to revoke invite');
     }
     return result.data;
   },
@@ -332,7 +338,7 @@ export const getUserInvitesQueryOptions: () => UndefinedInitialDataOptions<
 
     if (result?.error) {
       throw new Error(
-        typeof result.error === "string" ? result.error : "Unknown error",
+        typeof result.error === 'string' ? result.error : 'Unknown error'
       );
     }
 
@@ -347,7 +353,7 @@ export const updateUserInviteMutationOptions = (queryClient: QueryClient) => ({
     status,
   }: {
     inviteId: string;
-    status: "accepted" | "rejected";
+    status: 'accepted' | 'rejected';
   }) => await updateUserOwnInvite(inviteId, status),
   onSuccess: (data: { data?: Invite; error?: string } | null) => {
     if (!data?.error) {
@@ -362,12 +368,12 @@ export const updateUserInviteMutationOptions = (queryClient: QueryClient) => ({
 // Utility function for getting organization by slug (for server-side use)
 export const getOrganizationBySlug = async (
   supabase: TypedSupabaseClient,
-  slug: string,
+  slug: string
 ) => {
   return await supabase
-    .from("organizations")
-    .select("*")
-    .eq("slug", slug)
+    .from('organizations')
+    .select('*')
+    .eq('slug', slug)
     .limit(1)
     .maybeSingle();
 };
