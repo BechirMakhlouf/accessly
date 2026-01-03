@@ -1,6 +1,4 @@
 {
-  "extends": "@accessly/config/typescript/base",
-  "exclude": [
-    "scripts/"
-  ]
+  "extends": "@accessly/config/typescript/base.json",
+  "exclude": ["scripts/"]
 }

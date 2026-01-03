@@ -1,13 +1,15 @@
 import { build } from 'esbuild';
 
-await build({
+build({
   entryPoints: ['src/index.ts'],
   bundle: true,
   outfile: 'dist/index.cjs',
   platform: 'node',
-  // outdir: "dist",
   target: 'node25',
   format: 'cjs',
   sourcemap: true,
   logLevel: 'info',
+  tsconfig: 'tsconfig.json',
+}).catch(() => {
+  process.exit(1);
 });

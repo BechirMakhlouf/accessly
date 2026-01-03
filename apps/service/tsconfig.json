@@ -1,16 +1,10 @@
 {
-  "extends": "@accessly/config/typescript/node",
+  "extends": "@accessly/config/typescript/node.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "verbatimModuleSyntax": false,
-    "strict": true,
-    "skipLibCheck": true,
-    "types": ["node"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "outDir": "./dist"
   },
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,4 +1,9 @@
-import { WebClient, ConversationsCreateResponse } from '@slack/web-api';
+import {
+  WebClient,
+  ConversationsCreateResponse,
+  ConversationsListResponse,
+  ConversationsHistoryResponse,
+} from '@slack/web-api';
 import { env } from '../lib/env';
 
 const token = env.SLACK_BOT_TOKEN;
@@ -40,7 +45,7 @@ export async function createSlackChannel(
 }
 
 export async function listSlackChannels(): Promise<
-  SlackResult<{ channels?: any[] }>
+  SlackResult<{ channels?: ConversationsListResponse['channels'] }>
 > {
   try {
     const res = await slackClient.conversations.list();
@@ -53,7 +58,12 @@ export async function listSlackChannels(): Promise<
     return { ok: false, error };
   }
 }
-export async function listSlackMessages(channel: string, limit = 20) {
+export async function listSlackMessages(
+  channel: string,
+  limit = 20
+): Promise<
+  SlackResult<{ messages?: ConversationsHistoryResponse['messages'] }>
+> {
   try {
     const res = await slackClient.conversations.history({
       channel,

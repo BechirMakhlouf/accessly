@@ -1,23 +1,23 @@
-name: "[CI] Web App Code Quality"
+name: '[CI] Web App Code Quality'
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - "apps/web/**"
-      - "packages/**"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
   workflow_dispatch:
 env:
-  NODE_VERSION: "22"
+  NODE_VERSION: '22'
   NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
   NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
-  SUPABASE_SECRET_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"
-  NEXT_PUBLIC_SENTRY_DSN: "https://8e209ebf1110543bd2f9d936e511d674@o4509983333089280.ingest.de.sentry.io/4509983335120976"
-  RESEND_API_KEY: "re_test_key_for_ci"
-  MAIL_FROM_DOMAIN: "mail.accessly.me"
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+  SUPABASE_SECRET_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+  NEXT_PUBLIC_SENTRY_DSN: 'https://8e209ebf1110543bd2f9d936e511d674@o4509983333089280.ingest.de.sentry.io/4509983335120976'
+  RESEND_API_KEY: 're_test_key_for_ci'
+  MAIL_FROM_DOMAIN: 'mail.accessly.me'
 
 jobs:
   web-code-quality:
@@ -34,21 +34,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '${{ env.NODE_VERSION }}'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9.0.0
+          version: 10.26.2
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint for web app
-        run: pnpm --filter @accessly/web run ci:lint
+        run: pnpm --filter @accessly/web run lint
 
       - name: Type check for web app
-        run: pnpm --filter @accessly/web run ci:type-check
+        run: pnpm --filter @accessly/web run type-check
 
       - name: Check for unused imports
         run: |
