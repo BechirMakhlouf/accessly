@@ -26,7 +26,7 @@ import { useAuth } from '../hooks';
 
 export const signUpSchema = z
   .object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(6),
     repeatPassword: z.string(),
   })

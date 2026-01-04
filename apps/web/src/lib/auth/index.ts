@@ -37,3 +37,8 @@ export { ForgotPasswordForm } from './components/forgot-password-form';
 export { ConfirmEmailCard } from './components/confirm-email-card';
 export { UpdatePasswordForm } from './components/update-password-form';
 export { OtpVerificationForm } from './components/otp-verification-form';
+
+// Loading components
+export { SignInFormLoading } from './components/sign-in-form-loading';
+export { SignUpFormLoading } from './components/sign-up-form-loading';
+export { ForgotPasswordFormLoading } from './components/forgot-password-form-loading';
